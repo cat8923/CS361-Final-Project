@@ -10,7 +10,7 @@ class DbCreateTest(TestCase):
             temp.set_password(raw_password="pass" + str(i))
             temp.save()
 
-        temp = MyUser(username="user5", first_name="john5", last_name="doe5")
+        temp = MyUser(username="user5", first_name="john5", last_name="doe5", position=UserType.SUPERVISOR)
         temp.set_password(raw_password="pass5")
         temp.save()
 
@@ -19,3 +19,4 @@ class DbCreateTest(TestCase):
         self.assertTrue(temp.has_usable_password())
         self.assertFalse(temp.check_password("pass2"))
         print(list(map(str, MyUser.objects.filter(position = UserType.TA))))
+        print(list(map(str, MyUser.objects.filter(position = UserType.SUPERVISOR))))

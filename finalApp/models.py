@@ -13,4 +13,4 @@ class MyUser(models.User):
     position = m.CharField(max_length = 1, choices = UserType.choices, default = UserType.TA)
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return self.get_full_name()
