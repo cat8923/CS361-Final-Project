@@ -1,6 +1,6 @@
 from django.test import TestCase
-from .models import MyUser, UserType, CourseData, LabData, TAsToCourses
-from .database_access import make_user, login, ErrorString
+from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
+from .database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor
 
 
 # Create your tests here.
@@ -103,16 +103,21 @@ class UserLoginTest(TestCase):
 
 class CreateCourseTest(TestCase):
     def setUp(self):
-        pass
+        make_course({"title": "course1", "section": 201})
 
     def test_goodData(self):
-        pass
+        check = make_course({"title": "course0", "section": 200})
+        self.assertTrue(check, msg="Error: good course data fails to create course")
+        temp = CourseSections.objects.filter(course__title="course0")
 
     def test_badData(self):
-        pass
+        check = make_course({"title": "course0", "section": "200"})
+        self.assertFalse(check, msg="Error: making course does not fail when input is incorrect")
+        self.assertFalse(CourseData.objects.exists(title="course0"), msg="Error: course data is stored when creation failed")
 
     def test_courseExists(self):
-        pass
+        check = make_course({"title": "course1", "section":201})
+        self.assertFalse(check, msg="Error: making course does not fail when course exists")
 
     def test_instructorDoesNotExist(self):
         pass
@@ -126,7 +131,7 @@ class CreateLabTest(TestCase):
         pass
 
     def test_goodData(self):
-        pass
+        check = make_lab({"courseId": 1, "section": 801})
 
     def test_badData(self):
         pass
@@ -149,12 +154,15 @@ class AssignTALabTest(TestCase):
         pass
 
     def test_goodData(self):
-        pass
+        check = assign_ta({"labId": 1, "labSection": 801, "taUsername": "user1"})
 
     def test_badData(self):
         pass
 
     def test_taDoesNotExist(self):
+        pass
+
+    def test_userNotTA(self):
         pass
 
     def test_labDoesNotExist(self):
@@ -169,9 +177,12 @@ class AssignInstructorCourseTest(TestCase):
         pass
 
     def test_goodData(self):
-        pass
+        check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": "user1"})
 
     def test_badData(self):
+        pass
+
+    def test_userNotInstructor(self):
         pass
 
     def test_courseDoesNotExist(self):

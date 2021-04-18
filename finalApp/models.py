@@ -21,7 +21,11 @@ class MyUser(models.User):
 
 
 class CourseData(m.Model):
-    title = m.CharField(max_length=20)
+    title = m.CharField(max_length=50, unique=True)
+
+
+class CourseSections(m.Model):
+    course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
     section = m.IntegerField(null=False)
     instructor = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
 
@@ -29,6 +33,7 @@ class CourseData(m.Model):
 class LabData(m.Model):
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
     TA = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
+    section = m.IntegerField(null=False)
 
 
 class TAsToCourses(m.Model):

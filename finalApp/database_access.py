@@ -1,4 +1,4 @@
-from .models import MyUser, UserType, CourseData, LabData, TAsToCourses
+from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 
 
 class ErrorString():
@@ -39,13 +39,16 @@ def make_course(coursedata):
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
 
-    if CourseData.objects.filter(title=coursedata["title"]).exists():
+    if CourseSections.objects.filter(course__title=coursedata["title"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + " already exists")
 
-    tempCourse = CourseData(title=coursedata["title"])
-    tempCourse.save()
+    if not CourseData.objects.get(title=coursedata["title"]).exists():
+        tempCourse = CourseData(title=coursedata["title"])
+        tempCourse.save()
 
-    return False
+
+
+    return True
 
 
 def login(logindata):
