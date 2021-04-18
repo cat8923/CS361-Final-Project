@@ -3,10 +3,10 @@ from .models import MyUser, UserType, CourseData, LabData, TAsToCourses
 
 class ErrorString():
     def __init__(self, message):
-        self.message = message
+        self.__message = message
 
     def __str__(self):
-        return self.message
+        return self.__message
 
     def __bool__(self):
         return False
@@ -33,12 +33,13 @@ def make_user(userdata):
 
 
 def make_course(coursedata):
-    """creates a course in the database according to the given input. On success, returns False, on failure returns
-    string describing error"""
+    """creates a course in the database according to the given input. On success, returns True, on failure returns
+    string describing error.
+    Note: providing an instructor is not required; it is recommended to use the assign_instructor method instead."""
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
 
-    if CourseData.objects.filter(title = coursedata["title"]).exists():
+    if CourseData.objects.filter(title=coursedata["title"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + " already exists")
 
     tempCourse = CourseData(title=coursedata["title"])
@@ -48,10 +49,22 @@ def make_course(coursedata):
 
 
 def login(logindata):
-    """handles interacting with the database for logging in. Returns false on failure, or a dictionary of first and last name and position on success"""
+    """handles interacting with the database for logging in. Returns ErrorString (False) on failure, or a dictionary of
+    first and last name and position on success"""
     pass
 
 
-def make_lab():
+def make_lab(labdata):
+    """handles making a lab given the user lab data. On failure, return ErrorString describing error. On success, return True"""
     pass
 
+
+def assign_ta(data):
+    """handles assigning a ta to a course. On failure returns ErrorString describing error. On success, returns true"""
+    pass
+
+
+def assign_instructor(data):
+    """handles assigning an instructor to a course in the given data. On failure returns ErrorString describing error.
+    On success, returns True."""
+    pass

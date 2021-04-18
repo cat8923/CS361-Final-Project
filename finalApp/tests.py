@@ -54,3 +54,86 @@ class UserLoginTest(TestCase):
         self.assertEqual(check["first_name"], temp.first_name, msg="Error: login dictionary returns incorrect first name")
         self.assertEqual(check["last_name"], temp.last_name, msg="Error: login dictionary returns incorrect last name")
         self.assertEqual(check["position"], temp.position, msg="Error: login dictionary returns incorrect position")
+
+    def test_wrongPass(self):
+        pass
+
+    def test_userDoesNotExist(self):
+        pass
+
+    def test_multiLogin(self):
+        pass
+
+    def test_missingData(self):
+        pass
+
+
+class CreateCourseTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_goodData(self):
+        pass
+
+    def test_badData(self):
+        pass
+
+    def test_courseExists(self):
+        pass
+
+    def test_instructorDoesNotExist(self):
+        pass
+
+
+class CreateLabTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_goodData(self):
+        pass
+
+    def test_badData(self):
+        pass
+
+    def test_labExists(self):
+        pass
+
+    def test_courseDoesNotExist(self):
+        pass
+
+    def test_taDoesNotExist(self):
+        pass
+
+
+class AssignTALabTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_goodData(self):
+        pass
+
+    def test_badData(self):
+        pass
+
+    def test_taDoesNotExist(self):
+        pass
+
+    def test_labDoesNotExist(self):
+        pass
+
+
+class AssignInstructorCourseTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_goodData(self):
+        pass
+
+    def test_badData(self):
+        pass
+
+    def test_courseDoesNotExist(self):
+        pass
+
+    def test_instructorDoesNotExist(self):
+        pass
