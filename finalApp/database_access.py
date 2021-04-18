@@ -35,18 +35,20 @@ def make_user(userdata):
 def make_course(coursedata):
     """creates a course in the database according to the given input. On success, returns True, on failure returns
     string describing error.
-    Note: providing an instructor is not required; it is recommended to use the assign_instructor method instead."""
+    Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
 
     if CourseSections.objects.filter(course__title=coursedata["title"], section=coursedata["section"]).exists():
-        return ErrorString("Error: course with title " + coursedata["title"] + " already exists")
+        return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
 
-    if not CourseData.objects.get(title=coursedata["title"]).exists():
+    tempCourse = CourseData.objects.get(title=coursedata["title"])
+
+    if tempCourse:
         tempCourse = CourseData(title=coursedata["title"])
         tempCourse.save()
 
-
+    tempSection = None
 
     return True
 
@@ -70,4 +72,10 @@ def assign_ta(data):
 def assign_instructor(data):
     """handles assigning an instructor to a course in the given data. On failure returns ErrorString describing error.
     On success, returns True."""
+    pass
+
+
+def get_course_id_by_name(courseName):
+    """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
+    whether the course did not exist or if data were invalid"""
     pass

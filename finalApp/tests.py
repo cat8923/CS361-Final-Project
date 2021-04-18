@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
-from .database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor
+from .database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, get_course_id_by_name
 
 
 # Create your tests here.
@@ -35,6 +35,12 @@ class DbCreateTest(TestCase):
             self.assertFalse(temp.check_password("pass2"))
             print(list(map(str, MyUser.objects.filter(position=UserType.TA))))
             print(list(map(str, MyUser.objects.filter(position=UserType.SUPERVISOR))))
+
+    def test_usernameTaken(self):
+        pass
+
+    def test_invalidData(self):
+        pass
 
 
 class UserLoginTest(TestCase):
@@ -103,7 +109,8 @@ class UserLoginTest(TestCase):
 
 class CreateCourseTest(TestCase):
     def setUp(self):
-        make_course({"title": "course1", "section": 201})
+        #make_course({"title": "course1", "section": 201})
+        pass
 
     def test_goodData(self):
         check = make_course({"title": "course0", "section": 200})
@@ -115,20 +122,38 @@ class CreateCourseTest(TestCase):
         self.assertFalse(check, msg="Error: making course does not fail when input is incorrect")
         self.assertFalse(CourseData.objects.exists(title="course0"), msg="Error: course data is stored when creation failed")
 
-    def test_courseExists(self):
+    def test_courseSectionExists(self):
         check = make_course({"title": "course1", "section":201})
         self.assertFalse(check, msg="Error: making course does not fail when course exists")
-
-    def test_instructorDoesNotExist(self):
-        pass
+        tempCourse = CourseData.objects.get(title="course1")
+        self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1, msg="Error: extra section is created when data is incorrect")
 
     def test_missingData(self):
         pass
 
+    def test_makeSureItsWorking(self):
+        course = CourseData(title="course1")
+        course.save()
+        section = CourseSections(section=201, course=course)
+        section.save()
+        section = CourseSections(section=202, course=course)
+        section.save()
+        course = CourseData(title="course2")
+        course.save()
+        section = CourseSections(section=201, course=course)
+        section.save()
+        section = CourseSections(section=202, course=course)
+        section.save()
+        temp = list(CourseSections.objects.filter(course__title="course1"))
+        print(len(temp))
+        temp = list(map(str, CourseSections.objects.filter(course__title="course2")))
+        print(temp)
+
 
 class CreateLabTest(TestCase):
     def setUp(self):
-        pass
+        self.tempCourse = CourseData(title="course1", id=1)
+        self.tempCourse.save()
 
     def test_goodData(self):
         check = make_lab({"courseId": 1, "section": 801})
@@ -142,19 +167,19 @@ class CreateLabTest(TestCase):
     def test_courseDoesNotExist(self):
         pass
 
-    def test_taDoesNotExist(self):
-        pass
-
     def test_missingData(self):
         pass
 
 
 class AssignTALabTest(TestCase):
     def setUp(self):
-        pass
+        tempCourse = CourseData(title="course1", id=1)
+        tempCourse.save()
+        LabData.objects.create(course=tempCourse, section=801)
 
     def test_goodData(self):
         check = assign_ta({"labId": 1, "labSection": 801, "taUsername": "user1"})
+        self.assertTrue(check, msg="Error: good data does not return true")
 
     def test_badData(self):
         pass
@@ -174,10 +199,13 @@ class AssignTALabTest(TestCase):
 
 class AssignInstructorCourseTest(TestCase):
     def setUp(self):
-        pass
+        tempCourse = CourseData(title="course1", id=1)
+        tempCourse.save()
+        CourseSections.objects.create(course=tempCourse, section=201)
 
     def test_goodData(self):
         check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": "user1"})
+        self.assertTrue(check, msg="Error: good data does not return true")
 
     def test_badData(self):
         pass
@@ -193,3 +221,29 @@ class AssignInstructorCourseTest(TestCase):
 
     def test_missingData(self):
         pass
+
+
+class GetCourseIDTest(TestCase):
+    def setUp(self):
+        for i in range(5):
+            CourseData.objects.create(title="course" + i, id=i*2)
+
+    def test_courseExists(self):
+        check = get_course_id_by_name("course3")
+        self.assertTrue(check, msg="Error: correct course data does not return true")
+        self.assertEqual(check, 6, msg="Error: incorrect ID is returned")
+
+    def test_courseDoesNotExist(self):
+        check = get_course_id_by_name("course5")
+        self.assertFalse(check, msg="Error: course title does not return false")
+        self.assertEqual(str(check), "Error: course does not exist", msg="Error: descriptive message is not returned")
+
+    def test_differentCapitalization(self):
+        check = get_course_id_by_name("Course0")
+        self.assertTrue(check, msg="Error: getting course by title is not case insensitive as it should be")
+        self.assertEqual(check, 0, msg="Error: variant capitalization returns incorrect course id")
+
+    def test_invalidData(self):
+        check = get_course_id_by_name({"course": "course1"})
+        self.assertFalse(check, msg="Error: incorrect passed data does not return false")
+        self.assertEqual(str(check), "Error: incorrect data", msg="Error: descriptive message is not returned")
