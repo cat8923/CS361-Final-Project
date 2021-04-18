@@ -22,6 +22,7 @@ class MyUser(models.User):
 
 class CourseData(m.Model):
     title = m.CharField(max_length=20)
+    section = m.IntegerField(null=False)
     instructor = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
 
 

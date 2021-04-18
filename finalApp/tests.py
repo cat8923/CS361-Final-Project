@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import MyUser, UserType, CourseData, LabData, TAsToCourses
-from .database_access import make_user, login
+from .database_access import make_user, login, ErrorString
 
 
 # Create your tests here.
@@ -45,27 +45,60 @@ class UserLoginTest(TestCase):
             temp.save()
 
     def test_goodLogin(self):
-        check = login({"username":"user0", "password":"pass0"})
+        check = login({"username": "user0", "password": "pass0"})
         temp = MyUser.objects.get(username="user0")
         self.assertTrue(check, msg="Error: correct login information does not login user")
         self.assertTrue(type(check) is dict, msg="Error: login does not return a dictionary")
         needed = ["first_name", "last_name", "position"]
         self.assertListEqual(list(check.keys()), needed, msg="Error: login returns a dictionary with incorrect keys")
-        self.assertEqual(check["first_name"], temp.first_name, msg="Error: login dictionary returns incorrect first name")
+        self.assertEqual(check["first_name"], temp.first_name,
+                         msg="Error: login dictionary returns incorrect first name")
         self.assertEqual(check["last_name"], temp.last_name, msg="Error: login dictionary returns incorrect last name")
         self.assertEqual(check["position"], temp.position, msg="Error: login dictionary returns incorrect position")
 
     def test_wrongPass(self):
-        pass
+        check = login({"username": "user0", "password": "pass1"})
+        self.assertFalse(check, msg="Error: logging in with incorrect password returns True")
+        self.assertTrue(type(check) is ErrorString, msg="Error: bad password does not return ErrorString")
+        self.assertEqual(str(check), "Error: incorrect password",
+                         msg="Error: bad password does not return correct error message")
 
     def test_userDoesNotExist(self):
-        pass
+        check = login({"username": "user0", "password": "pass0"})
+        self.assertFalse(check, msg="Error: logging in with incorrect username returns True")
+        self.assertTrue(type(check) is ErrorString, msg="Error: bad username does not return ErrorString")
+        self.assertEqual(str(check), "Error: user does not exist",
+                         msg="Error: bad username does not return correct error message")
 
     def test_multiLogin(self):
-        pass
+        needed = ["first_name", "last_name", "position"]
+        for i in range(3):
+            tempusername = "user" + str(i)
+            temppass = "pass" + str(i)
+            check = login({"username": tempusername, "password": temppass})
+            temp = MyUser.objects.get(username=tempusername)
+            self.assertTrue(check, msg="Error: correct login information does not login user")
+            self.assertTrue(type(check) is dict, msg="Error: login does not return a dictionary")
+            self.assertListEqual(list(check.keys()), needed,
+                                 msg="Error: login returns a dictionary with incorrect keys")
+            self.assertEqual(check["first_name"], temp.first_name,
+                             msg="Error: login dictionary returns incorrect first name")
+            self.assertEqual(check["last_name"], temp.last_name,
+                             msg="Error: login dictionary returns incorrect last name")
+            self.assertEqual(check["position"], temp.position, msg="Error: login dictionary returns incorrect position")
 
     def test_missingData(self):
-        pass
+        check = login({"username": "user0"})
+        self.assertFalse(check, msg="Error: logging in without password returns True")
+        self.assertTrue(type(check) is ErrorString, msg="Error: missing password does not return ErrorString")
+        self.assertEqual(str(check), "Error: password not provided",
+                         msg="Error: missing password does not return correct error message")
+
+        check = login({"password": "pass0"})
+        self.assertFalse(check, msg="Error: logging in without username returns True")
+        self.assertTrue(type(check) is ErrorString, msg="Error: missing username does not return ErrorString")
+        self.assertEqual(str(check), "Error: username not provided",
+                         msg="Error: missing username does not return correct error message")
 
 
 class CreateCourseTest(TestCase):
@@ -82,6 +115,9 @@ class CreateCourseTest(TestCase):
         pass
 
     def test_instructorDoesNotExist(self):
+        pass
+
+    def test_missingData(self):
         pass
 
 
@@ -104,6 +140,9 @@ class CreateLabTest(TestCase):
     def test_taDoesNotExist(self):
         pass
 
+    def test_missingData(self):
+        pass
+
 
 class AssignTALabTest(TestCase):
     def setUp(self):
@@ -121,6 +160,9 @@ class AssignTALabTest(TestCase):
     def test_labDoesNotExist(self):
         pass
 
+    def test_missingData(self):
+        pass
+
 
 class AssignInstructorCourseTest(TestCase):
     def setUp(self):
@@ -136,4 +178,7 @@ class AssignInstructorCourseTest(TestCase):
         pass
 
     def test_instructorDoesNotExist(self):
+        pass
+
+    def test_missingData(self):
         pass
