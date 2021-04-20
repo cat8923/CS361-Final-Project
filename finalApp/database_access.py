@@ -39,16 +39,24 @@ def make_course(coursedata):
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
 
+    if not coursedata.get("section"):
+        return ErrorString("Error: section is not provided in coursedata")
+
     if CourseSections.objects.filter(course__title=coursedata["title"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
 
-    tempCourse = CourseData.objects.get(title=coursedata["title"])
+    tempCourse = CourseData.objects.filter(title=coursedata["title"])
+    print(list(map(str, tempCourse)))
 
-    if tempCourse:
+
+    if not tempCourse:
         tempCourse = CourseData(title=coursedata["title"])
         tempCourse.save()
+    else:
+        tempCourse = tempCourse[0]
 
-    tempSection = None
+    tempSection = CourseSections(course=tempCourse, section=coursedata["section"])
+    tempSection.save()
 
     return True
 

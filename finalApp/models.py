@@ -35,6 +35,9 @@ class CourseSections(m.Model):
     def __str__(self):
         return str(self.course) + " " + str(self.section)
 
+    def __repr__(self):
+        return str(self.course) + " " + str(self.section)
+
 
 class LabData(m.Model):
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)

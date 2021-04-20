@@ -20,7 +20,7 @@ class DbCreateTest(TestCase):
 
     def test_createUser(self):
         make_user({"username": "user1", "password": "pass1", "first_name": "john", "last_name": "doe",
-                   "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "test@test.com",
+                   "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "testtest.com",
                    "number": "123456789"})
 
         check = make_user({"username": "user1", "password": "pass1", "first_name": "john", "last_name": "doe",
@@ -109,13 +109,12 @@ class UserLoginTest(TestCase):
 
 class CreateCourseTest(TestCase):
     def setUp(self):
-        #make_course({"title": "course1", "section": 201})
-        pass
+        make_course({"title": "course1", "section": 201})
 
     def test_goodData(self):
         check = make_course({"title": "course0", "section": 200})
         self.assertTrue(check, msg="Error: good course data fails to create course")
-        temp = CourseSections.objects.filter(course__title="course0")
+        print(list(map(str, CourseSections.objects.all())))
 
     def test_badData(self):
         check = make_course({"title": "course0", "section": "200"})
@@ -124,12 +123,22 @@ class CreateCourseTest(TestCase):
 
     def test_courseSectionExists(self):
         check = make_course({"title": "course1", "section":201})
-        self.assertFalse(check, msg="Error: making course does not fail when course exists")
+        self.assertFalse(check, msg="Error: making course does not fail when course section exists")
         tempCourse = CourseData.objects.get(title="course1")
         self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1, msg="Error: extra section is created when data is incorrect")
 
+    def test_existingCourse(self):
+        check = make_course({"title": "course1", "section": 202})
+        self.assertTrue(check, msg="Error: creating new section for a course fails when it should not")
+        print(list(map(str, CourseSections.objects.all())))
+        print(list(map(str, CourseData.objects.all())))
+
     def test_missingData(self):
-        pass
+        check = make_course({"title": "course0"})
+        self.assertFalse(check, msg="Error: making course does not fail if a section is not provided")
+
+        check = make_course({"section": 201})
+        self.assertFalse(check, msg="Error: making course does not fail when title is not provided")
 
     def test_makeSureItsWorking(self):
         course = CourseData(title="course1")
@@ -157,6 +166,11 @@ class CreateLabTest(TestCase):
 
     def test_goodData(self):
         check = make_lab({"courseId": 1, "section": 801})
+        #self.assertTrue(check, msg="Error: creating a lab for a course that exists fails")
+        CourseSections.objects.create(course=self.tempCourse, section=801)
+        CourseSections.objects.create(course_id=1, section=802)
+        temp = list(CourseSections.objects.all())
+        print(temp)
 
     def test_badData(self):
         pass
@@ -239,9 +253,9 @@ class GetCourseIDTest(TestCase):
         self.assertEqual(str(check), "Error: course does not exist", msg="Error: descriptive message is not returned")
 
     def test_differentCapitalization(self):
-        check = get_course_id_by_name("Course0")
+        check = get_course_id_by_name("Course1")
         self.assertTrue(check, msg="Error: getting course by title is not case insensitive as it should be")
-        self.assertEqual(check, 0, msg="Error: variant capitalization returns incorrect course id")
+        self.assertEqual(check, 2, msg="Error: variant capitalization returns incorrect course id")
 
     def test_invalidData(self):
         check = get_course_id_by_name({"course": "course1"})
