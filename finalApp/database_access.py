@@ -38,16 +38,19 @@ def make_course(coursedata):
     Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
+    if not type(coursedata["title"]) is str:
+        return ErrorString("Error: wrong type for course title")
 
     if not coursedata.get("section"):
         return ErrorString("Error: section is not provided in coursedata")
+    if not type(coursedata["section"]) is int:
+        return ErrorString("Error: wrong type for section")
 
     if CourseSections.objects.filter(course__title=coursedata["title"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
 
     tempCourse = CourseData.objects.filter(title=coursedata["title"])
     print(list(map(str, tempCourse)))
-
 
     if not tempCourse:
         tempCourse = CourseData(title=coursedata["title"])
@@ -64,7 +67,22 @@ def make_course(coursedata):
 def login(logindata):
     """handles interacting with the database for logging in. Returns ErrorString (False) on failure, or a dictionary of
     first and last name and position on success"""
-    pass
+    needed = ["username", "password"]
+    for i in needed:
+        if not logindata.get(i):
+            return ErrorString("Error: " + i + " not provided")
+        if not type(logindata[i]) is str:
+            return ErrorString("Error: bad input data")
+
+    tempUser = MyUser.objects.filter(username=logindata["username"]).exists()
+    if not tempUser:
+        return ErrorString("Error: user does not exist")
+
+    tempUser = MyUser.objects.get(username=logindata["username"])
+    if not tempUser.check_password(raw_password=logindata["password"]):
+        return ErrorString("Error: incorrect password")
+
+    return {"first_name": tempUser.first_name, "last_name": tempUser.last_name, "position": tempUser.position}
 
 
 def make_lab(labdata):
@@ -86,4 +104,10 @@ def assign_instructor(data):
 def get_course_id_by_name(courseName):
     """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
     whether the course did not exist or if data were invalid"""
-    pass
+    if type(courseName) is not str:
+        return ErrorString("Error: incorrect data")
+
+    if not CourseData.objects.filter(title__iexact=courseName).exists():
+        return ErrorString("Error: course does not exist")
+
+    return CourseData.objects.get(title__iexact=courseName).id

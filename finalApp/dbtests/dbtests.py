@@ -1,7 +1,7 @@
 from django.test import TestCase
-from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
-from .database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, get_course_id_by_name
-
+from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
+from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, get_course_id_by_name
+import random
 
 # Create your tests here.
 
@@ -70,7 +70,7 @@ class UserLoginTest(TestCase):
                          msg="Error: bad password does not return correct error message")
 
     def test_userDoesNotExist(self):
-        check = login({"username": "user0", "password": "pass0"})
+        check = login({"username": "user3", "password": "pass0"})
         self.assertFalse(check, msg="Error: logging in with incorrect username returns True")
         self.assertTrue(type(check) is ErrorString, msg="Error: bad username does not return ErrorString")
         self.assertEqual(str(check), "Error: user does not exist",
@@ -119,7 +119,7 @@ class CreateCourseTest(TestCase):
     def test_badData(self):
         check = make_course({"title": "course0", "section": "200"})
         self.assertFalse(check, msg="Error: making course does not fail when input is incorrect")
-        self.assertFalse(CourseData.objects.exists(title="course0"), msg="Error: course data is stored when creation failed")
+        self.assertFalse(CourseData.objects.filter(title="course0").exists(), msg="Error: course data is stored when creation failed")
 
     def test_courseSectionExists(self):
         check = make_course({"title": "course1", "section":201})
@@ -130,8 +130,6 @@ class CreateCourseTest(TestCase):
     def test_existingCourse(self):
         check = make_course({"title": "course1", "section": 202})
         self.assertTrue(check, msg="Error: creating new section for a course fails when it should not")
-        print(list(map(str, CourseSections.objects.all())))
-        print(list(map(str, CourseData.objects.all())))
 
     def test_missingData(self):
         check = make_course({"title": "course0"})
@@ -141,13 +139,13 @@ class CreateCourseTest(TestCase):
         self.assertFalse(check, msg="Error: making course does not fail when title is not provided")
 
     def test_makeSureItsWorking(self):
-        course = CourseData(title="course1")
+        course = CourseData(title="course2")
         course.save()
         section = CourseSections(section=201, course=course)
         section.save()
         section = CourseSections(section=202, course=course)
         section.save()
-        course = CourseData(title="course2")
+        course = CourseData(title="course3")
         course.save()
         section = CourseSections(section=201, course=course)
         section.save()
@@ -240,7 +238,7 @@ class AssignInstructorCourseTest(TestCase):
 class GetCourseIDTest(TestCase):
     def setUp(self):
         for i in range(5):
-            CourseData.objects.create(title="course" + i, id=i*2)
+            CourseData.objects.create(title="course" + str(i), id=i*2)
 
     def test_courseExists(self):
         check = get_course_id_by_name("course3")
