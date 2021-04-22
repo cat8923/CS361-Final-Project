@@ -73,15 +73,11 @@ class UserLoginTest(TestCase):
         check = login({"username": "user0", "password": "pass1"})
         self.assertFalse(check, msg="Error: logging in with incorrect password returns True")
         self.assertTrue(type(check) is ErrorString, msg="Error: bad password does not return ErrorString")
-        self.assertEqual(str(check), "Error: incorrect password",
-                         msg="Error: bad password does not return correct error message")
 
     def test_userDoesNotExist(self):
         check = login({"username": "user3", "password": "pass0"})
         self.assertFalse(check, msg="Error: logging in with incorrect username returns True")
         self.assertTrue(type(check) is ErrorString, msg="Error: bad username does not return ErrorString")
-        self.assertEqual(str(check), "Error: user does not exist",
-                         msg="Error: bad username does not return correct error message")
 
     def test_multiLogin(self):
         needed = ["first_name", "last_name", "position"]
@@ -176,7 +172,7 @@ class CreateLabTest(TestCase):
         self.assertTrue(check, msg="Error: creating a lab for a course that exists fails")
         query = list(LabData.objects.filter(course__title="course1"))
         self.assertEqual(len(query), 1, msg="Error: a single lab is not created for a course")
-        self.assertEqual(query[0].section, 801, msg="Error: correct secion is not created for the lab")
+        self.assertEqual(query[0].section, 801, msg="Error: correct section is not created for the lab")
 
     def test_badData(self):
         check = make_lab({"courseId": "one", "section": 801})
@@ -212,6 +208,14 @@ class CreateLabTest(TestCase):
         self.assertFalse(check, msg="Error: making lab does not fail when section is not given")
         query = list(LabData.objects.all())
         self.assertEqual(len(query), 0, msg="Error: a lab is created when section is not given")
+
+    def test_twoLabsOneCourse(self):
+        make_lab({"courseId": 1, "section": 801})
+        check = make_lab({"courseId": 1, "section": 802})
+        self.assertTrue(check, msg="Error: making lab fails when labs for the same course have different sections")
+        query = list(LabData.objects.all())
+        self.assertEqual(len(query), 2, msg="Error: lab is not created when section is unique.")
+
 
 
 class AssignTALabTest(TestCase):
@@ -279,7 +283,6 @@ class GetCourseIDTest(TestCase):
     def test_courseDoesNotExist(self):
         check = get_course_id_by_name("course5")
         self.assertFalse(check, msg="Error: course title does not return false")
-        self.assertEqual(str(check), "Error: course does not exist", msg="Error: descriptive message is not returned")
 
     def test_differentCapitalization(self):
         check = get_course_id_by_name("Course1")
@@ -289,4 +292,3 @@ class GetCourseIDTest(TestCase):
     def test_invalidData(self):
         check = get_course_id_by_name({"course": "course1"})
         self.assertFalse(check, msg="Error: incorrect passed data does not return false")
-        self.assertEqual(str(check), "Error: incorrect data", msg="Error: descriptive message is not returned")

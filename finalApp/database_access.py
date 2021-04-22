@@ -12,6 +12,16 @@ class ErrorString():
         return False
 
 
+def verify_dict(needed, dict):
+    for i in needed:
+        if not dict.get(i[0]):
+            return ErrorString("Error: " + i[0] + " was not provided")
+        if type(dict[i[0]]) is not i[1]:
+            return ErrorString("Error: invalid datatype for " + i[0])
+
+    return True
+
+
 def make_user(userdata):
     """creates a user in the database according to the given information. On success, returns True on failure returns an
     ErrorString describing the error."""
@@ -38,6 +48,7 @@ def make_course(coursedata):
     """creates a course in the database according to the given input. On success, returns True, on failure returns
     string describing error.
     Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
+    needed = [("title", str), ("section", int)]
     if not coursedata.get("title"):
         return ErrorString("Error: title is not provided in coursedata")
     if not type(coursedata["title"]) is str:
@@ -69,7 +80,7 @@ def make_course(coursedata):
 def login(logindata):
     """handles interacting with the database for logging in. Returns ErrorString (False) on failure, or a dictionary of
     first and last name and position on success"""
-    needed = ["username", "password"]
+    needed = [("username", str), ("password", str)]
     for i in needed:
         if not logindata.get(i):
             return ErrorString("Error: " + i + " not provided")
@@ -89,7 +100,20 @@ def login(logindata):
 
 def make_lab(labdata):
     """handles making a lab given the user lab data. On failure, return ErrorString describing error. On success, return True"""
-    pass
+    needed = [("courseId", int), ("section", int)]
+    check = verify_dict(needed, labdata)
+    if not check:
+        return check
+
+    if LabData.objects.filter(course_id=labdata["courseId"], section=labdata["section"]).exists():
+        return ErrorString("Error: lab section for this course already exists")
+
+    query = CourseData.objects.filter(id=labdata["courseId"])
+    if not query.exists():
+        return ErrorString("Error: course does not exist")
+
+    LabData.objects.create(course=(list(query))[0], section=labdata["section"])
+    return True
 
 
 def assign_ta(data):
