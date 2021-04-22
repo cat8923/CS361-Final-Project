@@ -15,10 +15,12 @@ class ErrorString():
 def make_user(userdata):
     """creates a user in the database according to the given information. On success, returns True on failure returns an
     ErrorString describing the error."""
-    needed = ["username", "password", "first_name", "last_name", "address", "title", "email", "number"]
+    needed = [("username", str), ("password", str), ("first_name", str), ("last_name", str), ("address", str), ("title", UserType), ("email", str), ("number", str)]
     for i in needed:
-        if not userdata.get(i):
-            return ErrorString("Error: " + i + " was not provided in userdata")
+        if not userdata.get(i[0]):
+            return ErrorString("Error: " + i[0] + " was not provided in userdata")
+        if type(userdata[i[0]]) is not i[1]:
+            return ErrorString("Error: invalid " + i[0])
 
     if MyUser.objects.filter(username=userdata["username"]).exists():
         return ErrorString("Error: username " + userdata["username"] + " is already taken")

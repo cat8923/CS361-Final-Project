@@ -1,46 +1,53 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
-from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, get_course_id_by_name
+from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, \
+    get_course_id_by_name
 import random
+
 
 # Create your tests here.
 
 
 class DbCreateTest(TestCase):
     def setUp(self):
-        pass
-        # for i in range(5):
-        #    temp = MyUser(username = "user" + str(i), first_name="john" + str(i), last_name="doe" + str(i))
-        #    temp.set_password(raw_password="pass" + str(i))
-        #    temp.save()
-
-        # temp = MyUser(username="user5", first_name="john5", last_name="doe5", position=UserType.SUPERVISOR)
-        # temp.set_password(raw_password="pass5")
-        # temp.save()
+        for i in range(4):
+            temp = MyUser(username="user" + str(i), first_name="john" + str(i), last_name="doe" + str(i))
+            temp.set_password(raw_password="pass" + str(i))
+            temp.save()
 
     def test_createUser(self):
-        make_user({"username": "user1", "password": "pass1", "first_name": "john", "last_name": "doe",
-                   "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "testtest.com",
-                   "number": "123456789"})
-
-        check = make_user({"username": "user1", "password": "pass1", "first_name": "john", "last_name": "doe",
-                           "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "test@test.com",
+        check = make_user({"username": "user5", "password": "pass5", "first_name": "john", "last_name": "doe",
+                           "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "testtest.com",
                            "number": "123456789"})
 
-        if check:
-            print(check)
-        else:
-            temp = MyUser.objects.get(username="user1")
-            self.assertTrue(temp.has_usable_password())
-            self.assertFalse(temp.check_password("pass2"))
-            print(list(map(str, MyUser.objects.filter(position=UserType.TA))))
-            print(list(map(str, MyUser.objects.filter(position=UserType.SUPERVISOR))))
+        self.assertTrue(check, msg="Error: good data does not create user")
+        temp = MyUser.objects.get(username="user5")
+        self.assertTrue(temp.has_usable_password(), msg="Error: password was not assigned to user")
+        self.assertTrue(temp.check_password("pass5"), msg="Error: password does not check out for created acount")
 
     def test_usernameTaken(self):
-        pass
+        data = {"username": "user1", "password": "pass1", "first_name": "john", "last_name": "doe",
+                "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "test@test.com",
+                "number": "123456789"}
+        make_user(data)
+        data["password"] = "pass2"
+        check = make_user(data)
+        self.assertFalse(check, msg="Error: make user returns true when username is already taken")
+        temp = MyUser.objects.get(username="user1")
+        self.assertTrue(temp.check_password("pass1"),
+                        msg="Error: making another user with same username changes password of orignal user")
 
     def test_invalidData(self):
-        pass
+        data = {"username": True, "password": "pass1", "first_name": "john", "last_name": "doe",
+                "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "test@test.com",
+                "number": "123456789"}
+        self.assertFalse(make_user(data), msg="Error: bad input data does not fail")
+        data["username"] = "user1"
+        data["password"] = False
+        self.assertFalse(make_user(data), msg="Error: bad password input does not fail")
+        data["password"] = "pass1"
+        data["title"] = "Supervisor"
+        self.assertFalse(make_user(data), msg="Error: bad position input does not fail")
 
 
 class UserLoginTest(TestCase):
@@ -119,13 +126,15 @@ class CreateCourseTest(TestCase):
     def test_badData(self):
         check = make_course({"title": "course0", "section": "200"})
         self.assertFalse(check, msg="Error: making course does not fail when input is incorrect")
-        self.assertFalse(CourseData.objects.filter(title="course0").exists(), msg="Error: course data is stored when creation failed")
+        self.assertFalse(CourseData.objects.filter(title="course0").exists(),
+                         msg="Error: course data is stored when creation failed")
 
     def test_courseSectionExists(self):
-        check = make_course({"title": "course1", "section":201})
+        check = make_course({"title": "course1", "section": 201})
         self.assertFalse(check, msg="Error: making course does not fail when course section exists")
         tempCourse = CourseData.objects.get(title="course1")
-        self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1, msg="Error: extra section is created when data is incorrect")
+        self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1,
+                         msg="Error: extra section is created when data is incorrect")
 
     def test_existingCourse(self):
         check = make_course({"title": "course1", "section": 202})
@@ -164,23 +173,45 @@ class CreateLabTest(TestCase):
 
     def test_goodData(self):
         check = make_lab({"courseId": 1, "section": 801})
-        #self.assertTrue(check, msg="Error: creating a lab for a course that exists fails")
-        CourseSections.objects.create(course=self.tempCourse, section=801)
-        CourseSections.objects.create(course_id=1, section=802)
-        temp = list(CourseSections.objects.all())
-        print(temp)
+        self.assertTrue(check, msg="Error: creating a lab for a course that exists fails")
+        query = list(LabData.objects.filter(course__title="course1"))
+        self.assertEqual(len(query), 1, msg="Error: a single lab is not created for a course")
+        self.assertEqual(query[0].section, 801, msg="Error: correct secion is not created for the lab")
 
     def test_badData(self):
-        pass
+        check = make_lab({"courseId": "one", "section": 801})
+        self.assertFalse(check, msg="Error: bad course id does not fail")
+        query = list(LabData.objects.filter(course__title="course1"))
+        self.assertEqual(len(query), 0, msg="Error: a lab is created when courseId is bad")
+
+        check = make_lab({"courseId": 1, "section": "801"})
+        self.assertFalse(check, msg="Error: bad section id does not fail")
+        query = list(LabData.objects.filter(course__title="course1"))
+        self.assertEqual(len(query), 0, msg="Error: a lab is created when section id is bad")
 
     def test_labExists(self):
-        pass
+        make_lab({"courseId": 1, "section": 801})
+        check = make_lab({"courseId": 1, "section": 801})
+        self.assertFalse(check, msg="Error: making a lab that already exists does not fail")
+        query = list(LabData.objects.filter(course__title="course1"))
+        self.assertEqual(len(query), 1, msg="Error: there is not exactly 1 lab section when identical data is passed")
 
     def test_courseDoesNotExist(self):
-        pass
+        check = make_lab({"courseId": 2, "section": 801})
+        self.assertFalse(check, msg="Error: making lab does not fail when course does not exist")
+        query = list(LabData.objects.all())
+        self.assertEqual(len(query), 0, msg="Error: a lab is created when coures does not exist")
 
     def test_missingData(self):
-        pass
+        check = make_lab({"section": 801})
+        self.assertFalse(check, msg="Error: making lab does not fail when courseId is not given")
+        query = list(LabData.objects.all())
+        self.assertEqual(len(query), 0, msg="Error: a lab is created when coures is not provided")
+
+        check = make_lab({"courseId": 1})
+        self.assertFalse(check, msg="Error: making lab does not fail when section is not given")
+        query = list(LabData.objects.all())
+        self.assertEqual(len(query), 0, msg="Error: a lab is created when section is not given")
 
 
 class AssignTALabTest(TestCase):
@@ -238,7 +269,7 @@ class AssignInstructorCourseTest(TestCase):
 class GetCourseIDTest(TestCase):
     def setUp(self):
         for i in range(5):
-            CourseData.objects.create(title="course" + str(i), id=i*2)
+            CourseData.objects.create(title="course" + str(i), id=i * 2)
 
     def test_courseExists(self):
         check = get_course_id_by_name("course3")
