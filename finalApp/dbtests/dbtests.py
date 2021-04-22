@@ -1,6 +1,6 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
-from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta, assign_instructor, \
+from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
     get_course_id_by_name
 import random
 
@@ -8,7 +8,7 @@ import random
 # Create your tests here.
 
 
-class DbCreateTest(TestCase):
+class UserCreateTest(TestCase):
     def setUp(self):
         for i in range(4):
             temp = MyUser(username="user" + str(i), first_name="john" + str(i), last_name="doe" + str(i))
@@ -100,14 +100,9 @@ class UserLoginTest(TestCase):
         check = login({"username": "user0"})
         self.assertFalse(check, msg="Error: logging in without password returns True")
         self.assertTrue(type(check) is ErrorString, msg="Error: missing password does not return ErrorString")
-        self.assertEqual(str(check), "Error: password not provided",
-                         msg="Error: missing password does not return correct error message")
-
         check = login({"password": "pass0"})
         self.assertFalse(check, msg="Error: logging in without username returns True")
         self.assertTrue(type(check) is ErrorString, msg="Error: missing username does not return ErrorString")
-        self.assertEqual(str(check), "Error: username not provided",
-                         msg="Error: missing username does not return correct error message")
 
 
 class CreateCourseTest(TestCase):
@@ -217,28 +212,40 @@ class CreateLabTest(TestCase):
         self.assertEqual(len(query), 2, msg="Error: lab is not created when section is unique.")
 
 
-
 class AssignTALabTest(TestCase):
     def setUp(self):
-        tempCourse = CourseData(title="course1", id=1)
-        tempCourse.save()
-        LabData.objects.create(course=tempCourse, section=801)
+        tempCourse = CourseData.objects.create(title="course1", id=1)
+        self.lab = LabData.objects.create(course=tempCourse, section=801)
+        self.ta = MyUser.objects.create(username="user1", position=UserType.TA)
+        self.notTa = MyUser.objects.create(username="user2", position=UserType.SUPERVISOR)
 
     def test_goodData(self):
-        check = assign_ta({"labId": 1, "labSection": 801, "taUsername": "user1"})
-        self.assertTrue(check, msg="Error: good data does not return true")
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user1"})
+        self.assertTrue(check, msg="Error: good data does not return true for adding TA to lab")
+        self.assertTrue(type(check) is bool, msg="Error: something other than a bool is returned on success")
+        self.assertEqual(self.lab.TA, self.ta, msg="Error: wrong TA is assigned to lab")
+        query = TAsToCourses.objects.all()
+        self.assertEqual(len(query), 1, msg="Error: an object is not created in the linking table")
+        self.assertEqual(query[0].TA, self.TA, msg="Error: wrong TA is created in linking table")
+        self.assertEqual(query[0].lab.title, "course1", msg="Error: wrong course is in the linking table")
 
     def test_badData(self):
         pass
 
     def test_taDoesNotExist(self):
-        pass
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user3"})
+        self.assertFalse(check, msg="Error: when TA does not exist assigning TA does not return false")
+        self.assertEqual(None, self.lab.TA, msg="Error: TA is assigned to lab when it should not be")
 
     def test_userNotTA(self):
-        pass
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user2"})
+        self.assertFalse(check, msg="Error: trying to assign a supervisor as a TA does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: someone is assigned to lab when it should not be")
 
     def test_labDoesNotExist(self):
-        pass
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 802, "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: assigning TA does not fail when it should")
+        self.assertEqual(None, self.lab.TA, msg="Error: TA is assigned to lab when it should not be")
 
     def test_missingData(self):
         pass

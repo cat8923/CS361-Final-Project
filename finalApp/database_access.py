@@ -59,7 +59,7 @@ def make_course(coursedata):
     if not type(coursedata["section"]) is int:
         return ErrorString("Error: wrong type for section")
 
-    if CourseSections.objects.filter(course__title=coursedata["title"], section=coursedata["section"]).exists():
+    if CourseSections.objects.filter(course__title__iexact=coursedata["title"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
 
     tempCourse = CourseData.objects.filter(title=coursedata["title"])
@@ -81,11 +81,14 @@ def login(logindata):
     """handles interacting with the database for logging in. Returns ErrorString (False) on failure, or a dictionary of
     first and last name and position on success"""
     needed = [("username", str), ("password", str)]
-    for i in needed:
-        if not logindata.get(i):
-            return ErrorString("Error: " + i + " not provided")
-        if not type(logindata[i]) is str:
-            return ErrorString("Error: bad input data")
+    check = verify_dict(needed, logindata)
+    if not check:
+        return check
+    #for i in needed:
+    #    if not logindata.get(i):
+    #        return ErrorString("Error: " + i + " not provided")
+    #    if not type(logindata[i]) is str:
+    #        return ErrorString("Error: bad input data")
 
     tempUser = MyUser.objects.filter(username=logindata["username"]).exists()
     if not tempUser:
@@ -116,8 +119,13 @@ def make_lab(labdata):
     return True
 
 
-def assign_ta(data):
-    """handles assigning a ta to a course. On failure returns ErrorString describing error. On success, returns true"""
+def assign_ta_to_lab(data):
+    """handles assigning a ta to a lab. Will also assign the TA to a course On failure returns ErrorString describing error. On success, returns true"""
+    pass
+
+
+def assign_ta_to_course(data):
+    """handles assigning a ta to a course without assigning to a particular lab section."""
     pass
 
 
@@ -137,3 +145,11 @@ def get_course_id_by_name(courseName):
         return ErrorString("Error: course does not exist")
 
     return CourseData.objects.get(title__iexact=courseName).id
+
+
+def list_courses() -> list:
+    pass
+
+
+def list_users() -> list:
+    pass
