@@ -223,56 +223,66 @@ class AssignTALabTest(TestCase):
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user1"})
         self.assertTrue(check, msg="Error: good data does not return true for adding TA to lab")
         self.assertTrue(type(check) is bool, msg="Error: something other than a bool is returned on success")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(self.lab.TA, self.ta, msg="Error: wrong TA is assigned to lab")
         query = TAsToCourses.objects.all()
         self.assertEqual(len(query), 1, msg="Error: an object is not created in the linking table")
-        self.assertEqual(query[0].TA, self.TA, msg="Error: wrong TA is created in linking table")
-        self.assertEqual(query[0].lab.title, "course1", msg="Error: wrong course is in the linking table")
+        self.assertEqual(query[0].TA, self.ta, msg="Error: wrong TA is created in linking table")
+        self.assertEqual(query[0].course.title, "course1", msg="Error: wrong course is in the linking table")
 
     def test_badData(self):
         check = assign_ta_to_lab({"courseId": "1", "labSection": 801, "taUsername": "user1"})
         self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
         check = assign_ta_to_lab({"courseId": 1, "labSection": "801", "taUsername": "user1"})
         self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": 1})
         self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
     def test_taDoesNotExist(self):
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user3"})
         self.assertFalse(check, msg="Error: when TA does not exist assigning TA does not return false")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: TA is assigned to lab when it should not be")
 
     def test_userNotTA(self):
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user2"})
         self.assertFalse(check, msg="Error: trying to assign a supervisor as a TA does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: someone is assigned to lab when it should not be")
 
     def test_labDoesNotExist(self):
         check = assign_ta_to_lab({"courseId": 1, "labSection": 802, "taUsername": "user1"})
         self.assertFalse(check, msg="Error: assigning TA does not fail when it should")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: TA is assigned to lab when it should not be")
 
     def test_missingData(self):
         check = assign_ta_to_lab({"labSection": 801, "taUsername": "user1"})
         self.assertFalse(check, msg="Error: missing data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
         check = assign_ta_to_lab({"courseId": "1", "taUsername": "user1"})
         self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801})
         self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.lab = LabData.objects.get(section=801)
         self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
         self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 

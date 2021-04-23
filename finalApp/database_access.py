@@ -134,6 +134,28 @@ def assign_ta_to_lab(data: dict):
     if not check:
         return check
 
+    query = list(LabData.objects.filter(course_id=data["courseId"], section=data["labSection"]))
+    if len(query) is 0:
+        return ErrorString("Error: lab section does not exist")
+
+    tempLab = query[0]
+
+    query = list(MyUser.objects.filter(username__iexact=data["taUsername"]))
+    if len(query) is 0:
+        return ErrorString("Error: user does not exist")
+
+    tempUser = query[0]
+
+    if tempUser.position is not str(UserType.TA):
+        return ErrorString("Error: user is not a TA")
+
+    tempLab.TA = tempUser
+    tempLab.save()
+
+    assign_ta_to_course(data)
+
+    return True
+
 
 def assign_ta_to_course(data: dict):
     """handles assigning a ta to a course without assigning to a particular lab section."""
