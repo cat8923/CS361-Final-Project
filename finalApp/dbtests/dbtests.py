@@ -279,7 +279,7 @@ class AssignTALabTest(TestCase):
 
 class AssignTAToCourseTest(TestCase):
     def setUp(self):
-        tempCourse = CourseData.objects.create(title="course1", id=1)
+        CourseData.objects.create(title="course1", id=1)
         self.ta = MyUser.objects.create(username="user1", position=UserType.TA)
         self.notTa = MyUser.objects.create(username="user2", position=UserType.SUPERVISOR)
 
@@ -292,16 +292,40 @@ class AssignTAToCourseTest(TestCase):
         self.assertEqual(query[0].course.title, "course1", msg="Error: wrong course is in the linking database")
 
     def test_badData(self):
-        pass
+        check = assign_ta_to_course({"courseId": "1", "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: bad data does not return false")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
+
+        check = assign_ta_to_course({"courseId": 1, "taUsername": 1})
+        self.assertFalse(check, msg="Error: bad data does not return false")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
 
     def test_userNotTA(self):
-        pass
+        check = assign_ta_to_course({"courseId": 1, "taUsername": "user2"})
+        self.assertFalse(check, msg="Error: when given a non-TA's username, assigning a TA does not fail")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
 
     def test_userNotExist(self):
-        pass
+        check = assign_ta_to_course({"courseId": 1, "taUsername": "user3"})
+        self.assertFalse(check, msg="Error: nonexistent user does not return false")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
 
     def test_courseNotExist(self):
-        pass
+        check = assign_ta_to_course({"courseId": 2, "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: does not return false when course does not exist")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
+
+    def test_alreadyAssigned(self):
+        assign_ta_to_course({"courseId": "1", "taUsername": "user1"})
+        check = assign_ta_to_course({"courseId": "1", "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: assigning already assigned TA does not return false")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(1, len(query), msg="Error: an extra object was created in the linking database")
 
 
 class AssignInstructorCourseTest(TestCase):
@@ -352,3 +376,15 @@ class GetCourseIDTest(TestCase):
     def test_invalidData(self):
         check = get_course_id_by_name({"course": "course1"})
         self.assertFalse(check, msg="Error: incorrect passed data does not return false")
+
+
+class UpdateUserDataTest(TestCase):
+    pass
+
+
+class ListCoursesTest(TestCase):
+    pass
+
+
+class ListUsersTest(TestCase):
+    pass
