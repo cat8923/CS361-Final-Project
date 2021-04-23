@@ -1,7 +1,7 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name
+    get_course_id_by_name, assign_ta_to_course
 import random
 
 
@@ -230,7 +230,20 @@ class AssignTALabTest(TestCase):
         self.assertEqual(query[0].lab.title, "course1", msg="Error: wrong course is in the linking table")
 
     def test_badData(self):
-        pass
+        check = assign_ta_to_lab({"courseId": "1", "labSection": 801, "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
+
+        check = assign_ta_to_lab({"courseId": 1, "labSection": "801", "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
+
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": 1})
+        self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
 
     def test_taDoesNotExist(self):
         check = assign_ta_to_lab({"courseId": 1, "labSection": 801, "taUsername": "user3"})
@@ -248,6 +261,46 @@ class AssignTALabTest(TestCase):
         self.assertEqual(None, self.lab.TA, msg="Error: TA is assigned to lab when it should not be")
 
     def test_missingData(self):
+        check = assign_ta_to_lab({"labSection": 801, "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: missing data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
+
+        check = assign_ta_to_lab({"courseId": "1", "taUsername": "user1"})
+        self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
+
+        check = assign_ta_to_lab({"courseId": 1, "labSection": 801})
+        self.assertFalse(check, msg="Error: bad data for assigning TA to lab does not fail")
+        self.assertEqual(None, self.lab.TA, msg="Error: some TA is assigned to lab when bad data is passed")
+        self.assertEqual(0, len(TAsToCourses.objects.all()), msg="Error: an entry is created in linking table")
+
+
+class AssignTAToCourseTest(TestCase):
+    def setUp(self):
+        tempCourse = CourseData.objects.create(title="course1", id=1)
+        self.ta = MyUser.objects.create(username="user1", position=UserType.TA)
+        self.notTa = MyUser.objects.create(username="user2", position=UserType.SUPERVISOR)
+
+    def test_goodData(self):
+        check = assign_ta_to_course({"courseId": 1, "taUsername": "user1"})
+        self.assertTrue(check, msg="Error: good data does not assign ta to course")
+        query = list(TAsToCourses.objects.all())
+        self.assertEqual(1, len(query), msg="Error: not 1 object is created in the linking database")
+        self.assertEqual(query[0].TA, self.ta, msg="Error: wrong TA is in the linking database")
+        self.assertEqual(query[0].course.title, "course1", msg="Error: wrong course is in the linking database")
+
+    def test_badData(self):
+        pass
+
+    def test_userNotTA(self):
+        pass
+
+    def test_userNotExist(self):
+        pass
+
+    def test_courseNotExist(self):
         pass
 
 
