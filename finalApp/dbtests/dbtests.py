@@ -321,7 +321,7 @@ class AssignTAToCourseTest(TestCase):
         self.assertEqual(0, len(query), msg="Error: an object was created in the linking database")
 
     def test_alreadyAssigned(self):
-        assign_ta_to_course({"courseId": "1", "taUsername": "user1"})
+        assign_ta_to_course({"courseId": 1, "taUsername": "user1"})
         check = assign_ta_to_course({"courseId": "1", "taUsername": "user1"})
         self.assertFalse(check, msg="Error: assigning already assigned TA does not return false")
         query = list(TAsToCourses.objects.all())

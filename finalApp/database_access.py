@@ -142,6 +142,28 @@ def assign_ta_to_course(data: dict):
     if not check:
         return check
 
+    query = list(CourseData.objects.filter(id=data["courseId"]))
+    if len(query) is 0:
+        return ErrorString("Error: course does not exist")
+
+    tempCourse = query[0]
+
+    query = list(MyUser.objects.filter(username__iexact=data["taUsername"]))
+    if len(query) is 0:
+        return ErrorString("Error: user does not exist")
+
+    if query[0].position is not str(UserType.TA):
+        return ErrorString("Error: user is not a TA")
+
+    tempUser = query[0]
+
+    if TAsToCourses.objects.filter(TA=tempUser, course=tempCourse).exists():
+        return ErrorString("Error: TA has already been assigned to course")
+
+    TAsToCourses.objects.create(TA=tempUser, course=tempCourse)
+
+    return True
+
 
 def assign_instructor(data: dict):
     """handles assigning an instructor to a course in the given data. On failure returns ErrorString describing error.
