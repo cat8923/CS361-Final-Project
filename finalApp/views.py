@@ -11,8 +11,8 @@ class Login(View):
     def post(self, request):
         user = login({request.POST(name="username"), request.POST(password="password")})
 
-        if user == ErrorString:
-            return render("Login.html", message=user)
+        if not user:
+            return render("Login.html", message=str(user))
         else:
             request.session["username"] = user.username
             return redirect("/Homepage/")
