@@ -402,6 +402,14 @@ class AssignInstructorCourseTest(TestCase):
         for i in sections:
             self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
+    def test_assignAll(self):
+        check = assign_instructor({"courseId": 1, "instructorUsername": "user1"}, all=True)
+        self.assertTrue(check, msg="Error: assigning instructor to all sections fails.")
+        tempUser = MyUser.objects.get(username="user1")
+        sections = list(CourseSections.objects.all())
+        for i in sections:
+            self.assertEqual(i.instructor, tempUser, msg="Error: instructor is not assigned to a section")
+
 
 class GetCourseIDTest(TestCase):
     def setUp(self):
@@ -428,7 +436,8 @@ class GetCourseIDTest(TestCase):
 
 
 class UpdateUserDataTest(TestCase):
-    pass
+    def setUp(self):
+        pass
 
 
 class ListCoursesTest(TestCase):

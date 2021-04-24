@@ -187,19 +187,25 @@ def assign_ta_to_course(data: dict):
     return True
 
 
-def assign_instructor(data: dict):
+def assign_instructor(data: dict, all=False):
     """handles assigning an instructor to a course section in the given data. On failure returns ErrorString describing error.
-    On success, returns True. Warning: will override an existing instructor of a course"""
-    needed = [("courseId", int), ("courseSection", int), ("instructorUsername", str)]
+    On success, returns True. Warning: will override an existing instructor of a course
+    if all is given as True, then the instructor will be assigned to all courses"""
+    needed = [("courseId", int), ("instructorUsername", str)]
+    if not all:
+        needed.append(("courseSection", int))
     check = verify_dict(needed, data)
     if not check:
         return check
 
-    query = list(CourseSections.objects.filter(course_id=data["courseId"], section=data["courseSection"]))
+    query = CourseSections.objects.filter(course_id=data["courseId"])
+    if not all:
+        query = query.filter(section=data["courseSection"])
+    query = list(query)
     if not query:
-        return ErrorString("Error: course section not found")
+        return ErrorString("Error: course/sections not found")
 
-    tempSection = query[0]
+    tempSections = query
 
     query = list(MyUser.objects.filter(username=data["instructorUsername"]))
     if not query:
@@ -210,8 +216,13 @@ def assign_instructor(data: dict):
     if tempUser.position is not str(UserType.INSTRUCTOR):
         return ErrorString("Error: user is not an instructor")
 
-    tempSection.instructor = tempUser
-    tempSection.save()
+    if all:
+        for section in tempSections:
+            section.instructor = tempUser
+            section.save()
+    else:
+        tempSections[0].instructor = tempUser
+        tempSections[0].save()
 
     return True
 
