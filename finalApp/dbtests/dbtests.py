@@ -343,26 +343,64 @@ class AssignInstructorCourseTest(TestCase):
         tempCourse = CourseData(title="course1", id=1)
         tempCourse.save()
         CourseSections.objects.create(course=tempCourse, section=201)
+        CourseSections.objects.create(course=tempCourse, section=202)
+        MyUser.objects.create(username="user1", position=UserType.INSTRUCTOR)
+        MyUser.objects.create(username="user2", position=UserType.TA)
 
     def test_goodData(self):
         check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": "user1"})
         self.assertTrue(check, msg="Error: good data does not return true")
+        section = CourseSections.objects.get(course_id=1, section=201)
+        instruct = MyUser.objects.get(username="user1")
+        self.assertEqual(section.instructor, instruct, msg="Error: wrong instructor assigned")
+        section = CourseSections.objects.get(course_id=1, section=202)
+        self.assertEqual(section.instructor, None, msg="Error: instructor was assigned to the wrong course")
 
     def test_badData(self):
-        pass
+        check = assign_instructor({"courseId": "1", "courseSection": 201, "instructorUsername": "user1"})
+        self.assertFalse(check, msg="Error: wrong input type does not return false")
+        check = assign_instructor({"courseId": 1, "courseSection": "201", "instructorUsername": "user1"})
+        self.assertFalse(check, msg="Error: wrong input type does not return false")
+        check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": 1})
+        self.assertFalse(check, msg="Error: non-instructor does not return false")
+
+        sections = list(CourseSections.objects.filter(course_id=1))
+        for i in sections:
+            self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
     def test_userNotInstructor(self):
-        pass
+        check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": "user2"})
+        self.assertFalse(check, msg="Error: non-instructor does not return false")
+        section = CourseSections.objects.get(course_id=1, section=201)
+        self.assertEqual(section.instructor, None, msg="Error: someone was assigned to the course when a non-instructor was provided")
 
     def test_courseDoesNotExist(self):
-        pass
+        check = assign_instructor({"courseId": 2, "courseSection": 201, "instructorUsername": "user1"})
+        self.assertFalse(check, msg="Error: missing course does not return false")
+        sections = list(CourseSections.objects.filter(course_id=1))
+        for i in sections:
+            self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
     def test_instructorDoesNotExist(self):
-        pass
+        check = assign_instructor({"courseId": 1, "courseSection": 201, "instructorUsername": "user3"})
+        self.assertFalse(check, msg="Error: missing user does not return false")
+        sections = list(CourseSections.objects.filter(course_id=1))
+        for i in sections:
+            self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
     def test_missingData(self):
-        pass
+        check = assign_instructor({"courseId": 1, "courseSection": 201})
+        self.assertFalse(check, msg="Error: missing username does not return false")
 
+        check = assign_instructor({"courseId": 1, "instructorUsername": "user1"})
+        self.assertFalse(check, msg="Error: missing course section does not return false")
+
+        check = assign_instructor({"courseSection": 201, "instructorUsername": "user1"})
+        self.assertFalse(check, msg="Error: missing courseId does not return false")
+
+        sections = list(CourseSections.objects.filter(course_id=1))
+        for i in sections:
+            self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
 class GetCourseIDTest(TestCase):
     def setUp(self):
