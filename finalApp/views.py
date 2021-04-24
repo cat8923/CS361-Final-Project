@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from finalApp.database_access import login, ErrorString
 
 # Create your views here.
 
@@ -8,18 +9,10 @@ class Login(View):
         return render(request, "Login.html")
 
     def post(self, request):
-        NoSuchUser = False
-        badPassword = False
-        try:
-            # check to see if there is a user with the chosen name
+        user = login({request.POST(name="username"), request.POST(password="password")})
 
-        except:
-            noSuchUser=True
-
-        if noSuchUser:
-            return render(request, "Login.html", {"message":"Username not recognized."})
-        elif badPassword:
-            return render(request, "Login.html", {"message":"Password incorrect"})
+        if user == ErrorString:
+            return render("Login.html", message=user)
         else:
             request.session["username"] = user.username
             return redirect("/Homepage/")
@@ -29,13 +22,14 @@ class Login(View):
 
 class Homepage(View):
     def get(self, request):
-        return render(request, "Homepage.html")
+        name = request.session['first_name']
+        return render(request, "Homepage.html", {'name': name})
 
     def post(self, request):
         click = request.POST['onclick']
         if click == 'accounts':
-            return redirect("/accounts/")
+            return redirect("/account_list/")
         elif click == 'courses':
-            return redirect("/courses/")
+            return redirect("/course_list/")
         elif click == 'logout':
             return render(request, "Login.html")
