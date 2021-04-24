@@ -1,7 +1,7 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name, assign_ta_to_course
+    get_course_id_by_name, assign_ta_to_course, update_user
 import random
 
 
@@ -437,7 +437,38 @@ class GetCourseIDTest(TestCase):
 
 class UpdateUserDataTest(TestCase):
     def setUp(self):
-        pass
+        MyUser.objects.create(username="user1", email="originalemail1", address="3400 N Maryland", phone_number="123456789")
+        MyUser.objects.create(username="user2", email="originalemail2", address="3401 N Maryland", phone_number="987654321")
+
+    def test_goodData(self):
+        check = update_user({"username": "user1", "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        self.assertTrue(check, msg="Error: updating user does not return true when data is good")
+        user = MyUser.objects.get(username="user1")
+        self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
+        self.assertEqual(user.address, "4300 S Maryland", msg="Error: address is not updated")
+        self.assertEqual(user.phone_number, "100200300", msg="Error: phone number is not updated")
+
+    def test_userNoExist(self):
+        check = update_user({"username": "user3", "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        self.assertFalse(check, msg="Error: check does not return false when user does not exist")
+
+    def test_invalidData(self):
+        check = update_user({"username": 1, "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        self.assertFalse(check, msg="Error: updating user does not return false when username is incorrect type")
+        check = update_user({"username": "user1", "email": 1, "address": "3400 S Maryland", "phone_number": "100200300"})
+        self.assertFalse(check, msg="Error: updating user does not return false when email is incorrect type")
+        check = update_user({"username": "user1", "email": "newemail1", "address": 1, "phone_number": "100200300"})
+        self.assertFalse(check, msg="Error: updating user does not return false when address is incorrect type")
+        check = update_user({"username": "user1", "email": 1, "address": "3400 S Maryland", "phone_number": 100200300})
+        self.assertFalse(check, msg="Error: updating user does not return false when phone number is incorrect type")
+
+    def test_updateSome(self):
+        check = update_user({"username": "user1", "email": "newemail1"})
+        self.assertTrue(check, msg="Error: updating user does not succeed when only updating ")
+        user = MyUser.objects.get(username="user1")
+        self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
+        self.assertEqual(user.address, "3400 N Maryland", msg="Error: address is erroneously updated")
+        self.assertEqual(user.phone_number, "123456789", msg="Error: phone number is erroneously updated")
 
 
 class ListCoursesTest(TestCase):
