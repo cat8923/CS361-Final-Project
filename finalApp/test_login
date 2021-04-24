@@ -29,7 +29,7 @@ class login(TestCase):
 
     def test_invalid_login_S(self):
         response = self.client.post("/", {'name': 'Supervisor', 'password': '123'})
-        self.assertEqual("bad password", response.context['message'], "InValid Information will take back to home page")
+        self.assertEqual("Error: Incorrect Password", response.context['message'], "InValid Information will take back to home page")
 
     def test_valid_login_I(self):
         response = self.client.post("/Login/", {'name': 'Instructor','password': 'pass1'})
@@ -37,7 +37,7 @@ class login(TestCase):
 
     def test_invalid_login_I(self):
         response = self.client.post("/", {'name': 'Instructor', 'password': '123'})
-        self.assertEqual("bad password", response.context['message'], "InValid Information will take back to home page")
+        self.assertEqual("Error: Incorrect Password", response.context['message'], "InValid Information will take back to home page")
 
     def test_valid_login_TA(self):
         response = self.client.post("/Login/", {'name': 'TA','password': 'pass2'})
@@ -45,4 +45,4 @@ class login(TestCase):
 
     def test_invalid_login_TA(self):
         response = self.client.post("/", {'name': 'TA', 'password': '123'})
-        self.assertEqual("bad password", response.context['message'], "InValid Information will take back to home page")
+        self.assertEqual("Error: Incorrect Password", response.context['message'], "InValid Information will take back to home page")
