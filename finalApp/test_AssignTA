@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, UserType,CourseData, CourseSections, LabData
+from Final_Project.models import MyUser, UserType,CourseData, LabData, TAsToCourses
 
 
 class assignTA(TestCase):
@@ -19,9 +19,8 @@ class assignTA(TestCase):
         self.temp1.set_password(raw_password="pass")
         self.temp1.save()
 
-
         self.data = CourseData(title="Cs")
-        self.course = CourseSections(course=self.data, section=901, instructor= self.temp1)
+        self.course = TAsToCourses(course=self.data, section=901, instructor= self.temp1)
 
         self.Lab = LabData(course=self.course, section=902)
 
