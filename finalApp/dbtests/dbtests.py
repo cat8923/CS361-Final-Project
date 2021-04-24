@@ -402,6 +402,7 @@ class AssignInstructorCourseTest(TestCase):
         for i in sections:
             self.assertEqual(i.instructor, None, msg="Error: an instructor was assigned to course " + str(i.id))
 
+
 class GetCourseIDTest(TestCase):
     def setUp(self):
         for i in range(5):

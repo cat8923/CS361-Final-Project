@@ -188,12 +188,35 @@ def assign_ta_to_course(data: dict):
 
 
 def assign_instructor(data: dict):
-    """handles assigning an instructor to a course in the given data. On failure returns ErrorString describing error.
-    On success, returns True."""
-    pass
+    """handles assigning an instructor to a course section in the given data. On failure returns ErrorString describing error.
+    On success, returns True. Warning: will override an existing instructor of a course"""
+    needed = [("courseId", int), ("courseSection", int), ("instructorUsername", str)]
+    check = verify_dict(needed, data)
+    if not check:
+        return check
+
+    query = list(CourseSections.objects.filter(course_id=data["courseId"], section=data["courseSection"]))
+    if not query:
+        return ErrorString("Error: course section not found")
+
+    tempSection = query[0]
+
+    query = list(MyUser.objects.filter(username=data["instructorUsername"]))
+    if not query:
+        return ErrorString("Error: user not found")
+
+    tempUser = query[0]
+
+    if tempUser.position is not str(UserType.INSTRUCTOR):
+        return ErrorString("Error: user is not an instructor")
+
+    tempSection.instructor = tempUser
+    tempSection.save()
+
+    return True
 
 
-def get_course_id_by_name(courseName: dict):
+def get_course_id_by_name(courseName: str):
     """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
     whether the course did not exist or if data were invalid"""
     if type(courseName) is not str:
