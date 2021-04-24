@@ -260,4 +260,7 @@ def list_courses() -> list:
 
 
 def list_users() -> list:
-    pass
+    users = []
+    for i in MyUser.objects.all():
+        users.append((str(i), i.position))
+    return users

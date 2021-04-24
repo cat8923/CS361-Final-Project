@@ -1,7 +1,7 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name, assign_ta_to_course, update_user, list_courses
+    get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users
 import random
 
 
@@ -495,4 +495,26 @@ class ListCoursesTest(TestCase):
 
 
 class ListUsersTest(TestCase):
-    pass
+    def setUp(self):
+        self.users = []
+        for i in range(1,11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.users.append((tempFn + " " +tempLn, str(UserType.TA)))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
+        for i in range(11,21):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.users.append((tempFn + " " +tempLn, str(UserType.SUPERVISOR)))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
+        for i in range(21,31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.users.append((tempFn + " " +tempLn, str(UserType.INSTRUCTOR)))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
+
+    def test_good(self):
+        self.assertListEqual(list_users(), self.users, msg="Error: listusers is wrong.")
