@@ -29,11 +29,6 @@ def make_user(userdata: dict):
     check = verify_dict(needed, userdata)
     if not check:
         return check
-    #for i in needed:
-    #    if not userdata.get(i[0]):
-    #        return ErrorString("Error: " + i[0] + " was not provided in userdata")
-    #    if type(userdata[i[0]]) is not i[1]:
-    #        return ErrorString("Error: invalid " + i[0])
 
     if MyUser.objects.filter(username__iexact=userdata["username"]).exists():
         return ErrorString("Error: username " + userdata["username"] + " is already taken")
@@ -261,7 +256,7 @@ def get_course_id_by_name(courseName: str):
 
 
 def list_courses() -> list:
-    pass
+    return list(map(str, CourseSections.objects.all()))
 
 
 def list_users() -> list:

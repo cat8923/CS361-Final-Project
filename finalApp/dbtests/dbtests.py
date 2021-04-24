@@ -1,7 +1,7 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name, assign_ta_to_course, update_user
+    get_course_id_by_name, assign_ta_to_course, update_user, list_courses
 import random
 
 
@@ -478,7 +478,20 @@ class UpdateUserDataTest(TestCase):
 
 
 class ListCoursesTest(TestCase):
-    pass
+    def setUp(self):
+        self.result = []
+
+        for i in range(1,11):
+            temp = CourseData.objects.create(title="course" + str(i), id=i)
+            for j in range(1, 4):
+                self.result.append("course" + str(i) + " " + str(j+200))
+                CourseSections.objects.create(course=temp, section=(j+200))
+
+        print(self.result)
+
+    def test_good(self):
+        alldata = list_courses()
+        self.assertListEqual(alldata, self.result, msg="Error")
 
 
 class ListUsersTest(TestCase):
