@@ -445,7 +445,7 @@ class UpdateUserDataTest(TestCase):
         self.assertTrue(check, msg="Error: updating user does not return true when data is good")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
-        self.assertEqual(user.address, "4300 S Maryland", msg="Error: address is not updated")
+        self.assertEqual(user.address, "3400 S Maryland", msg="Error: address is not updated")
         self.assertEqual(user.phone_number, "100200300", msg="Error: phone number is not updated")
 
     def test_userNoExist(self):
@@ -464,10 +464,16 @@ class UpdateUserDataTest(TestCase):
 
     def test_updateSome(self):
         check = update_user({"username": "user1", "email": "newemail1"})
-        self.assertTrue(check, msg="Error: updating user does not succeed when only updating ")
+        self.assertTrue(check, msg="Error: updating user does not succeed when only updating email")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
         self.assertEqual(user.address, "3400 N Maryland", msg="Error: address is erroneously updated")
+        self.assertEqual(user.phone_number, "123456789", msg="Error: phone number is erroneously updated")
+        check = update_user({"username": "user1", "address": "new address"})
+        self.assertTrue(check, msg="Error: updating user does not succeed when only updating address")
+        user = MyUser.objects.get(username="user1")
+        self.assertEqual(user.email, "newemail1", msg="Error: email is updated when it should not be")
+        self.assertEqual(user.address, "new address", msg="Error: address is not updated")
         self.assertEqual(user.phone_number, "123456789", msg="Error: phone number is erroneously updated")
 
 

@@ -35,7 +35,7 @@ def make_user(userdata: dict):
     #    if type(userdata[i[0]]) is not i[1]:
     #        return ErrorString("Error: invalid " + i[0])
 
-    if MyUser.objects.filter(username=userdata["username"]).exists():
+    if MyUser.objects.filter(username__iexact=userdata["username"]).exists():
         return ErrorString("Error: username " + userdata["username"] + " is already taken")
 
     tempUser = MyUser(username=userdata["username"], first_name=userdata["first_name"], last_name=userdata["last_name"],
@@ -48,8 +48,29 @@ def make_user(userdata: dict):
 
 
 def update_user(userdata: dict):
-    """updates a given user based off of the given information"""
-    pass
+    """updates a given user based off of the given information
+    Possible information to update: email, address, phone number"""
+    toUpdate = []
+    if "username" not in userdata:
+        return ErrorString("Error: username must be provided")
+    maybeNeeded = [("email", str), ("address", str), ("phone_number", str)] # makes it very easy if we need to add more things to update
+    for i in maybeNeeded:
+        if i[0] in userdata:
+            if type(userdata[i[0]]) is not i[1]:
+                return ErrorString("Error: wrong datatype provided for " + i[0])
+            toUpdate.append(i[0])
+
+    user = list(MyUser.objects.filter(username__iexact=userdata["username"]))
+    if not user:
+        return ErrorString("Error: user not found")
+    user = user[0]
+
+    for i in toUpdate:
+        setattr(user, i, userdata[i])
+
+    user.save()
+
+    return True
 
 
 def make_course(coursedata: dict):
@@ -98,11 +119,11 @@ def login(logindata: dict):
     #    if not type(logindata[i]) is str:
     #        return ErrorString("Error: bad input data")
 
-    tempUser = MyUser.objects.filter(username=logindata["username"]).exists()
+    tempUser = MyUser.objects.filter(username__iexact=logindata["username"]).exists()
     if not tempUser:
         return ErrorString("Error: user does not exist")
 
-    tempUser = MyUser.objects.get(username=logindata["username"])
+    tempUser = MyUser.objects.get(username__iexact=logindata["username"])
     if not tempUser.check_password(raw_password=logindata["password"]):
         return ErrorString("Error: incorrect password")
 
@@ -207,7 +228,7 @@ def assign_instructor(data: dict, all=False):
 
     tempSections = query
 
-    query = list(MyUser.objects.filter(username=data["instructorUsername"]))
+    query = list(MyUser.objects.filter(username__iexact=data["instructorUsername"]))
     if not query:
         return ErrorString("Error: user not found")
 
