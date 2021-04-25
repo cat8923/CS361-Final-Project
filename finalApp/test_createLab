@@ -35,15 +35,12 @@ class createLab(TestCase):
         response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
         self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
 
-        response = self.client.post("/Create_Lab/", {"Description": "Introduction",
+        response = self.client.post("/CreateLab/", {"Description": "Introduction",
                                                         "Course": "CS361-909", "Semester": "Spring 2021",
                                                         "Instructor": "Jayson Rock","role": "TA",
                                                      "Times": "Tu & Thur 6:00-6:50 AM"})
 
-        self.assertEqual("/Create_Lab/", response.url, "Invalid type")
+        self.assertEqual("/CreateLab/", response.url, "Invalid type")
 
-        # test if the account that was created above can login. If so then It was successfully created and it works
 
-        response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
 
