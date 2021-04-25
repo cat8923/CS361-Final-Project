@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Create_Lab</h1>
-    <form action="" method="post">
+    < action="" method="post">
         <label for="Description">Description:</label>
         <input type="text" id="Description" name="Desciption"><br><br>
         <label for="Course">Course:</label>
@@ -18,11 +18,16 @@
         <label for="Instructor">Instructor:</label>
         <input type="text" id="Instructor" name="Instructor"><br><br>
         <label for="TA's">TA'S:</label>
-        <input type="text" id="TA'S" name="TA's"><br><br>
-        <label for="Times">Instructor:</label>
+            <select id="TA" name="TA">
+                {% for i in TA  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+        <label for="Times">Times:</label>
         <input type="text" id="Times" name="Times"><br><br>
-        <input type="submit" value="Edit">
-        <input type="submit" value="Logout">
+    <button type="submit" onclick="window.location.href='/Login/';" >Logout </button>
+    <button type="submit" onclick="window.location.href='/Edit_Lab/';" >Logout </button>
+
     </form>
 
 </body>
