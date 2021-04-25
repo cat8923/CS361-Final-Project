@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, UserType,CourseData, LabData, TAsToCourses
+from Final_Project.models import MyUser,CourseData, LabData, TAsToCourses
 
 
 class assignTA(TestCase):
@@ -37,8 +37,8 @@ class assignTA(TestCase):
         self.assertEqual(response.url, "/HomePage/")
 
         # assign the user created to the course declared in setUp
-        response2 = self.Client.post("/Assign_Lab/", {"Lab": 1})
-        self.assertEqual(response2.url, "/Assign_Lab/")
+        response2 = self.Client.post("/Create_Lab/", {"Lab": 1})
+        self.assertEqual(response2.url, "/HomePage/")
 
 
 
@@ -57,5 +57,5 @@ class assignTA(TestCase):
 
 
         # assign the user created to the course declared in setUp
-        response2 = self.Client.post("/Assign_Lab/", {"Lab": 2})
-        self.assertEqual("/Assign_Lab/", response2.url,"Lab does not exist")
+        response2 = self.Client.post("/Create_Lab/", {"Lab": 2})
+        self.assertEqual("/Create_Lab/", response2.url,"Lab does not exist")
