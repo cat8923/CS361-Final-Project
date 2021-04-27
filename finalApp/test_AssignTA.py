@@ -3,7 +3,7 @@ from django.test import Client
 from Final_Project.models import MyUser,CourseData, LabData, TAsToCourses
 
 
-class assignTA(TestCase):
+class testAssignTA(TestCase):
     def setUp(self):
         self.Client = Client()
         self.Client.session["position"] = "S"
