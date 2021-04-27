@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +6,9 @@
     <title>Lab</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
-<body>
-    <h1>Create_Lab</h1>
-    < action="" method="post">
+   <h1 class="h1Style">Lab</h1>
+    <div class="formStyle">
+        <form action="" method="post">
         <label for="Description">Description:</label>
         <input type="text" id="Description" name="Desciption"><br><br>
         <label for="Course">Course:</label>
@@ -25,10 +25,11 @@
             </select>
         <label for="Times">Times:</label>
         <input type="text" id="Times" name="Times"><br><br>
+    <input type="Submit" value="Save Course"><br><br>
     <button type="submit" onclick="window.location.href='/Login/';" >Logout </button>
-    <button type="submit" onclick="window.location.href='/Edit_Lab/';" >Logout </button>
+
 
     </form>
-
+    </div>
 </body>
 </html>
