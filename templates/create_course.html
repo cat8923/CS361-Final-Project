@@ -28,13 +28,6 @@
                 {% endfor %}
             </select><br><br>
 
-            <label for="labs">Lab Section:</label>
-            <select id="TA" name="TA">
-                {% for i in labs  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
-                {% endfor %}
-            </select><br><br>
-
             <button type="Submit" value="Submit">Edit Course</button>
 
         </form>
