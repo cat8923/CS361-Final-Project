@@ -12,9 +12,15 @@ class CreateCourse(View):
     def post(self,request):
         courseDict = {
             "title": request.GET["description"],
-            "section": request.GET[""],
-            "year": 1964
+            "section": request.GET["designation"],
         }
+        database_access.make_course(courseDict)
+
+class EditCourse(View):
+    def get(self,request):
+
+
+    def post(self,request):
 
 
 
