@@ -151,13 +151,13 @@ def assign_ta_to_lab(data: dict):
         return check
 
     query = list(LabData.objects.filter(course_id=data["courseId"], section=data["labSection"]))
-    if len(query) == 0:
+    if len(query) is 0:
         return ErrorString("Error: lab section does not exist")
 
     tempLab = query[0]
 
     query = list(MyUser.objects.filter(username__iexact=data["taUsername"]))
-    if len(query) == 0:
+    if len(query) is 0:
         return ErrorString("Error: user does not exist")
 
     tempUser = query[0]
@@ -181,13 +181,13 @@ def assign_ta_to_course(data: dict):
         return check
 
     query = list(CourseData.objects.filter(id=data["courseId"]))
-    if len(query) == 0:
+    if len(query) is 0:
         return ErrorString("Error: course does not exist")
 
     tempCourse = query[0]
 
     query = list(MyUser.objects.filter(username__iexact=data["taUsername"]))
-    if len(query) == 0:
+    if len(query) is 0:
         return ErrorString("Error: user does not exist")
 
     if query[0].position is not str(UserType.TA):
