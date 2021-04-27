@@ -20,5 +20,5 @@ from finalApp.views import Login, Homepage
 urlpatterns = [
     #    path('admin/', admin.site.urls),
     path('', Login.as_view()),
-    path('Homescreen/', Homepage.as_veiw())
+    path('Homescreen/', Homepage.as_view())
 ]

@@ -6,15 +6,16 @@ from finalApp.database_access import login, ErrorString
 
 class Login(View):
     def get(self, request):
-        return render(request, "Login.html")
+        return render(request, "Login.html", {})
 
     def post(self, request):
-        user = login({request.POST(name="username"), request.POST(password="password")})
+        user = login({"username": request.POST["username"], "password": request.POST["password"]})
 
         if not user:
-            return render("Login.html", message=str(user))
+            return render("Login.html", {"message": str(user)})
         else:
-            request.session["username"] = user.username
+            request.session["first_name"] = user["first_name"]
+            request.session.save()
             return redirect("/Homepage/")
 
 
@@ -32,4 +33,5 @@ class Homepage(View):
         elif click == 'courses':
             return redirect("/course_list/")
         elif click == 'logout':
+            request.session.flush()
             return render(request, "Login.html")
