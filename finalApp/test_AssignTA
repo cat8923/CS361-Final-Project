@@ -26,7 +26,7 @@ class assignTA(TestCase):
 
     def test_01(self):
         response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.Client.post("/create_account/",
                                     {"username": "bic21", "password": "hello", "first_name": "brett",
@@ -38,7 +38,7 @@ class assignTA(TestCase):
 
         # assign the user created to the course declared in setUp
         response2 = self.Client.post("/Create_Lab/", {"Lab": 1})
-        self.assertEqual(response2.url, "/HomePage/")
+        self.assertEqual(response2.url, "/Homepage/")
 
 
 
@@ -53,7 +53,7 @@ class assignTA(TestCase):
                                      "number": "123456789"})
 
         self.assertEqual(response.context["message"], "successfully created account", msg="confirmed account creation")
-        self.assertEqual(response.url, "/HomePage/")
+        self.assertEqual(response.url, "/Homepage/")
 
 
         # assign the user created to the course declared in setUp
