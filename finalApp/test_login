@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, UserType
+from Final_Project.models import MyUser
 
 class login(TestCase):
     def setUp(self):
@@ -16,13 +16,13 @@ class login(TestCase):
             self.temp1.set_password(raw_password="pass1")
             self.temp1.save()
 
-            self.temp2 = MyUser(username="TA", first_name="Apoorv", last_name="Prasad", position="TA")
+            self.temp2 = MyUser(username="TA", first_name="Apoorv", last_name="Prasad", osition="TA")
             self.temp2.set_password(raw_password="pass2")
             self.temp2.save()
 
     def test_valid_login_S(self):
         response = self.client.post("/Login/", {'name': 'Supervisor','password': 'pass'})
-        self.assertEqual("/HomePage/",response.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
 
         print(response.context['MyUser'])
 
@@ -33,7 +33,7 @@ class login(TestCase):
 
     def test_valid_login_I(self):
         response = self.client.post("/Login/", {'name': 'Instructor','password': 'pass1'})
-        self.assertEqual("/HomePage/",response.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
 
     def test_invalid_login_I(self):
         response = self.client.post("/", {'name': 'Instructor', 'password': '123'})
@@ -41,7 +41,7 @@ class login(TestCase):
 
     def test_valid_login_TA(self):
         response = self.client.post("/Login/", {'name': 'TA','password': 'pass2'})
-        self.assertEqual("/HomePage/",response.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
 
     def test_invalid_login_TA(self):
         response = self.client.post("/", {'name': 'TA', 'password': '123'})
