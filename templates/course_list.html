@@ -7,17 +7,22 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <h1 style="text-align: center;">List of Courses</h1>
-    <h2 style="text-align: center;"><small>Select a course to view</small></h2>
-    <form action="" method="post">
-        {% csrf_token %}
-        <!-- insert selection box here -->
+    <div class="formStyle">
+        <h1 class="h1Style">List of Courses</h1>
+        <h2 style="text-align: center;"><small>Select a course to view</small></h2>
+        <form action="" method="post">
+            <select id="TA" name="TA">
+                {% for i in courses  %}
+                 <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select><br><br>
 
-    </form>
-    <form align="right" method="post">
-        <label class="logoutLblPos">
-            <input type="submit" value="Logout">
-        </label>
-    </form>
+        </form>
+        <form align="right" method="post">
+            <label class="logoutLblPos">
+                <input type="submit" value="Logout">
+            </label>
+        </form>
+    </div>
 </body>
 </html>
