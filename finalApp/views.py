@@ -17,8 +17,6 @@ class CreateCourse(View):
         database_access.make_course(courseDict)
 
 
-
-
 class CourseList(View):
     def get(self,request):
         if len(request.GET) == 0:
