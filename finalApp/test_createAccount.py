@@ -21,7 +21,7 @@ class createAccount(TestCase):
 
     def test_noAccount(self):
         response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.Client.post("/create_account/",
                                     {"username": "bic21", "password": "hello", "first_name": "brett",
