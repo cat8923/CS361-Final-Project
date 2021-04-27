@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homepage</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<h1 style="align-text: center">Homepage</h1>
+<h2 style="align-text: center">Welcome {{ name }}!</h2>
+
+<form action="/Homepage/" method="post">
+    {% csrf_token %}
+    <div>
+        <input style="align-text: left" type="submit" onclick="alert('Accounts')" value="Accounts" name="onclick">
+        <input style="align-text: right" type="submit" onclick="alert('Courses')" value="Courses" name="onclick">
+    </div>
+</form>
+
+<form action="/Homepage/" align="right" method="post">
+    {% csrf_token %}
+    <label class="logoutLblPos">
+        <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
+    </label>
+</form>
+
+</body>
+</html>
