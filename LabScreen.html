@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Lab</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+   <h1 class="h1Style">Lab</h1>
+    <div class="formStyle">
+        <form action="" method="post">
+        <label for="Description">Description:</label>
+        <input type="text" id="Description" name="Desciption"><br><br>
+        <label for="Course">Course:</label>
+        <input type="text" id="course" name="course"><br><br>
+        <label for="Semester">Semester:</label>
+        <input type="text" id="Semester" name="Semester"><br><br>
+        <label for="Instructor">Instructor:</label>
+        <input type="text" id="Instructor" name="Instructor"><br><br>
+        <label for="TA's">TA'S:</label>
+            <select id="TA" name="TA">
+                {% for i in TA  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+        <label for="Times">Times:</label>
+        <input type="text" id="Times" name="Times"><br><br>
+    <input type="Submit" value="Save Course"><br><br>
+    <button type="submit" onclick="window.location.href='/Login/';" >Logout </button>
+
+
+    </form>
+    </div>
+</body>
+</html>
