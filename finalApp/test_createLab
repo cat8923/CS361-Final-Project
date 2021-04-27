@@ -21,19 +21,19 @@ class createLab(TestCase):
 
     def test_01(self):
         response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Lab/", {"Description": "Introduction to Software Engineering",
                                                         "Course": "CS361-901", "Semester": "Spring 2021",
                                                         "Instructor": "Jayson Rock","role": "TA",
                                                      "Times": "Tu & Thur 10:00-10:50 AM"})
 
-        self.assertEqual(response.url, "/HomePage/")
+        self.assertEqual(response.url, "/Homepage/")
 
 
     def test_01_Invalid(self):
         response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.client.post("/CreateLab/", {"Description": "Introduction",
                                                         "Course": "CS361-909", "Semester": "Spring 2021",
