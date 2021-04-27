@@ -18,7 +18,14 @@
             </select><br><br>
 
         </form>
-        <button type="submit" onclick="window.location.href='/Login/';" >Logout </button>
+
+        <form action="/Course_List/" align="right" method="post">
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
+            </label>
+        </form>
+
     </div>
 </body>
 </html>

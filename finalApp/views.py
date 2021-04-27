@@ -27,9 +27,9 @@ class Homepage(View):
     def post(self, request):
         click = request.POST['onclick']
         if click == 'Accounts':
-            return redirect("/account_list/")
+            return redirect("/Account_List/")
         elif click == 'Courses':
-            return redirect("/course_list/")
+            return redirect("/Course_List/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
@@ -42,11 +42,17 @@ class CreateCourse(View):
             return render(request, "create_course.html", {"TA": TA})
 
     def post(self, request):
+        '''
         courseDict = {
             "title": request.GET["description"],
             "section": request.GET["designation"],
         }
         database_access.make_course(courseDict)
+        '''
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return render(request, "Login.html")
 
         
 class AddLab(View):
@@ -68,3 +74,7 @@ class CourseList(View):
         if len(request.GET) == 0:
             courses = list(database_access.list_courses())
             return render(request, "course_list.html", {"courses": courses})
+
+    def post(self, request):
+        request.session.flush()
+        return render(request, "Login.html")
