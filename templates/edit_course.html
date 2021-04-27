@@ -23,12 +23,20 @@
             <input type="text" id="instructor" name="instructor"><br><br>
 
             <label for="TAs">TA's:</label>
-            <input type="text" id="TAs" name="TAs"><br><br>
+            <select id="TA" name="TA">
+                {% for i in TA  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select><br><br>
 
             <label for="labs">Lab Section:</label>
-            <input type="text" id="labs" name="labs"><br><br>
+            <select id="TA" name="TA">
+                {% for i in labs  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select><br><br>
 
-            <input type="Submit" value="Submit">
+            <button type="Submit" value="Submit">Edit Course</button>
 
         </form>
     </div>
