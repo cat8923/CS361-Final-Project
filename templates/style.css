@@ -1,0 +1,20 @@
+.logoutLblPos{
+    position: fixed;
+    right: 10px;
+    top: 5px;
+}
+.h1Style{
+    font-family: "Bebas Neue";
+    text-align: center;
+}
+
+.formStyle{
+    display: block;
+    text-align: center;
+}
+.selectionStyle{
+    display: block;
+    width: fit-content;
+
+
+}
