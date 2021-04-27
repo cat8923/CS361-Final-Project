@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser
+from finalApp.models import MyUser
 
 class testLogin(TestCase):
     def setUp(self):
@@ -21,9 +21,9 @@ class testLogin(TestCase):
             self.temp2.save()
 
     def test_valid_login_S(self):
-        response = self.client.post("/Login/", {'name': 'Supervisor','password': 'pass'})
+        response = self.client.post("/", {'name': 'Supervisor','password': 'pass'})
         self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
-
+        # after a successful login it should take the user to the homescreen
         print(response.context['MyUser'])
 
 
@@ -32,7 +32,7 @@ class testLogin(TestCase):
         self.assertEqual("Error: Incorrect Password", response.context['message'], "InValid Information will take back to home page")
 
     def test_valid_login_I(self):
-        response = self.client.post("/Login/", {'name': 'Instructor','password': 'pass1'})
+        response = self.client.post("/", {'name': 'Instructor','password': 'pass1'})
         self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
 
     def test_invalid_login_I(self):
@@ -40,7 +40,7 @@ class testLogin(TestCase):
         self.assertEqual("Error: Incorrect Password", response.context['message'], "InValid Information will take back to home page")
 
     def test_valid_login_TA(self):
-        response = self.client.post("/Login/", {'name': 'TA','password': 'pass2'})
+        response = self.client.post("/", {'name': 'TA','password': 'pass2'})
         self.assertEqual("/Homepage/",response.url, "Valid Information will take to the homepage page")
 
     def test_invalid_login_TA(self):

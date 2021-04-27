@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, UserType,CourseData, CourseSections
+from finalApp.models import MyUser, CourseData, CourseSections
 
 
 class testEditAccount(TestCase):
@@ -24,9 +24,9 @@ class testEditAccount(TestCase):
         self.course = CourseSections(course=self.data, section=901)
 
 
-    def test_noAccount(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+    def test_01(self):
+        response1 = self.client.post("/", {'name': 'user', 'password': 'pass'})
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.Client.post("/edit_account/",
                                     {"username": "user1", "password": "bye", "first_name": "Bob",
@@ -39,11 +39,14 @@ class testEditAccount(TestCase):
 
 
 
-    def test_accountExists(self):
+    def test_02(self):
+        response1 = self.client.post("/", {'name': 'user', 'password': 'pass'})
+        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+
         response = self.Client.post("/edit_account/",
-                                    {"username": "user2", "password": "pass5", "first_name": "Bryan",
+                                    {"username": "user1", "password": 1234, "first_name": "Bryan",
                                      "last_name": "Johnson", "address": "3429 N Maryland",
-                                     "title": UserType.SUPERVISOR, "email": "test@test.com",
+                                     "title": "TA", "email": "test@test.com",
                                      "number": "123456789"})
-        self.assertEqual(response.context["message"], "account already exists", msg="account was not created")
+        self.assertEqual(response.context["message"], "invalid credentials", msg="account was not edited")
         self.assertEqual(response.url, "/create_account/")
