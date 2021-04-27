@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, CourseData, CourseSections, LabData
+from finalApp.models import MyUser, CourseData, CourseSections, LabData
 
 
 class editCourse(TestCase):
