@@ -3,7 +3,7 @@ from django.test import Client
 from Final_Project.models import MyUser, UserType,CourseData, CourseSections
 
 
-class edit_Account(TestCase):
+class testEditAccount(TestCase):
     def setUp(self):
         self.Client = Client()
         self.Client.session["position"] = "S"
