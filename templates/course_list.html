@@ -11,7 +11,7 @@
         <h1 class="h1Style">List of Courses</h1>
         <h2 style="text-align: center;"><small>Select a course to view</small></h2>
         <form action="" method="post">
-            <select size="4" id="TA" name="TA">
+            <select size="4" id="courses" name="courses">
                 {% for i in courses  %}
                  <option value="{{ i.id }}">{{ i.title}}</option>
                 {% endfor %}
