@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test import Client
 from Final_Project.models import MyUser
 
-class createCourses(TestCase):
+class testCreateCourses(TestCase):
     def setUp(self):
         self.Client = Client()
         self.Client.session["position"] = "S"
