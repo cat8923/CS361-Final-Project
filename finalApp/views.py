@@ -28,10 +28,10 @@ class Homepage(View):
 
     def post(self, request):
         click = request.POST['onclick']
-        if click == 'accounts':
+        if click == 'Accounts':
             return redirect("/account_list/")
-        elif click == 'courses':
+        elif click == 'Courses':
             return redirect("/course_list/")
-        elif click == 'logout':
+        elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
