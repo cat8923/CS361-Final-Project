@@ -16,14 +16,21 @@ class CreateCourse(View):
         }
         database_access.make_course(courseDict)
 
-class EditCourse(View):
+
+
+
+class CourseList(View):
+    def get(self,request):
+        if len(request.GET) == 0:
+            courses = list(database_access.list_courses())
+            return render(request, "course_list.html", {"courses":courses})
+"""class EditCourse(View):
     def get(self,request):
         if len(request.GET) == 0:
             TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
             return render(request, "edit_course.html", {"TA":TA})
 
-
-    def post(self,request):
+    def post(self,request):"""
 
 
 

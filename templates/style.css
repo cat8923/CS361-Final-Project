@@ -12,3 +12,9 @@
     display: block;
     text-align: center;
 }
+.selectionStyle{
+    display: block;
+    width: fit-content;
+
+
+}
