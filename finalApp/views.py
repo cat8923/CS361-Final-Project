@@ -12,7 +12,7 @@ class Login(View):
         user = login({"username": request.POST["username"], "password": request.POST["password"]})
 
         if not user:
-            return render("Login.html", {"message": str(user)})
+            return render(request, "Login.html", {"message": str(user)})
         else:
             request.session["first_name"] = user["first_name"]
             request.session.save()
