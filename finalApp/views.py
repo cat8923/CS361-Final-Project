@@ -1,23 +1,21 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render,redirect
 from django.views import View
-from Final_Project.models import MyUser
+from finalApp import database_access
 
 # Create your views here.
 
 class AddLab(View):
-    def get(self, request):
-        return render(request, "createLab")
+        def get(self, request):
+            if len(request.GET) == 0:
+                TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
+                return render(request, "/Create_Lab/", {"TA": TA})
 
-    def post(self, request):
-        noSuchUser = False
-        badPassword = False
+        def post(self, request):
+            labDict = {
+                "courseID": request.GET["description"],
+                "section": request.GET["designation"],
+            }
+            database_access.make_lab(labDict)
 
-        if noSuchUser:
-            return render(request, "createLab", {"message":"Username not recognized."})
-        elif badPassword:
-            return render(request, "createLab", {"message":"Password incorrect"})
-        else:
-            request.session["username"] = MyUser.username
-            return redirect("createLab")
 
 
