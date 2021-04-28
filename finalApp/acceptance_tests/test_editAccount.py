@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import Client
 
-from finalApp.models import MyUser, CourseData, CourseSections
+from finalApp.models import MyUser, CourseData, CourseSections, UserType
 
 
 
@@ -28,12 +28,12 @@ class testEditAccount(TestCase):
 
 
     def test_01(self):
-        response1 = self.client.post("/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/", {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
     def test_noAccount(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/HomePage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
 
         response = self.Client.post("/edit_account/",
@@ -49,15 +49,15 @@ class testEditAccount(TestCase):
 
 
     def test_02(self):
-        response1 = self.client.post("/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/", {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.Client.post("/edit_account/",
                                     {"username": "user1", "password": 1234, "first_name": "Bryan",
                                      "last_name": "Johnson", "address": "3429 N Maryland",
                                      "title": "TA", "email": "test@test.com",
                                      "number": "123456789"})
-        self.assertEqual(response.context["message"], "invalid credentials", msg="account was not edited")
+        self.assertEqual(response.context.get("message"), "invalid credentials", msg="account was not edited")
 
     def test_accountExists(self):
         response = self.Client.post("/edit_account/",
@@ -65,6 +65,6 @@ class testEditAccount(TestCase):
                                      "last_name": "Johnson", "address": "3429 N Maryland",
                                      "title": UserType.SUPERVISOR, "email": "test@test.com",
                                      "number": "123456789"})
-        self.assertEqual(response.context["message"], "account already exists", msg="account was not created")
+        self.assertEqual(response.context.get("message"), "account already exists", msg="account was not created")
 
         self.assertEqual(response.url, "/create_account/")

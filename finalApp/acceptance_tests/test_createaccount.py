@@ -21,7 +21,7 @@ class createAccount(TestCase):
                                                          "last_name": "frank", "address": "3423 N Maryland",
                                                          "title": UserType.SUPERVISOR, "email": "test@test.com",
                                                          "number": "123456789"})
-        self.assertEqual(response.context["message"], "successfully created account", msg="confirmed account creation")
+        self.assertEqual(response.context.get("message"), "successfully created account", msg="did not confirm account creation")
         self.assertEqual(response.url, "/edit_account/")
 
 
@@ -30,6 +30,6 @@ class createAccount(TestCase):
                                                          "last_name": "frank", "address": "3423 N Maryland",
                                                          "title": UserType.SUPERVISOR, "email": "test@test.com",
                                                          "number": "123456789"})
-        self.assertEqual(response.context["message"], "account already exists", msg="account was not created")
+        self.assertEqual(response.context.get("message"), "account already exists", msg="account was not created")
         self.assertEqual(response.url, "/create_account/")
         

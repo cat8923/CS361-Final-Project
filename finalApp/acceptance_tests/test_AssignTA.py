@@ -26,7 +26,7 @@ class testAssignTA(TestCase):
         self.Lab = LabData(course=self.data, section=902)
 
     def test_01(self):
-        response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'}, follow=True)
+        response1 = self.client.post("/", {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual("/Homepage/", response1.request['PATH_INFO'], "Valid Information does not take to the homepage page")
 
         response = self.Client.post("/create_account/",
@@ -34,7 +34,7 @@ class testAssignTA(TestCase):
                                      "last_name": "frank", "address": "3423 N Maryland",
                                      "title": "TA", "email": "test@test.com",
                                      "number": "123456789"})
-        self.assertEqual(response.context["message"], "successfully created account", msg="No message for confirmed account creation")
+        self.assertEqual(response.context.get("message"), "successfully created account", msg="No message for confirmed account creation")
         self.assertEqual(response.url, "/HomePage/")
 
         # assign the user created to the course declared in setUp
