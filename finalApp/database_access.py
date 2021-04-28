@@ -25,7 +25,7 @@ def verify_dict(needed, toVerify: dict):
 def make_user(userdata: dict):
     """creates a user in the database according to the given information. On success, returns True on failure returns an
     ErrorString describing the error."""
-    needed = [("username", str), ("password", str), ("first_name", str), ("last_name", str), ("address", str), ("title", UserType), ("email", str), ("number", str)]
+    needed = [("username", str), ("password", str), ("first_name", str), ("last_name", str), ("address", str), ("title", str), ("email", str), ("number", str)]
     check = verify_dict(needed, userdata)
     if not check:
         return check

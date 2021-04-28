@@ -19,17 +19,17 @@ class createAccount(TestCase):
     def test_noAccount(self):
         response = self.Client.post("/create_account/", {"username": "bic21", "password": "hello", "first_name": "brett",
                                                          "last_name": "frank", "address": "3423 N Maryland",
-                                                         "title": UserType.SUPERVISOR, "email": "test@test.com",
+                                                         "title": str(UserType.SUPERVISOR), "email": "test@test.com",
                                                          "number": "123456789"})
         self.assertEqual(response.context.get("message"), "successfully created account", msg="did not confirm account creation")
-        self.assertEqual(response.url, "/edit_account/")
+        self.assertEqual(response.request["PATH_INFO"], "/create_account/")
 
 
     def test_accountExists(self):
         response = self.Client.post("/create_account/", {"username": "user1", "password": "pass1", "first_name": "brett",
                                                          "last_name": "frank", "address": "3423 N Maryland",
-                                                         "title": UserType.SUPERVISOR, "email": "test@test.com",
+                                                         "title": str(UserType.SUPERVISOR), "email": "test@test.com",
                                                          "number": "123456789"})
-        self.assertEqual(response.context.get("message"), "account already exists", msg="account was not created")
-        self.assertEqual(response.url, "/create_account/")
+        self.assertEqual(response.context.get("message"), "Error: username user1 is already taken", msg="account was not created")
+        self.assertEqual(response.request["PATH_INFO"], "/create_account/")
         

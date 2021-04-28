@@ -35,7 +35,7 @@ class testAssignTA(TestCase):
                                      "title": "TA", "email": "test@test.com",
                                      "number": "123456789"})
         self.assertEqual(response.context.get("message"), "successfully created account", msg="No message for confirmed account creation")
-        self.assertEqual(response.url, "/HomePage/")
+        self.assertEqual(response1.request["PATH_INFO"], "/HomePage/")
 
         # assign the user created to the course declared in setUp
         response2 = self.Client.post("/Create_Lab/", {"Lab": 1})

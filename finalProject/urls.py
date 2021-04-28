@@ -16,15 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList #EditLab
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount #EditLab
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Login.as_view()),
-
     path('Homepage/', Homepage.as_view()),
     path('createLab/',AddLab.as_view()),
     path('Create_Course/',CreateCourse.as_view()),
-    path('Course_List/' , CourseList.as_view())
+    path('Course_List/' , CourseList.as_view()),
+    path('create_account/', CreateAccount.as_view()),
 ]

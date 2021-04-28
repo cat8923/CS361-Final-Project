@@ -17,7 +17,7 @@ class UserCreateTest(TestCase):
 
     def test_createUser(self):
         check = make_user({"username": "user5", "password": "pass5", "first_name": "john", "last_name": "doe",
-                           "address": "3400 N Maryland", "title": UserType.SUPERVISOR, "email": "testtest.com",
+                           "address": "3400 N Maryland", "title": str(UserType.SUPERVISOR), "email": "testtest.com",
                            "number": "123456789"})
 
         self.assertTrue(check, msg="Error: good data does not create user")
