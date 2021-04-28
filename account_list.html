@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>View Accounts</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h1 style="text-align: center;">List of Accounts</h1>
+    <h2 style="text-align: center;"><small>Select an account to view</small></h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <!-- insert selection list box here -->
+        <select size="4" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
+                {% for i in accounts  %}
+                 <option value="{{ i.id }}">{{ i.title }}</option>
+                {% endfor %}
+            </select><br><br>
+        </select>
+    </form>
+    <form align="right" method="post">
+        <label class="logoutLblPos">
+            <input type="submit" value="Logout">
+        </label>
+    </form>
+</body>
+</html>
