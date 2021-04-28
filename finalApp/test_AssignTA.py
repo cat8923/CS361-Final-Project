@@ -1,6 +1,9 @@
 from django.test import TestCase
 from django.test import Client
+
 from finalApp.models import MyUser,CourseData, LabData, TAsToCourses
+
+
 
 
 class testAssignTA(TestCase):
@@ -43,7 +46,10 @@ class testAssignTA(TestCase):
 
 
     def test_02(self):
+
         response1 = self.client.post("/", {'name': 'user', 'password': 'pass'})
+
+
         self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
 
         response = self.Client.post("/create_account/",
