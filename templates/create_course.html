@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Create Course</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+    <h1 class="h1Style">Create Course</h1>
+    <div class="formStyle">
+        <form action="" method="post">
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description"><br><br>
+
+            <label for="designation">Designation:</label>
+            <input type="text" id="designation" name="designation"><br><br>
+
+            <label for="semester">Semester:</label>
+            <input type="text" id="semester" name="semester"><br><br>
+
+            <label for="instructor">Instructor:</label>
+            <input type="text" id="instructor" name="instructor"><br><br>
+
+            <label for="TAs">TA's:</label>
+             <select id="TA" name="TA">
+                {% for i in TA  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select><br><br>
+
+            <input type="Submit" value="Save Course"><br><br>
+
+        </form>
+
+        <form action="/Create_Course/" align="right" method="post">
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
+            </label>
+        </form>
+
+    </div>
+</body>
+</html>

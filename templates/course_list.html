@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>View Accounts</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="formStyle">
+        <h1 class="h1Style">List of Courses</h1>
+        <h2 style="text-align: center;"><small>Select a course to view</small></h2>
+        <form action="" method="post">
+            <select size="4" id="courses" name="courses" onclick="window.location.href='/Create_Course/';">
+                {% for i in courses  %}
+                 <option value="{{ i.id }}">{{ i.title }}</option>
+                {% endfor %}
+            </select><br><br>
+
+        </form>
+
+        <form action="/Course_List/" align="right" method="post">
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
+            </label>
+        </form>
+
+    </div>
+</body>
+</html>
