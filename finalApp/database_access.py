@@ -73,15 +73,9 @@ def make_course(coursedata: dict):
     string describing error.
     Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
     needed = [("title", str), ("section", int)]
-    if not coursedata.get("title"):
-        return ErrorString("Error: title is not provided in coursedata")
-    if not type(coursedata["title"]) is str:
-        return ErrorString("Error: wrong type for course title")
-
-    if not coursedata.get("section"):
-        return ErrorString("Error: section is not provided in coursedata")
-    if not type(coursedata["section"]) is int:
-        return ErrorString("Error: wrong type for section")
+    check = verify_dict(needed, coursedata)
+    if not check:
+        return check
 
     if CourseSections.objects.filter(course__title__iexact=coursedata["title"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
@@ -108,11 +102,6 @@ def login(logindata: dict):
     check = verify_dict(needed, logindata)
     if not check:
         return check
-    #for i in needed:
-    #    if not logindata.get(i):
-    #        return ErrorString("Error: " + i + " not provided")
-    #    if not type(logindata[i]) is str:
-    #        return ErrorString("Error: bad input data")
 
     tempUser = MyUser.objects.filter(username__iexact=logindata["username"]).exists()
     if not tempUser:

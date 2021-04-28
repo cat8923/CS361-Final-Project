@@ -25,9 +25,6 @@ urlpatterns = [
 
     path('Homepage/', Homepage.as_view()),
     path('createLab/',AddLab.as_view()),
-    #path('editLab/',EditLab.as_view())
     path('Create_Course/',CreateCourse.as_view()),
-
-    #path('/Edit_Course/' , EditCourse.as_view()),
     path('Course_List/' , CourseList.as_view())
 ]
