@@ -9,15 +9,26 @@
 <body>
     <h1>Create Account</h1>
     <form action="" method="post">
+        <label for="username">Username: </label>
+        <input type="text" id="username" name="username"><br><br>
         <label for="name">Name:</label>
         <input type="text" id="name" name="name"><br><br>
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address"><br><br>
+        <label for="address1">Address line 1:</label>
+        <input type="text" id="address1" name="address1"><br><br>
+        <label for="address2">Address line 2:</label>
+        <input type="text" id="address2" name="address2"><br><br>
         <label for="email">Email:</label>
         <input type="email" id="email" name="email"><br><br>
         <label for="PhoneNumber">Phone:</label>
         <input type="text" id="PhoneNumber" name="PhoneNumber"><br><br>
+        <label for="course">Courses: </label>
+        <input type="text" id="course" name="course"><br><br>
+        <label for="labs">Labs: </label>
+        <input type="text" id="labs" name="labs"><br><br>
         <input type="submit" value="Create Account">
+        <input type="submit" value="Cancel">
+        <button type="submit" onclick="window.location.href='';" >Logout</button>
+        <button type="submit" onclick="window.location.href='/Homepage/';" >Back to Home</button>
     </form>
 
 </body>
