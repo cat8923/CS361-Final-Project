@@ -4,9 +4,24 @@ from finalApp.database_access import login, ErrorString
 from finalApp import database_access
 # Create your views here.
 
+
+class Blank(View):
+    def get(self, request):
+        if request.session.get("first_name"):
+            return redirect("/Homepage/")
+        else:
+            return redirect("/Login/")
+
+
+class Logout(View):
+    def get(self, request):
+        request.session.flush()
+        return redirect("/Login/", {"message": "logout successful"})
+
+
 class Login(View):
     def get(self, request):
-        return render(request, "Login.html", {})
+        return render(request, "Login.html")
 
     def post(self, request):
         user = login({"username": request.POST["username"], "password": request.POST["password"]})
