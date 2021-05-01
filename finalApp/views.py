@@ -5,6 +5,18 @@ from finalApp import database_access
 # Create your views here.
 
 
+class TestCreate(View):
+    def get(self, request):
+        return render(request, "create_test_user.html")
+
+    def post(self, request):
+        check = database_access.make_user(request.POST)
+        if not check:
+            return render(request, "create_test_user.html", {"message": str(check)})
+        else:
+            return render(request, "create_test_user.html", {"message": "success"})
+
+
 class Blank(View):
     def get(self, request):
         if request.session.get("first_name"):
