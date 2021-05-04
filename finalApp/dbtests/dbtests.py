@@ -482,10 +482,12 @@ class ListCoursesTest(TestCase):
         self.result = []
 
         for i in range(1,11):
-            temp = CourseData.objects.create(title="course" + str(i), id=i)
+            temp = CourseData.objects.create(title="course" + str(i), designation="CS" + str(i), id=i)
             for j in range(1, 4):
                 self.result.append("course" + str(i) + " " + str(j+200))
                 CourseSections.objects.create(course=temp, section=(j+200))
+            for j in range(1, 4):
+                LabData.objects.create(course=temp, section=(j+900))
 
         print(self.result)
 

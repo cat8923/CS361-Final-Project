@@ -27,5 +27,25 @@
     <input type="submit" value="submit">
 </form>
 
+<br>
+
+{% if list %}
+    <table>
+        {% for i in list %}
+            <tr><td>
+                <table>
+                <tr><th>{{ i.0 }}</th></tr>
+                {% for j in i.1 %}
+                    <tr><td class="sections">{{ j }}</td></tr>
+                {% endfor %}
+                {% for j in i.2 %}
+                    <tr><td class="labs">{{ j }}</td></tr>
+                {% endfor %}
+                </table>
+            </td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 </body>
 </html>

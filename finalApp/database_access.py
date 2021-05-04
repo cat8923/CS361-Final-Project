@@ -245,7 +245,11 @@ def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
 
 
 def list_courses() -> list:
-    return list(map(str, CourseSections.objects.all()))
+    result = []
+    courses = CourseData.objects.all()
+    for c in courses:
+        result.append((str(c), list(map(str, CourseSections.objects.filter(course=c))), list(map(str, LabData.objects.filter(course=c)))))
+    return result
 
 
 def list_users(isSupervisor = False) -> list:
