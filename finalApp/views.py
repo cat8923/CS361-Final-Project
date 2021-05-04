@@ -102,7 +102,8 @@ class CreateAccount(View):
         return render(request, "create_account.html")
 
     def post(self, request):
-        """accountDict = {
+        '''
+        accountDict = {
             "username": request.POST["description"],
             "password": request.POST["description"],
             "first_name": request.POST["description"],
@@ -111,7 +112,8 @@ class CreateAccount(View):
             "title": request.POST["description"],
             "email": request.POST["description"],
             "number": request.POST["description"],
-        }"""
+        }
+        '''
         message = database_access.make_user(request.POST)
         if message:
             message = "successfully created account"
