@@ -9,8 +9,15 @@
 <body>
     <h1>Create Account</h1>
     <form action="" method="post">
+        <!--add a drop down for position-->
         <label for="username">Username: </label>
-        <input type="text" id="username" name="username"><br><br>
+        <input type="text" id="username" name="username">
+        <label for="position">Position: </label>
+            <select name="position" id="position">
+                {% for i in positions %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select><br><br>
         <label for="name">Name:</label>
         <input type="text" id="name" name="name"><br><br>
         <label for="address1">Address line 1:</label>
@@ -21,10 +28,6 @@
         <input type="email" id="email" name="email"><br><br>
         <label for="PhoneNumber">Phone:</label>
         <input type="text" id="PhoneNumber" name="PhoneNumber"><br><br>
-        <label for="course">Courses: </label>
-        <input type="text" id="course" name="course"><br><br>
-        <label for="labs">Labs: </label>
-        <input type="text" id="labs" name="labs"><br><br>
         <input type="submit" value="Create Account">
         <input type="submit" value="Cancel">
         <button type="submit" onclick="window.location.href='';" >Logout</button>

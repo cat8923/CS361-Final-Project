@@ -27,12 +27,14 @@
                     <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
             </select>
+            <input type="submit" value="Assign Course">
         <label for="labs">Labs: </label>
             <select name="labs" id="labs">
                 {% for i in labs  %}
                     <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
-             </select><br><br>
+             </select>
+            <input type="submit" value="Assign Lab"><br><br>
         <input type="submit" value="Save Edits">
         <input type="submit" value="Cancel">
         <input type="submit" value="Delete Account">
