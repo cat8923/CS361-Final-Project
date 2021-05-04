@@ -4,9 +4,10 @@ from django.contrib import admin
 from django.contrib import admin
 
 # Register your models here.
-from .models import MyUser, UserType, CourseData, CourseSections, LabData, TAsToCourses
+from .models import MyUser, UserType, CourseData, CourseSections, LabData, TAsToCourses, TASkills
 admin.site.register(MyUser)
 admin.site.register(CourseData)
 admin.site.register(CourseSections)
 admin.site.register(LabData)
 admin.site.register(TAsToCourses)
+admin.site.register(TASkills)

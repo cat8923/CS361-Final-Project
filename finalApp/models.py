@@ -13,7 +13,8 @@ class UserType(m.TextChoices):
 
 class MyUser(models.User):
     position = m.CharField(max_length=1, choices=UserType.choices, default=UserType.TA, null=False)
-    address = m.CharField(max_length=50, null=True)
+    addressln1 = m.CharField(max_length=50, null=True)
+    addressln2 = m.CharField(max_length=50, null=True)
     phone_number = m.CharField(max_length=12, null=True)
 
     def __str__(self):
@@ -22,6 +23,7 @@ class MyUser(models.User):
 
 class CourseData(m.Model):
     title = m.CharField(max_length=50, unique=True)
+    designation = m.CharField(max_length=10, unique=True)
 
     def __str__(self):
         return self.title
@@ -48,3 +50,8 @@ class LabData(m.Model):
 class TAsToCourses(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
+
+
+class TASkills(m.Model):
+    TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
+    skills = m.TextField()

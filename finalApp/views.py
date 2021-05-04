@@ -48,8 +48,12 @@ class Login(View):
 
 class Homepage(View):
     def get(self, request):
-        name = request.session['first_name']
-        return render(request, "Homepage.html", {'name': name})
+
+        name = request.session.get('first_name')
+        if name:
+            return render(request, "Homepage.html", {'name': name})
+        else:
+            return redirect("/Login/")
 
     def post(self, request):
         click = request.POST['onclick']

@@ -248,7 +248,7 @@ def list_courses() -> list:
     return list(map(str, CourseSections.objects.all()))
 
 
-def list_users(isSupervisor: bool) -> list:
+def list_users(isSupervisor = False) -> list:
     users = []
     for i in MyUser.objects.all():
         users.append((str(i), i.position))
