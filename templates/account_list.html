@@ -9,17 +9,10 @@
 <body>
     <h1 style="text-align: center;">List of Accounts</h1>
     <h2 style="text-align: center;"><small>Select an account to view</small></h2>
-    <form align="center" action="" method="post">
+    <form action="" method="post">
         {% csrf_token %}
         <!-- insert selection list box here -->
-        <div class="select">
-            <select size="10" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
-                    {% for i in accounts  %}
-                     <option value="{{ i.id }}">{{ i.title }} &nbsp;&nbsp; {{ i.position }}</option>
-                    {% endfor %}
-            </select><br><br>
-             </select>
-        </div>
+
     </form>
     <form align="right" method="post">
         <label class="logoutLblPos">
