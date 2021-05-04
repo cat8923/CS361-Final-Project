@@ -30,9 +30,13 @@
             </select><br><br>
 
             <input type="Submit" value="Edit Course"><br><br>
-            <button type="submit" onclick="window.location.href='/Login/';" >Logout </button>
+        </form>
 
-
+    <form action="/Edit_Course/" align="right" method="post">
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" value="Logout" name="onclick">
+            </label>
         </form>
     </div>
 </body>

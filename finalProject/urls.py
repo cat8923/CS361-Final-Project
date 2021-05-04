@@ -15,8 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
 
-from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount #EditLab
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, EditCourse #EditLab
 
 
 urlpatterns = [
@@ -27,4 +28,5 @@ urlpatterns = [
     path('Create_Course/',CreateCourse.as_view()),
     path('Course_List/' , CourseList.as_view()),
     path('create_account/', CreateAccount.as_view()),
+    url('Edit_Course/(?P<course>[a-zA-Z0-9]+)', EditCourse.as_view())
 ]
