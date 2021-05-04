@@ -17,7 +17,7 @@ class UserCreateTest(TestCase):
 
     def test_createUser(self):
         check = make_user({"username": "user5", "password": "pass5", "first_name": "john", "last_name": "doe",
-                           "address": "3400 N Maryland", "title": str(UserType.SUPERVISOR), "email": "testtest.com",
+                           "addressln1": "3400 N Maryland", "addressln2": "Milwaukee, WI 53211", "title": str(UserType.SUPERVISOR), "email": "testtest.com",
                            "number": "123456789"})
 
         self.assertTrue(check, msg="Error: good data does not create user")
@@ -107,10 +107,10 @@ class UserLoginTest(TestCase):
 
 class CreateCourseTest(TestCase):
     def setUp(self):
-        make_course({"title": "course1", "section": 201})
+        make_course({"title": "course1", "section": 201, "designation": "CS351"})
 
     def test_goodData(self):
-        check = make_course({"title": "course0", "section": 200})
+        check = make_course({"title": "course0", "section": 200, "designation": "CS350"})
         self.assertTrue(check, msg="Error: good course data fails to create course")
         print(list(map(str, CourseSections.objects.all())))
 
@@ -121,14 +121,14 @@ class CreateCourseTest(TestCase):
                          msg="Error: course data is stored when creation failed")
 
     def test_courseSectionExists(self):
-        check = make_course({"title": "course1", "section": 201})
+        check = make_course({"title": "course1", "section": 201, "designation": "CS351"})
         self.assertFalse(check, msg="Error: making course does not fail when course section exists")
         tempCourse = CourseData.objects.get(title="course1")
         self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1,
                          msg="Error: extra section is created when data is incorrect")
 
     def test_existingCourse(self):
-        check = make_course({"title": "course1", "section": 202})
+        check = make_course({"title": "course1", "section": 202, "designation": "CS351"})
         self.assertTrue(check, msg="Error: creating new section for a course fails when it should not")
 
     def test_missingData(self):
@@ -139,13 +139,13 @@ class CreateCourseTest(TestCase):
         self.assertFalse(check, msg="Error: making course does not fail when title is not provided")
 
     def test_makeSureItsWorking(self):
-        course = CourseData(title="course2")
+        course = CourseData(title="course2", designation="CS352")
         course.save()
         section = CourseSections(section=201, course=course)
         section.save()
         section = CourseSections(section=202, course=course)
         section.save()
-        course = CourseData(title="course3")
+        course = CourseData(title="course3", designation="CS353")
         course.save()
         section = CourseSections(section=201, course=course)
         section.save()
@@ -414,7 +414,7 @@ class AssignInstructorCourseTest(TestCase):
 class GetCourseIDTest(TestCase):
     def setUp(self):
         for i in range(5):
-            CourseData.objects.create(title="course" + str(i), id=i * 2)
+            CourseData.objects.create(title="course" + str(i), id=i * 2, designation="CS" + str(i))
 
     def test_courseExists(self):
         check = get_course_id_by_name("course3")
@@ -437,29 +437,29 @@ class GetCourseIDTest(TestCase):
 
 class UpdateUserDataTest(TestCase):
     def setUp(self):
-        MyUser.objects.create(username="user1", email="originalemail1", address="3400 N Maryland", phone_number="123456789")
-        MyUser.objects.create(username="user2", email="originalemail2", address="3401 N Maryland", phone_number="987654321")
+        MyUser.objects.create(username="user1", email="originalemail1", addressln1="3400 N Maryland", phone_number="123456789")
+        MyUser.objects.create(username="user2", email="originalemail2", addressln1="3401 N Maryland", phone_number="987654321")
 
     def test_goodData(self):
-        check = update_user({"username": "user1", "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user({"username": "user1", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertTrue(check, msg="Error: updating user does not return true when data is good")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
-        self.assertEqual(user.address, "3400 S Maryland", msg="Error: address is not updated")
+        self.assertEqual(user.addressln1, "3400 S Maryland", msg="Error: address is not updated")
         self.assertEqual(user.phone_number, "100200300", msg="Error: phone number is not updated")
 
     def test_userNoExist(self):
-        check = update_user({"username": "user3", "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user({"username": "user3", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: check does not return false when user does not exist")
 
     def test_invalidData(self):
-        check = update_user({"username": 1, "email": "newemail1", "address": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user({"username": 1, "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when username is incorrect type")
-        check = update_user({"username": "user1", "email": 1, "address": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user({"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when email is incorrect type")
-        check = update_user({"username": "user1", "email": "newemail1", "address": 1, "phone_number": "100200300"})
+        check = update_user({"username": "user1", "email": "newemail1", "addressln1": 1, "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when address is incorrect type")
-        check = update_user({"username": "user1", "email": 1, "address": "3400 S Maryland", "phone_number": 100200300})
+        check = update_user({"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": 100200300})
         self.assertFalse(check, msg="Error: updating user does not return false when phone number is incorrect type")
 
     def test_updateSome(self):
@@ -467,13 +467,13 @@ class UpdateUserDataTest(TestCase):
         self.assertTrue(check, msg="Error: updating user does not succeed when only updating email")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
-        self.assertEqual(user.address, "3400 N Maryland", msg="Error: address is erroneously updated")
+        self.assertEqual(user.addressln1, "3400 N Maryland", msg="Error: address is erroneously updated")
         self.assertEqual(user.phone_number, "123456789", msg="Error: phone number is erroneously updated")
-        check = update_user({"username": "user1", "address": "new address"})
+        check = update_user({"username": "user1", "addressln1": "new address"})
         self.assertTrue(check, msg="Error: updating user does not succeed when only updating address")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is updated when it should not be")
-        self.assertEqual(user.address, "new address", msg="Error: address is not updated")
+        self.assertEqual(user.addressln1, "new address", msg="Error: address is not updated")
         self.assertEqual(user.phone_number, "123456789", msg="Error: phone number is erroneously updated")
 
 
@@ -483,11 +483,12 @@ class ListCoursesTest(TestCase):
 
         for i in range(1,11):
             temp = CourseData.objects.create(title="course" + str(i), designation="CS" + str(i), id=i)
+            temptup = (str(temp), [], [])
             for j in range(1, 4):
-                self.result.append("course" + str(i) + " " + str(j+200))
-                CourseSections.objects.create(course=temp, section=(j+200))
+                temptup[1].append(str(CourseSections.objects.create(course=temp, section=(j+200))))
             for j in range(1, 4):
-                LabData.objects.create(course=temp, section=(j+900))
+                temptup[2].append(str(LabData.objects.create(course=temp, section=(j+900))))
+            self.result.append(temptup)
 
         print(self.result)
 

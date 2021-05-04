@@ -25,7 +25,7 @@ def verify_dict(needed: list[(str, type)], toVerify: dict) -> Union[ErrorString,
 def make_user(userdata: dict) -> Union[ErrorString, bool]:
     """creates a user in the database according to the given information. On success, returns True on failure returns an
     ErrorString describing the error."""
-    needed = [("username", str), ("password", str), ("first_name", str), ("last_name", str), ("address", str), ("title", str), ("email", str), ("number", str)]
+    needed = [("username", str), ("password", str), ("first_name", str), ("last_name", str), ("addressln1", str), ("addressln2", str),("title", str), ("email", str), ("number", str)]
     check = verify_dict(needed, userdata)
     if not check:
         return check
@@ -34,7 +34,7 @@ def make_user(userdata: dict) -> Union[ErrorString, bool]:
         return ErrorString("Error: username " + userdata["username"] + " is already taken")
 
     tempUser = MyUser(username=userdata["username"], first_name=userdata["first_name"], last_name=userdata["last_name"],
-                      address=userdata["address"], position=userdata["title"], phone_number=userdata["number"],
+                      addressln1=userdata["addressln1"], addressln2=userdata["addressln2"], position=userdata["title"], phone_number=userdata["number"],
                       email=userdata["email"])
     tempUser.set_password(userdata["password"])
     tempUser.save()
@@ -48,7 +48,7 @@ def update_user(userdata: dict) -> Union[ErrorString, bool]:
     toUpdate = []
     if "username" not in userdata:
         return ErrorString("Error: username must be provided")
-    maybeNeeded = [("email", str), ("address", str), ("phone_number", str), ("first_name", str), ("last_name", str)] # makes it very easy if we need to add more things to update
+    maybeNeeded = [("email", str), ("addressln1", str), ("addressln2", str), ("phone_number", str), ("first_name", str), ("last_name", str)] # makes it very easy if we need to add more things to update
     for i in maybeNeeded:
         if i[0] in userdata:
             if type(userdata[i[0]]) is not i[1]:
@@ -72,19 +72,19 @@ def make_course(coursedata: dict) -> Union[ErrorString, bool]:
     """creates a course in the database according to the given input. On success, returns True, on failure returns
     string describing error.
     Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
-    needed = [("title", str), ("section", int)]
+    needed = [("title", str), ("section", int), ("designation", str)]
     check = verify_dict(needed, coursedata)
     if not check:
         return check
 
-    if CourseSections.objects.filter(course__title__iexact=coursedata["title"], section=coursedata["section"]).exists():
+    if CourseSections.objects.filter(course__designation__iexact=coursedata["designation"], section=coursedata["section"]).exists():
         return ErrorString("Error: course with title " + coursedata["title"] + "and section " + str(coursedata["section"]) + " already exists")
 
-    tempCourse = CourseData.objects.filter(title=coursedata["title"])
+    tempCourse = CourseData.objects.filter(designation__iexact=coursedata["designation"])
     print(list(map(str, tempCourse)))
 
     if not tempCourse:
-        tempCourse = CourseData(title=coursedata["title"])
+        tempCourse = CourseData(title=coursedata["title"], designation=coursedata["designation"])
         tempCourse.save()
     else:
         tempCourse = tempCourse[0]
