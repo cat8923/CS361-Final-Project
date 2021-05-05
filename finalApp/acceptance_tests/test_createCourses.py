@@ -25,8 +25,8 @@ class testCreateCourses(TestCase):
         response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
-        response = self.client.post("/Create_Course/", {"Description": "Introduction to Software Engineering",
-                                                        "Designation": "CS361-201", "Semester": "Spring 2021",
+        response = self.client.post("/Create_Course/", {"Description": "CS 361-Introduction to Software Engineering",
+                                                        "Section": "201", "Semester": "Spring 2021",
                                                         "Instructor": 1,"role": "TA", "Lab": 901})
 
         self.assertEqual(response.url, "/Homepage/")
@@ -41,7 +41,7 @@ class testCreateCourses(TestCase):
         self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Course/", {"Description": 12121,
-                                                        "Designation": "CS361-201", "Semester": "Spring 1995",
+                                                        "Section": "201", "Semester": "Spring 2021",
                                                         "Instructor": 1, "role": "TA", "Lab": 901})
 
         self.assertEqual("/Create_Course/", response.url, "Invalid type")

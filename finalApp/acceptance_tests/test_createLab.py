@@ -26,7 +26,7 @@ class testCreateLab(TestCase):
         self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Lab/", {"Description": "Introduction to Software Engineering",
-                                                        "Course": "CS361-901", "Semester": "Spring 2021",
+                                                        "Course": "CS361", "Semester": "Spring 2021",
                                                         "Instructor": "Jayson Rock","role": "TA",
                                                      "Times": "Tu & Thur 10:00-10:50 AM"})
 
@@ -38,7 +38,7 @@ class testCreateLab(TestCase):
         self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/CreateLab/", {"Description": "Introduction",
-                                                        "Course": "CS361-909", "Semester": "Spring 2021",
+                                                        "Course": "CS361", "Semester": "Spring 2021",
                                                         "Instructor": "Jayson Rock","role": "TA",
                                                      "Times": "Tu & Thur 6:00-6:50 AM"})
 
