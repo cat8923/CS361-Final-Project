@@ -14,3 +14,32 @@ class testDeleteAccount(TestCase):
             temp.set_password(raw_password="pass" + str(i))
             temp.save()
 
+    def test_1(self):
+
+            response = self.client.post("/", {'username': 'Supervisor', 'password': 'pass'}, follow=True)
+            self.assertEqual("/Homepage/", response.request["PATH_INFO"],"Valid Information will take to the homepage page")
+
+            # add a user
+            response1 = self.Client.post("/create_account/", {"username": "bic21", "password": "hello", "first_name": "brett",
+                                                         "last_name": "frank", "address": "3423 N Maryland",
+                                                         "title": str(UserType.SUPERVISOR), "email": "test@test.com",
+                                                         "number": "123456789"})
+            self.assertEqual(response1.context.get("message"), "successfully created account",msg="did not confirm account creation")
+
+            # delete the user
+            response2 = self.client.post('/delete_account/', {"User": 2})
+
+
+            response3 = self.client.get('/create_account/')
+
+            users = list(response3.context['users'])
+            print(users)
+
+            # since we only add 1 user, on deleting one the list should be of size 1
+            if len(users) == 1:
+                self.assertTrue("Successful Deletion")
+            else:
+                self.assertFalse("Successful Deletion")
+
+        def test_2(self):
+            pass
