@@ -12,15 +12,15 @@
 <form action="/Homepage/" method="post">
     {% csrf_token %}
     <div>
-        <input style="align-text: left" type="submit" onclick="alert('Accounts')" value="Accounts" name="onclick">
-        <input style="align-text: right" type="submit" onclick="alert('Courses')" value="Courses" name="onclick">
+        <input style="align-text: left" type="submit" value="Accounts" name="onclick">
+        <input style="align-text: right" type="submit" value="Courses" name="onclick">
     </div>
 </form>
 
 <form action="/Homepage/" align="right" method="post">
     {% csrf_token %}
     <label class="logoutLblPos">
-        <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
+        <input type="submit"  value="Logout" name="onclick">
     </label>
 </form>
 

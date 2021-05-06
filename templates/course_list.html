@@ -13,7 +13,7 @@
         <form action="/Course_List/" method="post">
             <select size="4" id="courses" name="courses">
                 {% for i in courses  %}
-                 <option value={{ i.id }}>{{ i.title }}</option>
+                 <option value={{ i }}>{{ i.title }}</option>
                 {% endfor %}
             </select><br><br>
             {% csrf_token %}
@@ -32,7 +32,7 @@
             </label>
         </form>
 
-        <form action="/Course_List/" align="right" method="post">
+        <form action="/Course_List/" align="left" method="post">
             {% csrf_token %}
             <label class="logoutLblPos">
                 <input type="submit" value="Create New Course" name="onclick">

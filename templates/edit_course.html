@@ -9,8 +9,8 @@
 
     <h1 class="h1Style">Edit Course</h1>
     <div class="formStyle">
-        <form action="" method="post">
-            <label for="description">Description:</label>
+        <form action="/EditCourse/" method="post">
+            <label for="description">Title:</label>
             <input type="text" id="description" name="description"><br><br>
 
             <label for="designation">Designation:</label>
@@ -19,24 +19,46 @@
             <label for="semester">Semester:</label>
             <input type="text" id="semester" name="semester"><br><br>
 
+            <label for="section">Section: </label>
+            <select id="section" name="section">
+                {% for i in section  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
             <label for="instructor">Instructor:</label>
-            <input type="text" id="instructor" name="instructor"><br><br>
+            <select id="Instructor" name="Instructor">
+                {% for i in Instructor  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="Submit" name="onclick" value="Assign"><br><br>
 
-            <label for="TAs">TA's:</label>
+            <label for="Labs">Lab:</label>
+            <select id="Labs" name="Lab">
+                {% for i in Lab  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="TAs">TA:</label>
             <select id="TA" name="TA">
                 {% for i in TA  %}
                     <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
-            </select><br><br>
+            </select>
+            <input type="Submit" name="onclick" value="Assign">
+            <input type="Submit" name="onclick" value="Delete Lab"><br><br><br>
 
-            <input type="Submit" value="Edit Course"><br><br>
+            <input type="submit" value="Create New Course" name="onclick">
+            <input type="submit" value="Save Edit" onclick="alert('Edits Saved')" name="onclick">
+            <input type="submit" value="Cancel Edit" onclick="alert('Edits Canceled')" name="onclick">
+            <input type="submit" value="Delete Course" onclick="confirm('Delete the course?')" name="onclick"><br><br>
         </form>
 
-    <form action="/Edit_Course/" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" value="Logout" name="onclick">
-            </label>
+        <form action="Edit_Course/(?P<course>[a-zA-Z0-9]+)" align="right" method="post">
+                {% csrf_token %}
+                <label class="logoutLblPos">
+                    <input type="submit" value="Logout" name="onclick">
+                </label>
         </form>
     </div>
 </body>

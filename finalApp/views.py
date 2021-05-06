@@ -125,9 +125,22 @@ class CreateAccount(View):
 class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        course = self.kwargs["course"]
-        return render(request, "edit_course.html")
+        course = self.kwargs
+        return render(request, "edit_course.html", course)
 
     def post(self, request):
-        request.session.flush()
-        return render(request, "Login.html")
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return redirect('')
+        elif click == 'Save Edit':
+            # need to save the changes we made first
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Cancel Edit':
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Delete Course':
+            return redirect('/course_list/')
+        elif click == 'Create New Course':
+            return redirect('/create_course/')
