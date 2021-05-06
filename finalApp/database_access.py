@@ -245,6 +245,7 @@ def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
 
 
 def list_courses() -> list:
+    """gets a list of all the courses: a triple of 1 course string, 2 list of associated sections, 3 list of associated labs"""
     result = []
     courses = CourseData.objects.all()
     for c in courses:

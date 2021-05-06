@@ -53,8 +53,4 @@ class LabData(m.Model):
 class TAsToCourses(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
-
-
-class TASkills(m.Model):
-    TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     skills = m.TextField()

@@ -29,7 +29,7 @@ class Blank(View):
 class Logout(View):
     def get(self, request):
         request.session.flush()
-        return redirect("/Login/", {"message": "logout successful"})
+        return redirect("/Login/")
 
 
 class Login(View):
