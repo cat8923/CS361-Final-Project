@@ -112,7 +112,7 @@ class CourseList(View):
         return render(request, "Login.html")
 
 
-class AccountView(View):
+class AccountList(View):
     def get(self, request):
         if len(request.GET) == 0:
             accounts = list(database_access.list_users())
@@ -141,3 +141,14 @@ class CreateAccount(View):
             message = str(message)
 
         return render(request, "Homepage.html", {"message": message})
+
+
+class EditAccount(View):
+    def get(self, request, **kwargs):
+        print(self.kwargs)
+        account = self.kwargs["account"]
+        return render(request, "account_list.html")
+
+    def post(self, request):
+        request.session.flush()
+        return render(request, "edit_account.html")
