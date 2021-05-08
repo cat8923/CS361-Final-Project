@@ -504,19 +504,19 @@ class ListUsersTest(TestCase):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.TA)))
+            self.users.append((tempFn + " " +tempLn, str(UserType.TA), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
         for i in range(11,21):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.SUPERVISOR)))
+            self.users.append((tempFn + " " +tempLn, str(UserType.SUPERVISOR), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
         for i in range(21,31):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.INSTRUCTOR)))
+            self.users.append((tempFn + " " +tempLn, str(UserType.INSTRUCTOR), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
 
     def test_good(self):

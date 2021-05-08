@@ -254,7 +254,8 @@ def list_courses() -> list:
 
 
 def list_users(isSupervisor = False) -> list:
+    """gets a list of all the users in the database as a list of triples containing the name of the user, their position, and their username"""
     users = []
     for i in MyUser.objects.all():
-        users.append((str(i), i.position))
+        users.append((str(i), i.position, i.username))
     return users
