@@ -5,9 +5,38 @@ from finalApp import database_access
 from .models import CourseData
 # Create your views here.
 
+
+class TestCreate(View):
+    def get(self, request, **kwargs):
+        li = database_access.list_courses()
+        return render(request, "create_test_user.html", {"list": li, "username": self.kwargs.get("username"), "users": database_access.list_users()
+                                                         , "courses": database_access.get_coursedata("cs351")})
+
+    def post(self, request):
+        check = database_access.make_user(request.POST)
+        if not check:
+            return render(request, "create_test_user.html", {"message": str(check)})
+        else:
+            return render(request, "create_test_user.html", {"message": "success"})
+
+
+class Blank(View):
+    def get(self, request):
+        if request.session.get("first_name"):
+            return redirect("/Homepage/")
+        else:
+            return redirect("/Login/")
+
+
+class Logout(View):
+    def get(self, request):
+        request.session.flush()
+        return redirect("/Login/")
+
+
 class Login(View):
     def get(self, request):
-        return render(request, "Login.html", {})
+        return render(request, "Login.html")
 
     def post(self, request):
         user = login({"username": request.POST["username"], "password": request.POST["password"]})
@@ -22,8 +51,12 @@ class Login(View):
 
 class Homepage(View):
     def get(self, request):
-        name = request.session['first_name']
-        return render(request, "Homepage.html", {'name': name})
+
+        name = request.session.get('first_name')
+        if name:
+            return render(request, "Homepage.html", {'name': name})
+        else:
+            return redirect("/Login/")
 
     def post(self, request):
         click = request.POST['onclick']
