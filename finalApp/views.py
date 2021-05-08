@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
-from .models import CourseData
+from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
@@ -76,17 +76,17 @@ class CreateCourse(View):
             return render(request, "create_course.html", {"TA": TA})
 
     def post(self, request):
-
+        '''
         courseDict = {
             "title": request.POST["description"],
             #"section": request.POST["designation"],
         }
         database_access.make_course(courseDict)
-
+        '''
         click = request.POST['onclick']
         if click == 'Logout':
             request.session.flush()
-            return render(request, "Login.html")
+            return redirect('/Login/')
 
         
 class AddLab(View):
@@ -107,7 +107,7 @@ class CourseList(View):
     def get(self, request):
         if len(request.GET) == 0:
             #courses = list(database_access.list_courses())
-            courses = list(CourseData.objects.all())
+            courses = database_access.list_courses()
             return render(request, "course_list.html", {"courses": courses})
 
     def post(self, request):
@@ -158,11 +158,17 @@ class CreateAccount(View):
 class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        course = self.kwargs.get("designation")
+        course = self.kwargs.get("course")
         if course:
-            data = database_access.get_coursedata(course)
+            course = database_access.get_coursedata(course)
+            #instructors = database_access.get_instructors()
+            instructors = list(MyUser.objects.filter(position=str(UserType.INSTRUCTOR)))
+            TAs = list(MyUser.objects.filter(position=str(UserType.TA)))
         else:
-            data = {}
+            course = {}
+        data = {"course": course, "instructors": instructors, "TA": TAs}
+        print(data)
+
         return render(request, "edit_course.html", data)
 
     def post(self, request):

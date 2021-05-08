@@ -8,7 +8,7 @@
 <body>
 <h1 style="align-text: center">Homepage</h1>
 <h2 style="align-text: center">Welcome {{ name }}!</h2>
-<!--
+
 <form action="/Homepage/" method="post">
     {% csrf_token %}
     <div>
@@ -16,21 +16,22 @@
         <input style="align-text: right" type="submit" value="Courses" name="onclick">
     </div>
 </form>
--->
+
+<!--
 <br>
 <a href="/Course_List/">Courses</a>
 <br>
 <a href="/Account_List">Accounts</a>
 <br>
 <a href="/Logout">Logout</a>
-<!--
+-->
+
 <form action="/Homepage/" align="right" method="post">
     {% csrf_token %}
     <label class="logoutLblPos">
         <input type="submit"  value="Logout" name="onclick">
     </label>
 </form>
--->
 
 </body>
 </html>

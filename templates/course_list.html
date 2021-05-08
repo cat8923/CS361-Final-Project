@@ -13,7 +13,7 @@
         <form action="/Course_List/" method="post">
             <select size="4" id="courses" name="courses">
                 {% for i in courses  %}
-                 <option value={{ i.0 }}>{{ i.title }}</option>
+                 <option value={{ i.1 }}>{{ i.0 }}</option>
                 {% endfor %}
             </select><br><br>
             {% csrf_token %}
