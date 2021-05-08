@@ -60,11 +60,20 @@
         {% for i in users %}
 
             <tr>
-            <td><a href="{% url 'edit' username=i.2 %}">{{ i.0 }}</a></td>
+            <td><a href="{% url 'test' username=i.2 %}">{{ i.0 }}</a></td>
             <td>{{ i.1 }}</td>
             </tr>
         {% endfor %}
     </table>
+    <br>
+{% endif %}
+{% if courses %}
+    <form>
+    <label for="title">Title:</label>
+    <input name="title" value="{{ courses.title }}" readonly>
+    <label for="designation">Designation</label>
+    <input name="designation" value="{{ courses.designation }}" readonly>
+    </form>
 {% endif %}
 
 </body>
