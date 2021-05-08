@@ -28,5 +28,5 @@ urlpatterns = [
     path('Create_Course/',CreateCourse.as_view()),
     path('Course_List/' , CourseList.as_view()),
     path('create_account/', CreateAccount.as_view()),
-    url('Edit_Course/(?P<course>[a-zA-Z0-9]+)', EditCourse.as_view())
+    url('Edit_Course/(?P<course>[a-zA-Z0-9]+)', EditCourse.as_view(), name='edit')
 ]

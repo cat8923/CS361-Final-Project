@@ -126,7 +126,9 @@ class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
         course = self.kwargs
-        return render(request, "edit_course.html", course)
+        if self.kwargs.get("course"):
+            data = database_access.get_coursedata(course["designation"])
+        return render(request, "edit_course.html", data)
 
     def post(self, request):
         click = request.POST['onclick']
@@ -144,3 +146,7 @@ class EditCourse(View):
             return redirect('/course_list/')
         elif click == 'Create New Course':
             return redirect('/create_course/')
+        elif click == 'Add Section':
+            pass
+        elif click == 'Add Lab':
+            pass

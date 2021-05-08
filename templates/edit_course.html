@@ -10,8 +10,8 @@
     <h1 class="h1Style">Edit Course</h1>
     <div class="formStyle">
         <form action="/EditCourse/" method="post">
-            <label for="description">Title:</label>
-            <input type="text" id="description" name="description"><br><br>
+            <label for="title">Title:</label>
+            <input type="text" id="description" name="title" value="{{ course.1 }}"><br><br>
 
             <label for="designation">Designation:</label>
             <input type="text" id="designation" name="designation"><br><br>
@@ -31,7 +31,8 @@
                     <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
             </select>
-            <input type="Submit" name="onclick" value="Assign"><br><br>
+            <input type="Submit" name="onclick" value="Assign">
+            <input type="Submit" name="onclick" value="Add Section"><br><br>
 
             <label for="Labs">Lab:</label>
             <select id="Labs" name="Lab">
@@ -46,7 +47,8 @@
                 {% endfor %}
             </select>
             <input type="Submit" name="onclick" value="Assign">
-            <input type="Submit" name="onclick" value="Delete Lab"><br><br><br>
+            <input type="Submit" name="onclick" value="Add Lab">
+            <input type="Submit" name="onclick" value="Delete Lab"><br><br>
 
             <input type="submit" value="Create New Course" name="onclick">
             <input type="submit" value="Save Edit" onclick="alert('Edits Saved')" name="onclick">
@@ -54,7 +56,7 @@
             <input type="submit" value="Delete Course" onclick="confirm('Delete the course?')" name="onclick"><br><br>
         </form>
 
-        <form action="Edit_Course/(?P<course>[a-zA-Z0-9]+)" align="right" method="post">
+        <form action="{%  url 'edit' course %}" align="right" method="post">
                 {% csrf_token %}
                 <label class="logoutLblPos">
                     <input type="submit" value="Logout" name="onclick">
