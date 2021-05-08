@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test users</title>
+</head>
+<body>
+
+{% if message %}
+    <p>{{ message }}</p><br>
+{% endif %}
+<form action="/test_create/" method="post">
+    {% csrf_token %}
+    <label for="fname">First Name:</label>
+    <input type="text" id="fname" name="first_name"><br>
+    <label for="lname">Last Name:</label>
+    <input type="text" id="lname" name="last_name"><br>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username"><br>
+    <label for="pass">Password:</label>
+    <input type="text" id="pass" name="password"><br>
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title"><br>
+    <input type="hidden" name="address" value="3400 N Maryland">
+    <input type="hidden" name="number" value="123456789">
+    <input type="hidden" name="email" value="user@user.com">
+    <input type="submit" value="submit">
+</form>
+
+<br>
+
+{% if list %}
+    <table>
+        {% for i in list %}
+            <tr><td>
+                <table>
+                <tr><th>{{ i.0 }}</th></tr>
+                {% for j in i.1 %}
+                    <tr><td class="sections">{{ j }}</td></tr>
+                {% endfor %}
+                {% for j in i.2 %}
+                    <tr><td class="labs">{{ j }}</td></tr>
+                {% endfor %}
+                </table>
+            </td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+</body>
+</html>

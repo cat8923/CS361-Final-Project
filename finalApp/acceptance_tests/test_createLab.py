@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser
+
+from finalApp.models import MyUser
+
 
 class testCreateLab(TestCase):
     def setUp(self):
@@ -20,8 +22,8 @@ class testCreateLab(TestCase):
 
 
     def test_01(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Lab/", {"Description": "Introduction to Software Engineering",
                                                         "Course": "CS361-901", "Semester": "Spring 2021",
@@ -32,8 +34,8 @@ class testCreateLab(TestCase):
 
 
     def test_01_Invalid(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/CreateLab/", {"Description": "Introduction",
                                                         "Course": "CS361-909", "Semester": "Spring 2021",

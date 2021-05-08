@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser, CourseData, CourseSections, LabData
+
+from finalApp.models import MyUser, CourseData, CourseSections, LabData
+
 
 
 class editCourse(TestCase):
@@ -22,7 +24,7 @@ class editCourse(TestCase):
 
 
 def test_01(self):
-    response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
+    response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'})
     self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
     response = self.client.post("/Edit_Course/", {"Description": "Introduction to Software Engineering",
@@ -33,12 +35,12 @@ def test_01(self):
 
     # test if the account that was created above can login. If so then It was successfully created and it works
 
-    response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'})
+    response1 = self.client.post("/Login/", {'username': 'bic21', 'password': 'hello'})
     self.assertEqual("/HomePage/", response1.url, "Valid Information will take to the homepage page")
 
 
 def test_01_Invalid(self):
-    response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
+    response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'})
     self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
 
     response = self.client.post("/Edit_Course/", {"Description": 12121,
@@ -49,5 +51,5 @@ def test_01_Invalid(self):
 
     # test if the account that was created above can login. If so then It was succesfully created and it works
 
-    response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'})
+    response1 = self.client.post("/Login/", {'username': 'bic21', 'password': 'hello'})
     self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")

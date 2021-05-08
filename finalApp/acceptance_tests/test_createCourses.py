@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.test import Client
-from Final_Project.models import MyUser
+
+from finalApp.models import MyUser
+
 
 class testCreateCourses(TestCase):
     def setUp(self):
@@ -20,8 +22,8 @@ class testCreateCourses(TestCase):
 
 
     def test_01(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Course/", {"Description": "Introduction to Software Engineering",
                                                         "Designation": "CS361-201", "Semester": "Spring 2021",
@@ -31,12 +33,12 @@ class testCreateCourses(TestCase):
 
         # test if the account that was created above can login. If so then It was successfully created and it works
 
-        response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'username': 'bic21', 'password': 'hello'})
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
     def test_01_Invalid(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
 
         response = self.client.post("/Create_Course/", {"Description": 12121,
                                                         "Designation": "CS361-201", "Semester": "Spring 1995",
@@ -46,5 +48,5 @@ class testCreateCourses(TestCase):
 
         # test if the account that was created above can login. If so then It was succesfully created and it works
 
-        response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'})
-        self.assertEqual("/Homepage/", response1.url, "Valid Information will take to the homepage page")
+        response1 = self.client.post("/Login/", {'name': 'bic21', 'password': 'hello'}, follow=True)
+        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
