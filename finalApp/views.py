@@ -158,9 +158,11 @@ class CreateAccount(View):
 class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        course = self.kwargs
-        if self.kwargs.get("course"):
-            data = database_access.get_coursedata(course["designation"])
+        course = self.kwargs.get("designation")
+        if course:
+            data = database_access.get_coursedata(course)
+        else:
+            data = {}
         return render(request, "edit_course.html", data)
 
     def post(self, request):
