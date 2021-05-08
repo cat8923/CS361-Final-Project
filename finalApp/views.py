@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
+from .models import CourseData
 # Create your views here.
 
 
@@ -75,13 +76,13 @@ class CreateCourse(View):
             return render(request, "create_course.html", {"TA": TA})
 
     def post(self, request):
-        '''
+
         courseDict = {
-            "title": request.GET["description"],
-            "section": request.GET["designation"],
+            "title": request.POST["description"],
+            #"section": request.POST["designation"],
         }
         database_access.make_course(courseDict)
-        '''
+
         click = request.POST['onclick']
         if click == 'Logout':
             request.session.flush()
@@ -105,12 +106,21 @@ class AddLab(View):
 class CourseList(View):
     def get(self, request):
         if len(request.GET) == 0:
-            courses = list(database_access.list_courses())
+            #courses = list(database_access.list_courses())
+            courses = list(CourseData.objects.all())
             return render(request, "course_list.html", {"courses": courses})
 
     def post(self, request):
-        request.session.flush()
-        return render(request, "Login.html")
+        click = request.POST['onclick']
+        if click == 'Create New Course':
+            return redirect("/Create_Course/")
+        elif click == 'Edit Course':
+            print(request.POST)
+            course = request.POST['courses']
+            return redirect("/Edit_Course/"+course+"/")
+        elif click == 'Logout':
+            request.session.flush()
+            return render(request, "Login.html")
 
 
 class AccountView(View):
@@ -125,7 +135,8 @@ class CreateAccount(View):
         return render(request, "create_account.html")
 
     def post(self, request):
-        """accountDict = {
+        '''
+        accountDict = {
             "username": request.POST["description"],
             "password": request.POST["description"],
             "first_name": request.POST["description"],
@@ -134,7 +145,8 @@ class CreateAccount(View):
             "title": request.POST["description"],
             "email": request.POST["description"],
             "number": request.POST["description"],
-        }"""
+        }
+        '''
         message = database_access.make_user(request.POST)
         if message:
             message = "successfully created account"
@@ -142,3 +154,32 @@ class CreateAccount(View):
             message = str(message)
 
         return render(request, "Homepage.html", {"message": message})
+
+class EditCourse(View):
+    def get(self, request, **kwargs):
+        print(self.kwargs)
+        course = self.kwargs
+        if self.kwargs.get("course"):
+            data = database_access.get_coursedata(course["designation"])
+        return render(request, "edit_course.html", data)
+
+    def post(self, request):
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return redirect('')
+        elif click == 'Save Edit':
+            # need to save the changes we made first
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Cancel Edit':
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Delete Course':
+            return redirect('/course_list/')
+        elif click == 'Create New Course':
+            return redirect('/create_course/')
+        elif click == 'Add Section':
+            pass
+        elif click == 'Add Lab':
+            pass

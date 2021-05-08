@@ -7,9 +7,9 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
     <h1 class="h1Style">Create Course</h1>
-    <div class="formStyle">
-        <form action="" method="post">
-            <label for="description">Description:</label>
+<div class="formStyle">
+        <form action="/EditCourse/" method="post">
+            <label for="description">Title:</label>
             <input type="text" id="description" name="description"><br><br>
 
             <label for="designation">Designation:</label>
@@ -18,27 +18,44 @@
             <label for="semester">Semester:</label>
             <input type="text" id="semester" name="semester"><br><br>
 
-            <label for="instructor">Instructor:</label>
-            <input type="text" id="instructor" name="instructor"><br><br>
-
-            <label for="TAs">TA's:</label>
-             <select id="TA" name="TA">
-                {% for i in TA  %}
-                    <option value="{{ i.id }}">"{{ i.name }}"</option>
+            <label for="section">Section: </label>
+            <select id="section" name="section">
+                {% for i in section  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
                 {% endfor %}
-            </select><br><br>
+            </select>
+            <label for="instructor">Instructor:</label>
+            <select id="Instructor" name="Instructor">
+                {% for i in Instructor  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="Submit" name="assign" value="Assign"><br><br>
 
-            <input type="Submit" value="Save Course"><br><br>
+            <label for="Labs">Lab:</label>
+            <select id="Labs" name="Lab">
+                {% for i in Lab  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <label for="TAs">TA:</label>
+            <select id="TA" name="TA">
+                {% for i in TA  %}
+                    <option value="{{ i.id }}">{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <input type="Submit" name="assign" value="Assign"><br><br><br>
 
+            <input type="submit" value="Save Course" name="onclick">
+            <input type="submit" value="Cancel" name="onclick">
         </form>
 
-        <form action="/Create_Course/" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
-            </label>
+        <form action="/EditCourse/" align="right" method="post">
+                {% csrf_token %}
+                <label class="logoutLblPos">
+                    <input type="submit" value="Logout" name="onclick">
+                </label>
         </form>
-
     </div>
 </body>
 </html>
