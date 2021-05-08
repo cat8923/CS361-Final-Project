@@ -6,9 +6,9 @@ from finalApp import database_access
 
 
 class TestCreate(View):
-    def get(self, request):
+    def get(self, request, **kwargs):
         li = database_access.list_courses()
-        return render(request, "create_test_user.html", {"list": li})
+        return render(request, "create_test_user.html", {"list": li, "username": self.kwargs.get("username"), "users": database_access.list_users()})
 
     def post(self, request):
         check = database_access.make_user(request.POST)

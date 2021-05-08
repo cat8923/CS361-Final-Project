@@ -35,7 +35,7 @@ class CourseSections(m.Model):
     instructor = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
 
     def __str__(self):
-        return str(self.course) + " " + str(self.section)
+        return self.course.designation + " " + str(self.section) + (" Instructor: " + self.instructor.get_full_name() if self.instructor else "")
 
     def __repr__(self):
         return self.course.designation + " " + str(self.section)
@@ -47,7 +47,7 @@ class LabData(m.Model):
     section = m.IntegerField(null=False)
 
     def __str__(self):
-        return str(self.section) + (("TA: " + self.TA.get_full_name() + " ") if self.TA else "")
+        return self.course.designation + " " + str(self.section) + ((" TA: " + self.TA.get_full_name() + " ") if self.TA else "")
 
 
 class TAsToCourses(m.Model):

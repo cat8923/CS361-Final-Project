@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
 
 from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate #EditLab
 
@@ -29,5 +30,6 @@ urlpatterns = [
     path('Create_Course/',CreateCourse.as_view()),
     path('Course_List/' , CourseList.as_view()),
     path('create_account/', CreateAccount.as_view()),
-    path('test_create/', TestCreate.as_view()),
+    path('test_create/', TestCreate.as_view(), name="edit"),
+    url(r'^test_create/(?P<username>[a-zA-Z0-9]+)', TestCreate.as_view(), name="edit"),
 ]

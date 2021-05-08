@@ -116,15 +116,15 @@ def login(logindata: dict) -> Union[ErrorString, dict]:
 
 def make_lab(labdata: dict) -> Union[ErrorString, bool]:
     """handles making a lab given the user lab data. On failure, return ErrorString describing error. On success, return True"""
-    needed = [("courseId", int), ("section", int)]
+    needed = [("designation", str), ("section", int)]
     check = verify_dict(needed, labdata)
     if not check:
         return check
 
-    if LabData.objects.filter(course_id=labdata["courseId"], section=labdata["section"]).exists():
+    if LabData.objects.filter(course__designation__iexact=labdata["designation"], section=labdata["section"]).exists():
         return ErrorString("Error: lab section for this course already exists")
 
-    query = CourseData.objects.filter(id=labdata["courseId"])
+    query = CourseData.objects.filter(designation__iexact=labdata["designation"])
     if not query.exists():
         return ErrorString("Error: course does not exist")
 
@@ -133,13 +133,13 @@ def make_lab(labdata: dict) -> Union[ErrorString, bool]:
 
 
 def assign_ta_to_lab(data: dict) -> Union[ErrorString, bool]:
-    """handles assigning a ta to a lab. Will also assign the TA to a course On failure returns ErrorString describing error. On success, returns true"""
-    needed = [("courseId", int), ("labSection", int), ("taUsername", str)]
+    """handles assigning a ta to a lab. On failure returns ErrorString describing error. On success, returns true"""
+    needed = [("designation", str), ("labSection", int), ("taUsername", str)]
     check = verify_dict(needed, data)
     if not check:
         return check
 
-    query = list(LabData.objects.filter(course_id=data["courseId"], section=data["labSection"]))
+    query = list(LabData.objects.filter(course__designation__iexact=data["designation"], section=data["labSection"]))
     if len(query) == 0:
         return ErrorString("Error: lab section does not exist")
 
@@ -151,25 +151,26 @@ def assign_ta_to_lab(data: dict) -> Union[ErrorString, bool]:
 
     tempUser = query[0]
 
-    if tempUser.position is not str(UserType.TA):
+    if tempUser.position != str(UserType.TA):
         return ErrorString("Error: user is not a TA")
+
+    if not TAsToCourses.objects.filter(TA=tempUser, course=tempLab.course).exists():
+        return ErrorString("Error: TA is not assigned to course.")
 
     tempLab.TA = tempUser
     tempLab.save()
-
-    assign_ta_to_course(data)
 
     return True
 
 
 def assign_ta_to_course(data: dict) -> Union[ErrorString, bool]:
     """handles assigning a ta to a course without assigning to a particular lab section."""
-    needed = [("courseId", int), ("taUsername", str)]
+    needed = [("designation", str), ("taUsername", str)]
     check = verify_dict(needed, data)
     if not check:
         return check
 
-    query = list(CourseData.objects.filter(id=data["courseId"]))
+    query = list(CourseData.objects.filter(designation__iexact=data["designation"]))
     if len(query) == 0:
         return ErrorString("Error: course does not exist")
 
@@ -179,7 +180,7 @@ def assign_ta_to_course(data: dict) -> Union[ErrorString, bool]:
     if len(query) == 0:
         return ErrorString("Error: user does not exist")
 
-    if query[0].position is not str(UserType.TA):
+    if query[0].position != str(UserType.TA):
         return ErrorString("Error: user is not a TA")
 
     tempUser = query[0]
@@ -196,14 +197,14 @@ def assign_instructor(data: dict, all=False) -> Union[ErrorString, bool]:
     """handles assigning an instructor to a course section in the given data. On failure returns ErrorString describing error.
     On success, returns True. Warning: will override an existing instructor of a course
     if all is given as True, then the instructor will be assigned to all courses"""
-    needed = [("courseId", int), ("instructorUsername", str)]
+    needed = [("designation", str), ("instructorUsername", str)]
     if not all:
         needed.append(("courseSection", int))
     check = verify_dict(needed, data)
     if not check:
         return check
 
-    query = CourseSections.objects.filter(course_id=data["courseId"])
+    query = CourseSections.objects.filter(course__designation__iexact=data["designation"])
     if not all:
         query = query.filter(section=data["courseSection"])
     query = list(query)
@@ -253,9 +254,24 @@ def list_courses() -> list:
     return result
 
 
-def list_users(isSupervisor = False) -> list:
+def list_users() -> list:
     """gets a list of all the users in the database as a list of triples containing the name of the user, their position, and their username"""
     users = []
     for i in MyUser.objects.all():
         users.append((str(i), i.position, i.username))
     return users
+
+
+def get_userdata(username: str) -> dict:
+    """gets the userdata of a certain user"""
+    if type(username) is not str:
+        return ErrorString("Error: wrong type for username")
+
+    temp = MyUser.objects.filter(username__iexact=username)
+    if not temp:
+        return ErrorString("Error: user not found")
+
+    temp = temp[0]
+
+    return {"username": username, "first_name": temp.first_name, "last_name": temp.last_name, "addressln1": temp.addressln1,
+            "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}

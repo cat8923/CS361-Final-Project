@@ -9,6 +9,9 @@
 {% if message %}
     <p>{{ message }}</p><br>
 {% endif %}
+{% if username %}
+    <p>Username is: {{ username }}</p>
+{% endif %}
 <form action="/test_create/" method="post">
     {% csrf_token %}
     <label for="fname">First Name:</label>
@@ -44,6 +47,22 @@
                 {% endfor %}
                 </table>
             </td></tr>
+        {% endfor %}
+    </table>
+    <br><br>
+{% endif %}
+{% if users %}
+    <table style="border: 1px solid black;">
+        <thead>
+            <th>Name</th>
+            <th>Position</th>
+        </thead>
+        {% for i in users %}
+
+            <tr>
+            <td><a href="{% url 'edit' username=i.2 %}">{{ i.0 }}</a></td>
+            <td>{{ i.1 }}</td>
+            </tr>
         {% endfor %}
     </table>
 {% endif %}
