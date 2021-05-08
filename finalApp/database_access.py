@@ -275,3 +275,13 @@ def get_userdata(username: str) -> dict:
 
     return {"username": username, "first_name": temp.first_name, "last_name": temp.last_name, "addressln1": temp.addressln1,
             "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}
+
+
+def get_coursedata(designation: str) -> dict:
+    if type(designation) != str:
+        return ErrorString("Error: wrong type for designation")
+    temp = CourseData.objects.filter(designation__iexact=designation)
+    if not temp.exists():
+        return ErrorString("Error: course does not exist")
+    temp = temp[0]
+    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp))}
