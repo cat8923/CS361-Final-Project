@@ -11,10 +11,10 @@
     <div class="formStyle">
         <form action="/EditCourse/" method="post">
             <label for="title">Title:</label>
-            <input type="text" id="description" name="title" value="{{ course.1 }}"><br><br>
+            <input type="text" id="description" name="title" value="{{ title }}"><br><br>
 
             <label for="designation">Designation:</label>
-            <input type="text" id="designation" name="designation"><br><br>
+            <input type="text" id="designation" name="designation" value="{{ designation }}"><br><br>
 
             <label for="semester">Semester:</label>
             <input type="text" id="semester" name="semester"><br><br>
@@ -56,7 +56,7 @@
             <input type="submit" value="Delete Course" onclick="confirm('Delete the course?')" name="onclick"><br><br>
         </form>
 
-        <form action="{%  url 'edit' course %}" align="right" method="post">
+        <form action="/logout" align="right" method="post">
                 {% csrf_token %}
                 <label class="logoutLblPos">
                     <input type="submit" value="Logout" name="onclick">

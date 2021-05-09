@@ -250,7 +250,7 @@ def list_courses() -> list:
     result = []
     courses = CourseData.objects.all()
     for c in courses:
-        result.append((str(c), list(map(str, CourseSections.objects.filter(course=c))), list(map(str, LabData.objects.filter(course=c)))))
+        result.append((str(c), c.designation, list(map(str, CourseSections.objects.filter(course=c))), list(map(str, LabData.objects.filter(course=c)))))
     return result
 
 

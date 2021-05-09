@@ -107,7 +107,7 @@ class CourseList(View):
     def get(self, request):
         if len(request.GET) == 0:
             #courses = list(database_access.list_courses())
-            courses = list(CourseData.objects.all())
+            courses = database_access.list_courses()
             return render(request, "course_list.html", {"courses": courses})
 
     def post(self, request):
@@ -158,11 +158,13 @@ class CreateAccount(View):
 class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        course = self.kwargs.get("designation")
+        course = self.kwargs.get("course")
+        print(course)
         if course:
             data = database_access.get_coursedata(course)
         else:
             data = {}
+        print(data)
         return render(request, "edit_course.html", data)
 
     def post(self, request):
