@@ -8,7 +8,7 @@
 </head>
     <h1 class="h1Style">Create Course</h1>
 <div class="formStyle">
-        <form action="/EditCourse/" method="post">
+        <form action="/CreateCourse/" method="post">
             <label for="description">Title:</label>
             <input type="text" id="description" name="description"><br><br>
 
@@ -50,7 +50,7 @@
             <input type="submit" value="Cancel" name="onclick">
         </form>
 
-        <form action="/EditCourse/" align="right" method="post">
+        <form action="/Create_Course/" align="right" method="post">
                 {% csrf_token %}
                 <label class="logoutLblPos">
                     <input type="submit" value="Logout" name="onclick">

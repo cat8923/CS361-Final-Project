@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
-from .models import CourseData
+from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
@@ -76,17 +76,17 @@ class CreateCourse(View):
             return render(request, "create_course.html", {"TA": TA})
 
     def post(self, request):
-
+        '''
         courseDict = {
             "title": request.POST["description"],
             #"section": request.POST["designation"],
         }
         database_access.make_course(courseDict)
-
+        '''
         click = request.POST['onclick']
         if click == 'Logout':
             request.session.flush()
-            return render(request, "Login.html")
+            return redirect('/Login/')
 
         
 class AddLab(View):
@@ -159,12 +159,16 @@ class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
         course = self.kwargs.get("course")
-        print(course)
         if course:
-            data = database_access.get_coursedata(course)
+            course = database_access.get_coursedata(course)
+            #instructors = database_access.get_instructors()
+            instructors = list(MyUser.objects.filter(position=str(UserType.INSTRUCTOR)))
+            TAs = list(MyUser.objects.filter(position=str(UserType.TA)))
         else:
-            data = {}
+            course = {}
+        data = {"course": course, "instructors": instructors, "TA": TAs}
         print(data)
+
         return render(request, "edit_course.html", data)
 
     def post(self, request):

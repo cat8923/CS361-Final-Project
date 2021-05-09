@@ -11,39 +11,39 @@
     <div class="formStyle">
         <form action="/EditCourse/" method="post">
             <label for="title">Title:</label>
-            <input type="text" id="description" name="title" value="{{ title }}"><br><br>
+            <input type="text" id="description" name="title" value="{{ course.title }}"><br><br>
 
             <label for="designation">Designation:</label>
-            <input type="text" id="designation" name="designation" value="{{ designation }}"><br><br>
+            <input type="text" id="designation" name="designation" value="{{ course.designation }}"><br><br>
 
             <label for="semester">Semester:</label>
             <input type="text" id="semester" name="semester"><br><br>
 
             <label for="section">Section: </label>
-            <select id="section" name="section">
-                {% for i in section  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+            <select id="sections" name="sections" value="sections">
+                {% for i in course.sections  %}
+                    <option value="{{ i.section }}">{{ i.section }}</option>
                 {% endfor %}
             </select>
             <label for="instructor">Instructor:</label>
-            <select id="Instructor" name="Instructor">
-                {% for i in Instructor  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+            <select id="Instructor" name="Instructor" value="instructors">
+                {% for i in instructors  %}
+                    <option value="{{ i.username }}">{{ i.get_full_name }}</option>
                 {% endfor %}
             </select>
             <input type="Submit" name="onclick" value="Assign">
             <input type="Submit" name="onclick" value="Add Section"><br><br>
 
             <label for="Labs">Lab:</label>
-            <select id="Labs" name="Lab">
-                {% for i in Lab  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+            <select id="Labs" name="Lab" value="Labs">
+                {% for i in course.labs  %}
+                    <option value="{{ i.section }}">{{ i.section }}</option>
                 {% endfor %}
             </select>
             <label for="TAs">TA:</label>
             <select id="TA" name="TA">
                 {% for i in TA  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+                    <option value="{{ i.username }}">{{ i.get_full_name }}</option>
                 {% endfor %}
             </select>
             <input type="Submit" name="onclick" value="Assign">
@@ -56,7 +56,7 @@
             <input type="submit" value="Delete Course" onclick="confirm('Delete the course?')" name="onclick"><br><br>
         </form>
 
-        <form action="/logout" align="right" method="post">
+        <form action="{%  url 'edit' course=course.designation %}" align="right" method="post">
                 {% csrf_token %}
                 <label class="logoutLblPos">
                     <input type="submit" value="Logout" name="onclick">
