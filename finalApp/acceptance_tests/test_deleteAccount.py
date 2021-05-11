@@ -26,8 +26,8 @@ class testDeleteAccount(TestCase):
                                                          "number": "123456789"})
             self.assertEqual(response1.context.get("message"), "successfully created account",msg="did not confirm account creation")
 
-            # delete the user
-            response2 = self.client.post('/delete_account/', {"User": 2})
+
+            response2 = self.client.post('/edit_account/', {"User": 2})
 
 
             response3 = self.client.get('/create_account/')
@@ -35,7 +35,7 @@ class testDeleteAccount(TestCase):
             users = list(response3.context['users'])
             print(users)
 
-            # since we only add 1 user, on deleting one the list should be of size 1
+
             if len(users) == 1:
                 self.assertTrue("Successful Deletion")
             else:
