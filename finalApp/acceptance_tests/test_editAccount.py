@@ -66,8 +66,6 @@ class testEditAccount(TestCase):
          self.assertEqual(response3.context.get("message"), "skills for TA updated successfully", msg="skills have not been added")
 
 
-
-
     def test_ASSP(self):
         response1 = self.client.post("/", {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
