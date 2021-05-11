@@ -24,6 +24,7 @@ class MyUser(models.User):
 class CourseData(m.Model):
     title = m.CharField(max_length=50, unique=True)
     designation = m.CharField(max_length=10, unique=True)
+    semester = m.CharField(max_length=10)
 
     def __str__(self):
         return self.title + " - " + self.designation
@@ -54,6 +55,11 @@ class TAsToCourses(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
 
+    def __str__(self):
+        return str(self.TA) + " - " + self.course.designation
+
+    def __repr__(self):
+        return str(self)
 
 class TASkills(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)

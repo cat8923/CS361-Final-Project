@@ -72,7 +72,7 @@ def make_course(coursedata: dict) -> Union[ErrorString, bool]:
     """creates a course in the database according to the given input. On success, returns True, on failure returns
     string describing error.
     Note: this method does not handle assigning instructors; use the assign_instructor method instead."""
-    needed = [("title", str), ("section", int), ("designation", str)]
+    needed = [("title", str), ("section", int), ("designation", str), ("semester", str)]
     check = verify_dict(needed, coursedata)
     if not check:
         return check
@@ -84,7 +84,7 @@ def make_course(coursedata: dict) -> Union[ErrorString, bool]:
     print(list(map(str, tempCourse)))
 
     if not tempCourse:
-        tempCourse = CourseData(title=coursedata["title"], designation=coursedata["designation"])
+        tempCourse = CourseData(title=coursedata["title"], designation=coursedata["designation"], semester=coursedata["semester"])
         tempCourse.save()
     else:
         tempCourse = tempCourse[0]
@@ -245,7 +245,7 @@ def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
     return CourseData.objects.get(title__iexact=courseName).id
 
 
-def list_courses() -> list:
+def list_courses() -> Union[ErrorString, dict]:
     """gets a list of all the courses: a triple of 1 course string, 2 list of associated sections, 3 list of associated labs"""
     result = []
     courses = CourseData.objects.all()
@@ -265,7 +265,7 @@ def list_users() -> list:
     return users
 
 
-def get_userdata(username: str) -> dict:
+def get_userdata(username: str) -> Union[ErrorString, dict]:
     """gets the userdata of a certain user"""
     if type(username) is not str:
         return ErrorString("Error: wrong type for username")
@@ -280,11 +280,21 @@ def get_userdata(username: str) -> dict:
             "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}
 
 
-def get_coursedata(designation: str) -> dict:
+def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if type(designation) != str:
         return ErrorString("Error: wrong type for designation")
     temp = CourseData.objects.filter(designation__iexact=designation)
     if not temp.exists():
         return ErrorString("Error: course does not exist")
     temp = temp[0]
-    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp))}
+    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}
+
+
+def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
+    if type(designation) != str:
+        return ErrorString("Error: wrong type for designation")
+    tempcourse = list(CourseData.objects.filter(designation__iexact=designation))
+    if not tempcourse:
+        return ErrorString("Error: no course with given designation found")
+    tempcourse = tempcourse[0]
+    return list(TAsToCourses.objects.filter(course=tempcourse))

@@ -6,6 +6,15 @@ from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
+class AddSection(View):
+    def get(self, request, **kwargs):
+        pass
+
+
+class AssignTas(View):
+    pass
+
+
 class TestCreate(View):
     def get(self, request, **kwargs):
         li = database_access.list_courses()
@@ -45,6 +54,7 @@ class Login(View):
             return render(request, "Login.html", {"message": str(user)})
         else:
             request.session["first_name"] = user["first_name"]
+            request.session["position"] = user["position"]
             request.session.save()
             return redirect("/Homepage/")
 
@@ -54,7 +64,7 @@ class Homepage(View):
 
         name = request.session.get('first_name')
         if name:
-            return render(request, "Homepage.html", {'name': name})
+            return render(request, "Homepage.html", {'name': name, 'pagetitle': "Homepage"})
         else:
             return redirect("/Login/")
 
@@ -73,7 +83,7 @@ class CreateCourse(View):
     def get(self, request):
         if len(request.GET) == 0:
             TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-            return render(request, "create_course.html", {"TA": TA})
+            return render(request, "create_course.html", {"TA": TA, "pagetitle": "Create Course"})
 
     def post(self, request):
         '''
@@ -83,10 +93,13 @@ class CreateCourse(View):
         }
         database_access.make_course(courseDict)
         '''
-        click = request.POST['onclick']
-        if click == 'Logout':
-            request.session.flush()
-            return redirect('/Login/')
+        #click = request.POST['onclick']
+        #if click == 'Logout':
+        #    request.session.flush()
+        #    return redirect('/Login/')
+        check = database_access.make_course({"title": request.POST['title'], "designation": request.POST['designation'],
+                                             "section": int(request.POST['section']), "semester": request.POST['semester']})
+        return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success"})
 
         
 class AddLab(View):
@@ -108,7 +121,7 @@ class CourseList(View):
         if len(request.GET) == 0:
             #courses = list(database_access.list_courses())
             courses = database_access.list_courses()
-            return render(request, "course_list.html", {"courses": courses})
+            return render(request, "course_list.html", {"courses": courses, "pagetitle": "List of Courses"})
 
     def post(self, request):
         click = request.POST['onclick']
@@ -166,7 +179,7 @@ class EditCourse(View):
             TAs = list(MyUser.objects.filter(position=str(UserType.TA)))
         else:
             course = {}
-        data = {"course": course, "instructors": instructors, "TA": TAs}
+        data = {"course": course, "instructors": instructors, "TA": TAs, "pagetitle": "Edit Course"}
         print(data)
 
         return render(request, "edit_course.html", data)

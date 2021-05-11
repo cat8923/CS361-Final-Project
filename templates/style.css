@@ -15,6 +15,14 @@
 .selectionStyle{
     display: block;
     width: fit-content;
+}
 
+.main {
+    width: 100%;
+}
 
+.menu {
+    background-color: blue;
+    width: 10%;
+    float: left;
 }

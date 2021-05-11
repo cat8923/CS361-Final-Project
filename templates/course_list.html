@@ -1,44 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>View Accounts</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
     <div class="formStyle">
-        <h1 class="h1Style">List of Courses</h1>
-        <h2 style="text-align: center;"><small>Select a course to view</small></h2>
-        <form action="/Course_List/" method="post">
-            <select size="4" id="courses" name="courses">
-                {% for i in courses  %}
-                 <option value={{ i.1 }}>{{ i.0 }}</option>
-                {% endfor %}
-            </select><br><br>
-            {% csrf_token %}
-            <label>
-                <input type="submit" value="Edit Course" name="onclick">
-            </label>
+    <h1 class="h1Style">List of Courses</h1>
+    <h2><small>Select a course to view</small></h2>
+    <form action="/Course_List/" method="post">
+        <select size="4" id="courses" name="courses">
+            {% for i in courses  %}
+             <option value={{ i.1 }}>{{ i.0 }}</option>
+            {% endfor %}
+        </select><br><br>
+        {% csrf_token %}
+        <label>
+            <input type="submit" value="Edit Course" name="onclick">
+        </label>
 
-        </form>
+    </form>
 
+    <form action="/Course_List/" align="right" method="post">
+        {% csrf_token %}
+        <label class="logoutLblPos">
+            <input type="submit" value="Logout" name="onclick">
+        </label>
+    </form>
 
+    <form action="/Course_List/" align="left" method="post">
+        {% csrf_token %}
+        <label class="logoutLblPos">
+            <input type="submit" value="Create New Course" name="onclick">
+        </label>
+    </form>
+</div>
+{% endblock %}
 
-        <form action="/Course_List/" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" value="Logout" name="onclick">
-            </label>
-        </form>
-
-        <form action="/Course_List/" align="left" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" value="Create New Course" name="onclick">
-            </label>
-        </form>
-
-    </div>
-</body>
-</html>
