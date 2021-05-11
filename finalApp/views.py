@@ -158,9 +158,32 @@ class CreateAccount(View):
 class EditAccount(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        account = self.kwargs["account"]
-        return render(request, "account_list.html")
+        account = self.kwargs.get("account")
+        if account:
+            account = database_access.getuserdata(account)
+        else:
+            account = {}
+        data = {"account": account}
+        print(data)
+
+        return render(request, "edit_account.html", data)
 
     def post(self, request):
-        request.session.flush()
-        return render(request, "edit_account.html")
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return redirect('')
+        elif click == 'Save Edits':
+            account = self.kwargs
+            return render(request, "edit_account.html", account)
+        elif click == 'Cancel':
+            account = self.kwargs
+            return render(request, "edit_account.html", account)
+        elif click == 'Delete Account':
+            return redirect('/Account_List/')
+        elif click == 'Create New Account':
+            return redirect("/create_account/")
+        elif click == 'Assign Course':
+            pass
+        elif click == 'Assign Lab':
+            pass
