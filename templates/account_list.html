@@ -9,22 +9,32 @@
 <body>
     <h1 style="text-align: center;">List of Accounts</h1>
     <h2 style="text-align: center;"><small>Select an account to view</small></h2>
-    <form action="" method="post">
-        {% csrf_token %}
+    <form action="/Account_List/" method="post">
+
         <div class="center">
-        <select size="10" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
-                {% for i in accounts  %}
-                 <option value="{{ i.id }}">{{ i.title }} &nbsp;&nbsp;{{ i.position }}</option>
-                {% endfor %}
-            </select><br><br>
-        </select>
+            <select size="10" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
+                    {% for i in accounts  %}
+                        <option value="{{ i.id }}">{{ i.title }} &nbsp;&nbsp;{{ i.position }}</option>
+                    {% endfor %}
+             </select><br><br>
+            {% csrf_token %}
+            <input type="submit" value="Edit Account" name="onclick">
         </div>
     </form>
 
-    <form align="right" method="post">
+    <form action="Account_List" align="right" method="post">
+        {% csrf_token %}
         <label class="logoutLblPos">
-            <input type="submit" value="Logout">
+            <input type="submit" value="Back to Home" name="onclick">
+            <input type="submit" value="Logout" name="onclick">
         </label>
+    </form>
+
+    <form action="/Account_List/" method="post">
+        {% csrf_token %}
+        <div class="center">
+            <input type="submit" value="Create New Account" name="onclick">
+        </div>
     </form>
 </body>
 </html>

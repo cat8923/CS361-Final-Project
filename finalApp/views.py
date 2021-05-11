@@ -115,8 +115,20 @@ class CourseList(View):
 class AccountList(View):
     def get(self, request):
         if len(request.GET) == 0:
-            accounts = list(database_access.list_users())
+            accounts = database_access.list_users()
             return render(request, "account_list.html", {"accounts": accounts})
+
+    def post(self, request):
+        click = request.POST['onclick']
+        if click == 'Create New Account':
+            return redirect("/create_account/")
+        elif click == 'Edit Account':
+            print(request.POST)
+            account = request.POST['accounts']
+            return redirect("/edit_account/"+account+"/")
+        elif click == 'Logout':
+            request.session.flush()
+            return render(request, "Login.html")
 
           
 class CreateAccount(View):
