@@ -16,15 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount #EditLab
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, \
+    EditAccount, AccountList  # EditLab,
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', Login.as_view()),
+    path('', Blank.as_view()),
+    path('Logout/', Logout.as_view()),
+    path('Login/', Login.as_view()),
     path('Homepage/', Homepage.as_view()),
     path('createLab/',AddLab.as_view()),
     path('Create_Course/',CreateCourse.as_view()),
     path('Course_List/' , CourseList.as_view()),
     path('create_account/', CreateAccount.as_view()),
+    path('test_create/', TestCreate.as_view()),
+    path('Account_List/', AccountList.as_view()),
+    path('edit_account/', EditAccount.as_view()),
+
 ]
