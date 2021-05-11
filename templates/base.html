@@ -67,6 +67,10 @@
             border: 1px solid black;
             padding: 5px;
         }
+        .updateselfform input, .updateselfform textarea {
+            width: 100%;
+            resize: none;
+        }
     </style>
 </head>
 <body>
@@ -77,6 +81,7 @@
     <div class="navigation">
         <div class="link"><a href="{% url 'home' %}">Home</a></div>
         <div class="link"><a href="{% url 'courses' %}">Courses</a></div>
+        <div class="link"><a href="{% url 'editself' %}">Edit Account</a></div>
     </div>
     <div class="content">
         <br>

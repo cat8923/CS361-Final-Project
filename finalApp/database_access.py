@@ -265,6 +265,15 @@ def list_users() -> list:
     return users
 
 
+def list_instructors() -> list:
+    instructors = []
+    for i in MyUser.objects.all():
+        if i.position == "I":
+            instructors.append((str(i), i.username))
+
+    return instructors
+
+
 def get_userdata(username: str) -> Union[ErrorString, dict]:
     """gets the userdata of a certain user"""
     if type(username) is not str:
@@ -298,3 +307,7 @@ def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
         return ErrorString("Error: no course with given designation found")
     tempcourse = tempcourse[0]
     return list(TAsToCourses.objects.filter(course=tempcourse))
+
+
+def add_ta_skill(tausername: str, skill: str):
+    pass

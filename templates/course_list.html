@@ -3,7 +3,7 @@
     <div class="formStyle">
     <h1 class="h1Style">List of Courses</h1>
     <h2><small>Select a course to view</small></h2>
-    <form action="/Course_List/" method="post">
+    <form action="{% url 'courses' %}" method="post">
         <select size="4" id="courses" name="courses">
             {% for i in courses  %}
              <option value={{ i.1 }}>{{ i.0 }}</option>
@@ -16,14 +16,15 @@
 
     </form>
 
+    <!--
     <form action="/Course_List/" align="right" method="post">
         {% csrf_token %}
         <label class="logoutLblPos">
             <input type="submit" value="Logout" name="onclick">
         </label>
-    </form>
+    </form>-->
 
-    <form action="/Course_List/" align="left" method="post">
+    <form action="{% url 'courses' %}" align="left" method="post">
         {% csrf_token %}
         <label class="logoutLblPos">
             <input type="submit" value="Create New Course" name="onclick">

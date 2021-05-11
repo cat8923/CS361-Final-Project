@@ -6,6 +6,18 @@ from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
+class EditSelf(View):
+    def get(self, request):
+        return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
+                                                  "position": request.session['position'],
+                                                  "username": request.session['username']})
+
+    def post(self, request):
+        check = database_access.update_user(request.POST)
+        return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
+                                                  "position": request.session['position'], "message": str(check) if not check else "Success!"})
+
+
 class AddSection(View):
     def get(self, request, **kwargs):
         pass
@@ -13,6 +25,24 @@ class AddSection(View):
 
 class AssignTas(View):
     pass
+
+
+class AssignInstructor(View):
+    def get(self, request, **kwargs):
+        return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
+                                                          "designation": self.kwargs.get("course"),
+                                                          "section": self.kwargs.get("section"),
+                                                          "instructors": database_access.list_instructors()})
+
+    def post(self, request, **kwargs):
+        check = database_access.assign_instructor({"instructorUsername": request.POST["instructorUsername"],
+                                                   "designation": self.kwargs.get("course"),
+                                                   "courseSection": int(self.kwargs.get("section"))})
+        return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
+                                                          "designation": self.kwargs.get("course"),
+                                                          "section": self.kwargs.get("section"),
+                                                          "instructors": database_access.list_instructors(),
+                                                          "message": str(check) if not check else "Success"})
 
 
 class TestCreate(View):
@@ -55,6 +85,7 @@ class Login(View):
         else:
             request.session["first_name"] = user["first_name"]
             request.session["position"] = user["position"]
+            request.session["username"] = request.POST['username']
             request.session.save()
             return redirect("/Homepage/")
 

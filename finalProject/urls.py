@@ -32,10 +32,11 @@ urlpatterns = [
     path('create_account/', CreateAccount.as_view()),
     path('test_create/', TestCreate.as_view(), name="test"),
     path('assign_tas', AssignTas.as_view(), name="assigntas"),
+    path('edit_self/', fav.EditSelf.as_view(), name='editself'),
     url(r'^test_create/(?P<username>[a-zA-Z0-9]+)', TestCreate.as_view(), name="test"),
-    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)', EditCourse.as_view(), name='edit'),
-    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/add', EditCourse.as_view(), name='edit'),
-    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/assigninstructor/(?P<section>[0-9]+)', EditCourse.as_view(), name='edit'),
+    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/assigninstructor/(?P<section>[0-9]+)', fav.AssignInstructor.as_view(), name='addinst'),
     url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/assignta/(?P<lab>[0-9]+)', EditCourse.as_view(), name='edit'),
+    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/add', EditCourse.as_view(), name='edit'),
+    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)', EditCourse.as_view(), name='edit'),
     url(r'.*', Blank.as_view())
 ]
