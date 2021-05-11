@@ -19,6 +19,7 @@
              </select><br><br>
             {% csrf_token %}
             <input type="submit" value="Edit Account" name="onclick">
+            <input type="submit" value="Create New Account" name="onclick">
         </div>
     </form>
 
@@ -30,11 +31,5 @@
         </label>
     </form>
 
-    <form action="/Account_List/" method="post">
-        {% csrf_token %}
-        <div class="center">
-            <input type="submit" value="Create New Account" name="onclick">
-        </div>
-    </form>
 </body>
 </html>
