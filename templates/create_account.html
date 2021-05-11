@@ -9,27 +9,30 @@
 <body>
     <h1>Create Account</h1>
     <form action="" method="post">
-        <label for="position">Position: </label>
-            <select name="position" id="position">
-                {% for i in positions %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
-                {% endfor %}
+    {% csrf_token %}
+        <label for="title">Position: </label>
+            <select name="title" id="title">
+                <option value="supervisor">Supervisor</option>
+                <option value="instructor">Instructor</option>
+                <option value="ta">TA</option>
             </select><br><br>
         <div class="container">
             <label for="username">Username: </label>
             <input type="text" id="username" name="username"><br><br>
-            <label for="fName">First name: </label>
-            <input type="text" id="fName" name="fName"><br><br>
-            <label for="lName">Last name: </label>
-            <input type="text" id="lName" name="lName"><br><br>
-            <label for="address1">Address line 1:</label>
-            <input type="text" id="address1" name="address1"><br><br>
-            <label for="address2">Address line 2:</label>
-            <input type="text" id="address2" name="address2"><br><br>
+            <label for="password">Password: </label>
+            <input type="text" id="password" name="password"><br><br>
+            <label for="first_name">First name: </label>
+            <input type="text" id="first_name" name="first_name"><br><br>
+            <label for="last_name">Last name: </label>
+            <input type="text" id="last_name" name="last_name"><br><br>
+            <label for="addressln1">Address line 1:</label>
+            <input type="text" id="addressln1" name="addressln1"><br><br>
+            <label for="addressln2">Address line 2:</label>
+            <input type="text" id="addressln2" name="addressln2"><br><br>
             <label for="email">Email:</label>
             <input type="email" id="email" name="email"><br><br>
-            <label for="PhoneNumber">Phone:</label>
-            <input type="text" id="PhoneNumber" name="PhoneNumber"><br><br>
+            <label for="number">Phone:</label>
+            <input type="text" id="number" name="number"><br><br>
         </div>
         <input type="submit" value="Create Account">
         <input type="submit" value="Cancel">

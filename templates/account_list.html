@@ -14,22 +14,22 @@
         <div class="center">
             <select size="10" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
                     {% for i in accounts  %}
-                        <option value="{{ i.id }}">{{ i.title }} &nbsp;&nbsp;{{ i.position }}</option>
+                        <option value="{{ i.1 }}">{{ i.0 }} &nbsp;&nbsp;{{ i.position }}</option>
                     {% endfor %}
              </select><br><br>
             {% csrf_token %}
-            <input type="submit" value="Edit Account" name="onclick">
-            <input type="submit" value="Create New Account" name="onclick">
+            <label>
+                <input type="submit" value="Edit Account" name="onclick">
+                <input type="submit" value="Create New Account" name="onclick">
+            </label>
         </div>
     </form>
 
-    <form action="Account_List" align="right" method="post">
+    <form action="" align="right" method="post">
         {% csrf_token %}
         <label class="logoutLblPos">
-            <input type="submit" value="Back to Home" name="onclick">
             <input type="submit" value="Logout" name="onclick">
         </label>
     </form>
-
 </body>
 </html>

@@ -109,7 +109,7 @@ class CourseList(View):
 
     def post(self, request):
         request.session.flush()
-        return render(request, "Login.html")
+        return redirect(request, "Login.html")
 
 
 class AccountList(View):
@@ -141,7 +141,8 @@ class CreateAccount(View):
             "password": request.POST["description"],
             "first_name": request.POST["description"],
             "last_name": request.POST["description"],
-            "address": request.POST["description"],
+            "addressln1": request.POST["description"],
+            "addressln1": request.POST["description"],
             "title": request.POST["description"],
             "email": request.POST["description"],
             "number": request.POST["description"],
