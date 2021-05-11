@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.test import Client
-from finalApp.models import Users, PersonalInfo
+from finalApp.models import Users, MyUser
 
 
 
@@ -19,19 +19,19 @@ class TestAddPersonalInfo(TestCase):
             temp.set_password(raw_password="pass" + str(i))
             temp.save()
 
-        self.test_instructor_info = PersonalInfo.objects.create(myName='Test Instructor', phoneNumber='414-555-5501',
+        self.test_instructor_info = PersonalInfo.objects.create(myName='Test Instructor', phoneNumber='414-555-5501', addressl1= '4306 Griff Street',
                                                            email='csdept@example.com',)
 
 
     # changing the phone number
     def test_01(self):
         # login
-        response = self.client.post('/', {'loginEmail': 'prof01', 'loginPassword': 'pass'})
-        self.assertEqual(response.url, '/userView')
+        response = self.client.post('/Login/', {'username': 'prof01', 'password': 'pass'})
+        self.assertEqual(response.url, '/Homepage/')
 
-        response = self.client.post('/AddPersonalInfo/', {"name": "Test Instructor", "PhoneNumber": "416-555-5501", "email": "csdept@example.com", })
+        response = self.client.post('/AddPersonalInfo/', {"name": "Test Instructor", "PhoneNumber": "416-555-5501", "email": "csdept@example.com", "addressl1": "4306 Griff Street"})
 
-        self.pi = PersonalInfo.objects.all()
+        self.pi = MyUser.objects.all()
 
         self.assertEqual(len(self.pi), 1)
 
@@ -42,16 +42,34 @@ class TestAddPersonalInfo(TestCase):
     # changing email
     def test_02(self):
         # login
-        response = self.client.post('/', {'loginEmail': 'prof01', 'loginPassword': 'pass'})
-        self.assertEqual(response.url, '/userView')
+        response = self.client.post('/Login/', {'loginEmail': 'prof01', 'loginPassword': 'pass'})
+        self.assertEqual(response.url, '/Homepage/')
 
-        response = self.client.post('/AddPersonalInfo/', {"name": "Test Instructor", "PhoneNumber": "416-555-5501", "email": "csdept@uwm.com",})
+        response1 = self.client.post('/AddPersonalInfo/', {"name": "Test Instructor", "PhoneNumber": "416-555-5501", "email": "csdept@uwm.com",
+                                                          "addressl1": "4306 Griff Street"})
 
-        self.pi = PersonalInfo.objects.all()
+        self.pi = MyUser.objects.all()
 
         self.assertEqual(len(self.pi), 1)
 
         for i in self.pi:
+                if i.myName == "csdept@uwm.edu":
+                    self.assertTrue("Successfully added personal info")
+
+        # changing address
+    def test_03(self):
+            # login
+            response = self.client.post('/Login/', {'loginEmail': 'prof01', 'loginPassword': 'pass'})
+            self.assertEqual(response.url,'/Homepage/')
+
+            response2 = self.client.post('/AddPersonalInfo/', {"name": "Test Instructor", "PhoneNumber": "416-555-5501",
+                                                              "email": "csdept@uwm.com",
+                                                              "addressl1": "4316 Red Street"})
+            self.pi = MyUser.objects.all()
+
+            self.assertEqual(len(self.pi), 1)
+
+            for i in self.pi:
                 if i.myName == "csdept@uwm.edu":
                     self.assertTrue("Successfully added personal info")
 
