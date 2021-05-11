@@ -30,7 +30,7 @@ class testDeleteAccount(TestCase):
             response2 = self.client.post('/edit_account/', {"User": 2})
 
 
-            response3 = self.client.get('/create_account/')
+            response3 = self.client.get('/account_list/')
 
             users = list(response3.context['users'])
             print(users)
