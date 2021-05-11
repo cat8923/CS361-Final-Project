@@ -13,7 +13,8 @@ class UserType(m.TextChoices):
 
 class MyUser(models.User):
     position = m.CharField(max_length=1, choices=UserType.choices, default=UserType.TA, null=False)
-    address = m.CharField(max_length=50, null=True)
+    addressln1 = m.CharField(max_length=50, null=True)
+    addressln2 = m.CharField(max_length=50, null=True)
     phone_number = m.CharField(max_length=12, null=True)
 
     def __str__(self):
@@ -22,9 +23,11 @@ class MyUser(models.User):
 
 class CourseData(m.Model):
     title = m.CharField(max_length=50, unique=True)
+    designation = m.CharField(max_length=10, unique=True)
+    semester = m.CharField(max_length=10)
 
     def __str__(self):
-        return self.title
+        return self.title + " - " + self.designation
 
 
 class CourseSections(m.Model):
@@ -33,10 +36,10 @@ class CourseSections(m.Model):
     instructor = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
 
     def __str__(self):
-        return str(self.course) + " " + str(self.section)
+        return self.course.designation + " " + str(self.section) + (" Instructor: " + self.instructor.get_full_name() if self.instructor else "")
 
     def __repr__(self):
-        return str(self.course) + " " + str(self.section)
+        return self.course.designation + " " + str(self.section)
 
 
 class LabData(m.Model):
@@ -44,7 +47,20 @@ class LabData(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
     section = m.IntegerField(null=False)
 
+    def __str__(self):
+        return self.course.designation + " " + str(self.section) + ((" TA: " + self.TA.get_full_name() + " ") if self.TA else "")
+
 
 class TAsToCourses(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
+
+    def __str__(self):
+        return str(self.TA) + " - " + self.course.designation
+
+    def __repr__(self):
+        return str(self)
+
+class TASkills(m.Model):
+    TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
+    skills = m.TextField()
