@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
+from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
@@ -125,7 +126,7 @@ class AccountList(View):
         elif click == 'Edit Account':
             print(request.POST)
             account = request.POST['accounts']
-            return redirect("/edit_account/"+account+"/")
+            return redirect("/edit_account/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")

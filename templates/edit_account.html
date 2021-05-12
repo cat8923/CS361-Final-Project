@@ -8,34 +8,41 @@
 </head>
 <body>
     <h1>Edit Account</h1>
-    <form action="" method="post">
+    <form action="/edit_account/" method="post">
+    {% csrf_token %}
         <div class="container">
-            <label for="username">Username: {{ username }}</label><br><br>
-            <label for="fName">First name:</label>
-            <input type="text" id="fName" name="fName"><br><br>
-            <label for="lName">Last name: </label>
-            <input type="text" id="lName" name="lName"><br><br>
-            <label for="address1">Address line 1:</label>
-            <input type="text" id="address1" name="address1"><br><br>
-            <label for="address2">Address line 2:</label>
-            <input type="text" id="address2" name="address2"><br><br>
+            <label for="username">Username: {{ accounts.username }}</label><br><br>
+
+            <label for="first_name">First name:</label>
+            <input type="text" id="first_name" name="first_name" value="{{ accounts.first_name }}"><br><br>
+
+            <label for="last_name">Last name: </label>
+            <input type="text" id="last_name" name="last_name" value="{{ accounts.last_name }}"><br><br>
+
+            <label for="addressln1">Address line 1:</label>
+            <input type="text" id="addressln1" name="addressln1" value="{{ accounts.addressln1 }}"><br><br>
+
+            <label for="addressln2">Address line 2:</label>
+            <input type="text" id="addressln2" name="addressln2" value="{{ accounts.addressln2 }}"><br><br>
+
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email"><br><br>
-            <label for="PhoneNumber">Phone:</label>
-            <input type="text" id="PhoneNumber" name="PhoneNumber"><br><br>
+            <input type="email" id="email" name="email" value="{{ accounts.email }}"><br><br>
+
+            <label for="number">Phone:</label>
+            <input type="text" id="number" name="number" value="{{ accounts.number }}"><br><br>
         </div>
         <label for="courses">Courses: </label>
-            <select name="courses" id="courses">
+            <select name="courses" id="courses" value="courses">
                 {% for i in courses  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+                    <option value={{ i.1 }}>{{ i.0 }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Assign Course">
             &nbsp;
         <label for="labs">Labs: </label>
-            <select name="labs" id="labs">
+            <select name="labs" id="labs" value="labs">
                 {% for i in labs  %}
-                    <option value="{{ i.id }}">{{ i.name }}</option>
+                    <option value={{ i.1 }}>{{ i.0 }}</option>
                 {% endfor %}
              </select>
             <input type="submit" value="Assign Lab"><br><br>
@@ -45,7 +52,7 @@
         &nbsp;
         <input type="submit" value="Delete Account">
         &nbsp;
-        <button type="submit" onclick="window.location.href='';" >Create New Account</button>
+        <button type="submit" onclick="window.location.href='/create_account/';" >Create New Account</button>
         <div class="logoutLblPos">
             <button type="submit" onclick="window.location.href='/Homepage/';" >Back to Home</button>
             <button type="submit" onclick="window.location.href='';" >Logout</button>

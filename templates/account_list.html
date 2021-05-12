@@ -10,11 +10,10 @@
     <h1 style="text-align: center;">List of Accounts</h1>
     <h2 style="text-align: center;"><small>Select an account to view</small></h2>
     <form action="/Account_List/" method="post">
-
         <div class="center">
-            <select size="10" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
+            <select size="10" id="accounts" name="accounts">
                     {% for i in accounts  %}
-                        <option value="{{ i.1 }}">{{ i.0 }} &nbsp;&nbsp;{{ i.position }}</option>
+                        <option value={{ i.1 }}>{{ i.0 }}</option>
                     {% endfor %}
              </select><br><br>
             {% csrf_token %}

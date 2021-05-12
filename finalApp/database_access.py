@@ -232,6 +232,21 @@ def assign_instructor(data: dict, all=False) -> Union[ErrorString, bool]:
     return True
 
 
+def get_userdata(username: str) -> Union[ErrorString, dict]:
+    """gets the userdata of a certain user"""
+    if type(username) is not str:
+        return ErrorString("Error: wrong type for username")
+
+    temp = MyUser.objects.filter(username__iexact=username)
+    if not temp:
+        return ErrorString("Error: user not found")
+
+    temp = temp[0]
+
+    return {"username": username, "first_name": temp.first_name, "last_name": temp.last_name, "addressln1": temp.addressln1,
+            "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}
+
+
 def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
     """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
     whether the course did not exist or if data were invalid"""
