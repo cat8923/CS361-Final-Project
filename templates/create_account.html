@@ -10,11 +10,11 @@
     <h1>Create Account</h1>
     <form action="" method="post">
     {% csrf_token %}
-        <label for="title">Position: </label>
+        <label for="position">Position: </label>
             <select name="title" id="title">
-                <option value="supervisor">Supervisor</option>
-                <option value="instructor">Instructor</option>
-                <option value="ta">TA</option>
+                <option value="S">Supervisor</option>
+                <option value="I">Instructor</option>
+                <option value="T">TA</option>
             </select><br><br>
         <div class="container">
             <label for="username">Username: </label>

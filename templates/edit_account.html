@@ -8,10 +8,11 @@
 </head>
 <body>
     <h1>Edit Account</h1>
-    <form action="/Edit_Account/" method="post">
+    <form action="/edit_account/" method="post">
     {% csrf_token %}
         <div class="container">
             <label for="username">Username: {{ account.username }}</label><br><br>
+            <!--<label for="title">Title: {{ account.position }}</label><br><br> -->
 
             <label for="first_name">First name:</label>
             <input type="text" id="first_name" name="first_name" value="{{ account.first_name }}"><br><br>
@@ -29,7 +30,7 @@
             <input type="email" id="email" name="email" value="{{ account.email }}"><br><br>
 
             <label for="number">Phone:</label>
-            <input type="text" id="number" name="number" value="{{ account.number }}"><br><br>
+            <input type="text" id="number" name="number" value="{{ account.phone_number }}"><br><br>
         </div>
         <label for="courses">Courses: </label>
             <select name="courses" id="courses" value="courses">
@@ -46,16 +47,19 @@
                 {% endfor %}
              </select>
             <input type="submit" value="Assign Lab"><br><br>
-        <input type="submit" value="Save Edits">
+        <input type="submit" value="Save Edits" name="onclick">
         &nbsp;
-        <input type="submit" value="Cancel">
+        <input type="submit" value="Cancel" name="onclick">
         &nbsp;
-        <input type="submit" value="Delete Account">
+        <input type="submit" value="Delete Account" name="onclick">
         &nbsp;
-        <button type="submit" onclick="window.location.href='/create_account/';" >Create New Account</button>
+        <input type="submit" value="Create New Account" name="onclick">
+        <!--<button type="submit" onclick="window.location.href='/create_account/';" >Create New Account</button>-->
         <div class="logoutLblPos">
-            <button type="submit" onclick="window.location.href='/Homepage/';" >Back to Home</button>
-            <button type="submit" onclick="window.location.href='';" >Logout</button>
+            <!--<button type="submit" onclick="window.location.href='/Homepage/';" >Back to Home</button>
+            <button type="submit" onclick="window.location.href='';" >Logout</button>-->
+            <input type="submit" value="Back to Home" name="onclick">
+            <input type="submit" value="Logout" name="onclick">
         </div>
     </form>
 </body>

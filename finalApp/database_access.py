@@ -270,5 +270,5 @@ def list_courses() -> list:
 def list_users(isSupervisor = False) -> list:
     users = []
     for i in MyUser.objects.all():
-        users.append((str(i), i.position))
+        users.append((str(i), i.position, i.username))
     return users

@@ -179,8 +179,7 @@ class EditAccount(View):
             account = self.kwargs
             return render(request, "edit_account.html", account)
         elif click == 'Cancel':
-            account = self.kwargs
-            return render(request, "edit_account.html", account)
+            return redirect("/Account_List/")
         elif click == 'Delete Account':
             return redirect('/Account_List/')
         elif click == 'Create New Account':
