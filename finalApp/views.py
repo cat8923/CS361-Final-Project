@@ -126,7 +126,7 @@ class AccountList(View):
         elif click == 'Edit Account':
             print(request.POST)
             account = request.POST['accounts']
-            return redirect("/edit_account/")
+            return redirect("/Edit_Account/"+account+"/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
@@ -160,9 +160,9 @@ class CreateAccount(View):
 class EditAccount(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        account = self.kwargs.get("account")
+        account = self.kwargs.get("username")
         if account:
-            account = database_access.getuserdata(account)
+            account = database_access.get_userdata(account)
         else:
             account = {}
         data = {"account": account}

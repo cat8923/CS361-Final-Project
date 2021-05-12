@@ -8,28 +8,28 @@
 </head>
 <body>
     <h1>Edit Account</h1>
-    <form action="/edit_account/" method="post">
+    <form action="/Edit_Account/" method="post">
     {% csrf_token %}
         <div class="container">
-            <label for="username">Username: {{ accounts.username }}</label><br><br>
+            <label for="username">Username: {{ account.username }}</label><br><br>
 
             <label for="first_name">First name:</label>
-            <input type="text" id="first_name" name="first_name" value="{{ accounts.first_name }}"><br><br>
+            <input type="text" id="first_name" name="first_name" value="{{ account.first_name }}"><br><br>
 
             <label for="last_name">Last name: </label>
-            <input type="text" id="last_name" name="last_name" value="{{ accounts.last_name }}"><br><br>
+            <input type="text" id="last_name" name="last_name" value="{{ account.last_name }}"><br><br>
 
             <label for="addressln1">Address line 1:</label>
-            <input type="text" id="addressln1" name="addressln1" value="{{ accounts.addressln1 }}"><br><br>
+            <input type="text" id="addressln1" name="addressln1" value="{{ account.addressln1 }}"><br><br>
 
             <label for="addressln2">Address line 2:</label>
-            <input type="text" id="addressln2" name="addressln2" value="{{ accounts.addressln2 }}"><br><br>
+            <input type="text" id="addressln2" name="addressln2" value="{{ account.addressln2 }}"><br><br>
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ accounts.email }}"><br><br>
+            <input type="email" id="email" name="email" value="{{ account.email }}"><br><br>
 
             <label for="number">Phone:</label>
-            <input type="text" id="number" name="number" value="{{ accounts.number }}"><br><br>
+            <input type="text" id="number" name="number" value="{{ account.number }}"><br><br>
         </div>
         <label for="courses">Courses: </label>
             <select name="courses" id="courses" value="courses">
