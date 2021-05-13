@@ -15,6 +15,33 @@
 .selectionStyle{
     display: block;
     width: fit-content;
+}
+/* the following "container" classes are for styling the text boxes */
+.container {
+    width: 500px;
+    clear: both;
+}
+.container input {
+    width: 100%;
+    clear: both;
+}
 
+.divider {
+    width: 5px;
+    height: auto;
+    display: inline-block;
+}
 
+.select {
+    width: 150px;
+    margin: 10px;
+
+}
+.select focus{
+    min-width: 150px;
+    width: auto;
+}
+
+.center {
+    text-align: center;
 }
