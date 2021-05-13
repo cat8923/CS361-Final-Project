@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
 
-from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditCourse, AssignTas #EditLab
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditCourse, AssignTas, AccountView #EditLab
 import finalApp.views as fav
 
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
     path('createLab/', AddLab.as_view()),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
     path('Course_List/', CourseList.as_view(), name="courses"),
+    path('Account_List/', AccountView.as_view(), name="accounts"),
     path('create_account/', CreateAccount.as_view()),
     path('test_create/', TestCreate.as_view(), name="test"),
     path('assign_tas', AssignTas.as_view(), name="assigntas"),
