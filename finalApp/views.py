@@ -3,6 +3,8 @@ from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
 from .models import CourseData, MyUser, UserType
+
+
 # Create your views here.
 
 
@@ -87,19 +89,19 @@ class CreateCourse(View):
             request.session.flush()
             return render(request, "Login.html")
 
-        
-class AddLab(View):
-        def get(self, request):
-            if len(request.GET) == 0:
-                TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-                return render(request, "/Create_Lab/", {"TA": TA})
 
-        def post(self, request):
-            labDict = {
-                "courseID": request.GET["description"],
-                "section": request.GET["designation"],
-            }
-            database_access.make_lab(labDict)
+class AddLab(View):
+    def get(self, request):
+        if len(request.GET) == 0:
+            TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
+            return render(request, "/Create_Lab/", {"TA": TA})
+
+    def post(self, request):
+        labDict = {
+            "courseID": request.GET["description"],
+            "section": request.GET["designation"],
+        }
+        database_access.make_lab(labDict)
 
 
 class CourseList(View):
@@ -126,12 +128,12 @@ class AccountList(View):
         elif click == 'Edit Account':
             print(request.POST)
             account = request.POST['accounts']
-            return redirect("/Edit_Account/"+account+"/")
+            return redirect("/Edit_Account/" + account + "/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
 
-          
+
 class CreateAccount(View):
     def get(self, request):
         return render(request, "create_account.html")
@@ -176,8 +178,11 @@ class EditAccount(View):
             request.session.flush()
             return redirect('')
         elif click == 'Save Edits':
-            account = self.kwargs
-            return render(request, "edit_account.html", account)
+            account = database_access.update_user(request.POST)
+            return render(request, "edit_account.html",
+                          {"user": database_access.get_userdata(request.session['username']),
+                           "position": request.session['position'],
+                           "message": str(account) if not account else "Success!"})
         elif click == 'Cancel':
             return redirect("/Account_List/")
         elif click == 'Delete Account':
@@ -188,3 +193,5 @@ class EditAccount(View):
             pass
         elif click == 'Assign Lab':
             pass
+        else:
+            return redirect("/Account_List/")
