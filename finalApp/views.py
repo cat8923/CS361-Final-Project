@@ -3,15 +3,56 @@ from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
 from .models import CourseData, MyUser, UserType
+from .models import CourseData, MyUser, UserType
 
 
 # Create your views here.
 
 
-class TestCreate(View):
+class EditSelf(View):
     def get(self, request):
+        return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
+                                                  "position": request.session['position'],
+                                                  "username": request.session['username']})
+
+    def post(self, request):
+        check = database_access.update_user(request.POST)
+        return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
+                                                  "position": request.session['position'], "message": str(check) if not check else "Success!"})
+
+
+class AddSection(View):
+    def get(self, request, **kwargs):
+        pass
+
+
+class AssignTas(View):
+    pass
+
+
+class AssignInstructor(View):
+    def get(self, request, **kwargs):
+        return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
+                                                          "designation": self.kwargs.get("course"),
+                                                          "section": self.kwargs.get("section"),
+                                                          "instructors": database_access.list_instructors()})
+
+    def post(self, request, **kwargs):
+        check = database_access.assign_instructor({"instructorUsername": request.POST["instructorUsername"],
+                                                   "designation": self.kwargs.get("course"),
+                                                   "courseSection": int(self.kwargs.get("section"))})
+        return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
+                                                          "designation": self.kwargs.get("course"),
+                                                          "section": self.kwargs.get("section"),
+                                                          "instructors": database_access.list_instructors(),
+                                                          "message": str(check) if not check else "Success"})
+
+
+class TestCreate(View):
+    def get(self, request, **kwargs):
         li = database_access.list_courses()
-        return render(request, "create_test_user.html", {"list": li})
+        return render(request, "create_test_user.html", {"list": li, "username": self.kwargs.get("username"), "users": database_access.list_users()
+                                                         , "courses": database_access.get_coursedata("cs351")})
 
     def post(self, request):
         check = database_access.make_user(request.POST)
@@ -32,7 +73,7 @@ class Blank(View):
 class Logout(View):
     def get(self, request):
         request.session.flush()
-        return redirect("/Login/", {"message": "logout successful"})
+        return redirect("/Login/")
 
 
 class Login(View):
@@ -46,6 +87,8 @@ class Login(View):
             return render(request, "Login.html", {"message": str(user)})
         else:
             request.session["first_name"] = user["first_name"]
+            request.session["position"] = user["position"]
+            request.session["username"] = request.POST['username']
             request.session.save()
             return redirect("/Homepage/")
 
@@ -55,7 +98,7 @@ class Homepage(View):
 
         name = request.session.get('first_name')
         if name:
-            return render(request, "Homepage.html", {'name': name})
+            return render(request, "Homepage.html", {'name': name, 'pagetitle': "Homepage"})
         else:
             return redirect("/Login/")
 
@@ -74,51 +117,63 @@ class CreateCourse(View):
     def get(self, request):
         if len(request.GET) == 0:
             TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-            return render(request, "create_course.html", {"TA": TA})
+            return render(request, "create_course.html", {"TA": TA, "pagetitle": "Create Course"})
 
     def post(self, request):
         '''
         courseDict = {
-            "title": request.GET["description"],
-            "section": request.GET["designation"],
+            "title": request.POST["description"],
+            #"section": request.POST["designation"],
         }
         database_access.make_course(courseDict)
         '''
-        click = request.POST['onclick']
-        if click == 'Logout':
-            request.session.flush()
-            return render(request, "Login.html")
+        #click = request.POST['onclick']
+        #if click == 'Logout':
+        #    request.session.flush()
+        #    return redirect('/Login/')
+        check = database_access.make_course({"title": request.POST['title'], "designation": request.POST['designation'],
+                                             "section": int(request.POST['section']), "semester": request.POST['semester']})
+        return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success"})
 
-
+        
 class AddLab(View):
-    def get(self, request):
-        if len(request.GET) == 0:
-            TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-            return render(request, "/Create_Lab/", {"TA": TA})
+        def get(self, request):
+            if len(request.GET) == 0:
+                TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
+                return render(request, "/Create_Lab/", {"TA": TA})
 
-    def post(self, request):
-        labDict = {
-            "courseID": request.GET["description"],
-            "section": request.GET["designation"],
-        }
-        database_access.make_lab(labDict)
+        def post(self, request):
+            labDict = {
+                "courseID": request.GET["description"],
+                "section": request.GET["designation"],
+            }
+            database_access.make_lab(labDict)
 
 
 class CourseList(View):
     def get(self, request):
         if len(request.GET) == 0:
-            courses = list(database_access.list_courses())
-            return render(request, "course_list.html", {"courses": courses})
+            #courses = list(database_access.list_courses())
+            courses = database_access.list_courses()
+            return render(request, "course_list.html", {"courses": courses, "pagetitle": "List of Courses"})
 
     def post(self, request):
-        request.session.flush()
-        return redirect(request, "Login.html")
+        click = request.POST['onclick']
+        if click == 'Create New Course':
+            return redirect("/Create_Course/")
+        elif click == 'Edit Course':
+            print(request.POST)
+            course = request.POST['courses']
+            return redirect("/Edit_Course/"+course+"/")
+        elif click == 'Logout':
+            request.session.flush()
+            return render(request, "Login.html")
 
 
-class AccountList(View):
+class AccountView(View):
     def get(self, request):
         if len(request.GET) == 0:
-            accounts = database_access.list_users()
+            accounts = list(database_access.list_users())
             return render(request, "account_list.html", {"accounts": accounts})
 
     def post(self, request):
@@ -139,7 +194,8 @@ class CreateAccount(View):
         return render(request, "create_account.html")
 
     def post(self, request):
-        """accountDict = {
+        '''
+        accountDict = {
             "username": request.POST["description"],
             "password": request.POST["description"],
             "first_name": request.POST["description"],
@@ -149,7 +205,8 @@ class CreateAccount(View):
             "title": request.POST["description"],
             "email": request.POST["description"],
             "number": request.POST["description"],
-        }"""
+        }
+        '''
         message = database_access.make_user(request.POST)
         if message:
             message = "successfully created account"
@@ -158,40 +215,39 @@ class CreateAccount(View):
 
         return render(request, "Homepage.html", {"message": message})
 
-
-class EditAccount(View):
+class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
-        account = self.kwargs.get("username")
-        if account:
-            account = database_access.get_userdata(account)
+        course = self.kwargs.get("course")
+        if course:
+            course = database_access.get_coursedata(course)
+            #instructors = database_access.get_instructors()
+            instructors = list(MyUser.objects.filter(position=str(UserType.INSTRUCTOR)))
+            TAs = list(MyUser.objects.filter(position=str(UserType.TA)))
         else:
-            account = {}
-        data = {"account": account}
+            course = {}
+        data = {"course": course, "instructors": instructors, "TA": TAs, "pagetitle": "Edit Course"}
         print(data)
 
-        return render(request, "edit_account.html", data)
+        return render(request, "edit_course.html", data)
 
     def post(self, request):
         click = request.POST['onclick']
         if click == 'Logout':
             request.session.flush()
             return redirect('')
-        elif click == 'Save Edits':
-            account = database_access.update_user(request.POST)
-            return render(request, "edit_account.html",
-                          {"user": database_access.get_userdata(request.session['username']),
-                           "position": request.session['position'],
-                           "message": str(account) if not account else "Success!"})
-        elif click == 'Cancel':
-            return redirect("/Account_List/")
-        elif click == 'Delete Account':
-            return redirect('/Account_List/')
-        elif click == 'Create New Account':
-            return redirect("/create_account/")
-        elif click == 'Assign Course':
+        elif click == 'Save Edit':
+            # need to save the changes we made first
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Cancel Edit':
+            course = self.kwargs
+            return render(request, "edit_course.html", course)
+        elif click == 'Delete Course':
+            return redirect('/course_list/')
+        elif click == 'Create New Course':
+            return redirect('/create_course/')
+        elif click == 'Add Section':
             pass
-        elif click == 'Assign Lab':
+        elif click == 'Add Lab':
             pass
-        else:
-            return redirect("/Account_List/")

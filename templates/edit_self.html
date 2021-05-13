@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <form method="post" action="{% url 'editself' %}">
+    {% csrf_token %}
+    <table class="updateselfform">
+        <tr>
+            <th>Item</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td><label for="first_name">First Name:</label></td>
+            <td><input type="text" value="{{ user.first_name }}" id="first_name" name="first_name"></td>
+        </tr>
+        <tr>
+            <td><label for="last_name">Last Name:</label></td>
+            <td><input type="text" value="{{ user.last_name }}" id="last_name" name="last_name"></td>
+        </tr>
+        <tr>
+            <td><label for="addressln1">Address Line 1:</label></td>
+            <td><input type="text" value="{{ user.addressln1 }}" id="addressln1" name="addressln1"></td>
+        </tr>
+        <tr>
+            <td><label for="addressln2">Address Line 2:</label></td>
+            <td><input type="text" value="{{ user.addressln2 }}" id="addressln2" name="addressln2"></td>
+        </tr>
+        <tr>
+            <td><label for="email">Email:</label></td>
+            <td><input type="text" value="{{ user.email }}" id="email" name="email"></td>
+        </tr>
+        <tr>
+            <td><label for="phone_number">Phone Number</label></td>
+            <td><input type="text" value="{{ user.phone_number }}" id="phone_number" name="phone_number"></td>
+        </tr>
+        <input type="hidden" value="{{ username }}" name="username">
+        {% if position == "T" %}
+            <tr>
+                <td><label for="skills">Skills:</label></td>
+                <td><textarea id="skills" name="skills" rows="4" cols="40">{{ skills }}</textarea></td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td>
+                <input type="submit" value="Submit Changes">
+            </td>
+        </tr>
+    </table>
+    </form>
+
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+
+{% endblock %}
