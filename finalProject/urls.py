@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Blank.as_view()),
     path('Logout/', Logout.as_view(), name='logout'),
-    path('Login/', Login.as_view()),
+    path('Login/', Login.as_view(), name='login'),
     path('Homepage/', Homepage.as_view(), name='home'),
     path('createLab/', AddLab.as_view()),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
