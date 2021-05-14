@@ -1,44 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Create Course</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-    <h1 class="h1Style">Create Course</h1>
-    <div class="formStyle">
-        <form action="" method="post">
-            <label for="description">Description:</label>
-            <input type="text" id="description" name="description"><br><br>
+{% extends "base.html" %}
 
-            <label for="designation">Designation:</label>
-            <input type="text" id="designation" name="designation"><br><br>
+{% block content %}
 
-            <label for="semester">Semester:</label>
-            <input type="text" id="semester" name="semester"><br><br>
+<h1 class="h1Style">Create Course</h1>
+<div class="formStyle">
+        <form action="{% url 'createcourse' %}" method="post">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td><label for="title">Title:</label></td>
+                <td><input type="text" id="description" name="title"><br><br></td>
+            </tr>
 
-            <label for="instructor">Instructor:</label>
-            <input type="text" id="instructor" name="instructor"><br><br>
+            <tr>
+                <td><label for="designation">Designation:</label></td>
+                <td><input type="text" id="designation" name="designation"><br><br></td>
+            </tr>
+            <tr>
+                <td><label for="semester">Semester:</label></td>
+                <td><input type="text" id="semester" name="semester"><br><br></td>
+            </tr>
 
-            <label for="TAs">TA's:</label>
-             <select id="TA" name="TA">
-                {% for i in TA  %}
-                    <option value="{{ i.id }}">"{{ i.name }}"</option>
-                {% endfor %}
-            </select><br><br>
+            <tr>
+                <td><label for="section">Section: </label></td>
+                <td><input type="number" id="section" name="section"></td>
+            </tr>
 
-            <input type="Submit" value="Save Course"><br><br>
-
+            <tr>
+                <td><input type="submit" value="Save Course" name="onclick"></td>
+                <td><input type="submit" value="Cancel" name="onclick"></td>
+            </tr>
+        </table>
         </form>
 
         <form action="/Create_Course/" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" onclick="alert('Logout')" value="Logout" name="onclick">
-            </label>
+                {% csrf_token %}
+                <label class="logoutLblPos">
+                    <input type="submit" value="Logout" name="onclick">
+                </label>
         </form>
+</div>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
 
-    </div>
-</body>
-</html>
+{% endblock %}

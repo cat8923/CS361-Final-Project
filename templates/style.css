@@ -7,7 +7,6 @@
     font-family: "Bebas Neue";
     text-align: center;
 }
-
 .formStyle{
     display: block;
     text-align: center;
@@ -25,23 +24,27 @@
     width: 100%;
     clear: both;
 }
-
 .divider {
     width: 5px;
     height: auto;
     display: inline-block;
 }
-
 .select {
     width: 150px;
     margin: 10px;
-
 }
 .select focus{
     min-width: 150px;
     width: auto;
 }
-
 .center {
     text-align: center;
+}
+.main {
+    width: 100%;
+}
+.menu {
+    background-color: blue;
+    width: 10%;
+    float: left;
 }
