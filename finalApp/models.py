@@ -63,7 +63,7 @@ class TAsToCourses(m.Model):
 
 
 class TASkills(m.Model):
-    TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False, unique=True)
+    TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     skills = m.TextField()
 
     def __str__(self):

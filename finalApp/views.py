@@ -153,17 +153,17 @@ class AddSection(View):
 
 
 class AddLab(View):
-        def get(self, request):
-            if len(request.GET) == 0:
-                TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-                return render(request, "/Create_Lab/", {"TA": TA})
+    def get(self, request):
+        if len(request.GET) == 0:
+            TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
+            return render(request, "/Create_Lab/", {"TA": TA})
 
-        def post(self, request):
-            labDict = {
-                "courseID": request.GET["description"],
-                "section": request.GET["designation"],
-            }
-            database_access.make_lab(labDict)
+    def post(self, request):
+        labDict = {
+            "courseID": request.GET["description"],
+            "section": request.GET["designation"],
+        }
+        database_access.make_lab(labDict)
 
 
 class CourseList(View):
@@ -186,13 +186,25 @@ class CourseList(View):
             return render(request, "Login.html")
 
 
-class AccountView(View):
+class AccountList(View):
     def get(self, request):
         if len(request.GET) == 0:
-            accounts = list(database_access.list_users())
+            accounts = database_access.list_users()
             return render(request, "account_list.html", {"accounts": accounts})
 
-          
+    def post(self, request):
+        click = request.POST['onclick']
+        if click == 'Create New Account':
+            return redirect("/create_account/")
+        elif click == 'Edit Account':
+            print(request.POST)
+            account = request.POST['accounts']
+            return redirect("/edit_account/" + account + "/")
+        elif click == 'Logout':
+            request.session.flush()
+            return render(request, "Login.html")
+
+
 class CreateAccount(View):
     def get(self, request):
         return render(request, "create_account.html")
@@ -218,6 +230,22 @@ class CreateAccount(View):
 
         return render(request, "Homepage.html", {"message": message})
 
+
+class 
+count(View):
+    def get(self, request, **kwargs):
+        print(self.kwargs)
+        account = self.kwargs.get("account")
+        if account:
+            account = database_access.getuserdata(account)
+        else:
+            account = {}
+        data = {"account": account}
+        print(data)
+
+        return render(request, "edit_account.html", data)
+
+      
 class EditCourse(View):
     def get(self, request, **kwargs):
         print(self.kwargs)
@@ -233,7 +261,7 @@ class EditCourse(View):
         print(data)
 
         return render(request, "edit_course.html", data)
-
+      
     def post(self, request):
         click = request.POST['onclick']
         if click == 'Logout':

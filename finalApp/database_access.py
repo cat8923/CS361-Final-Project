@@ -1,3 +1,4 @@
+
 from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections, TASkills
 from typing import Union
 
@@ -254,7 +255,6 @@ def list_courses() -> Union[ErrorString, dict]:
     for c in courses:
         yield (str(c), c.designation, list(map(str, CourseSections.objects.filter(course=c))),
                        list(map(str, LabData.objects.filter(course=c))))
-    #return result
 
 
 def list_users() -> list:
@@ -266,13 +266,9 @@ def list_users() -> list:
 
 
 def list_instructors() -> list:
-    #instructors = []
     for i in MyUser.objects.all():
         if i.position == "I":
-            #instructors.append((str(i), i.username))
             yield (str(i), i.username)
-
-    #return instructors
 
 
 def get_userdata(username: str) -> Union[ErrorString, dict]:
