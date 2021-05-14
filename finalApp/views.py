@@ -3,6 +3,7 @@ from django.views import View
 from finalApp.database_access import login, ErrorString
 from finalApp import database_access
 from .models import CourseData, MyUser, UserType
+from django.urls import reverse
 # Create your views here.
 
 
@@ -10,12 +11,18 @@ class EditSelf(View):
     def get(self, request):
         return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
                                                   "position": request.session['position'],
-                                                  "username": request.session['username']})
+                                                  "username": request.session['username'],
+                                                  "skills": database_access.get_skills(request.session['username'])})
 
     def post(self, request):
         check = database_access.update_user(request.POST)
+        if request.session['position'] == "T":
+            database_access.update_ta_skill({"taUsername": request.session['username'], "skills": request.POST['skills']})
         return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
-                                                  "position": request.session['position'], "message": str(check) if not check else "Success!"})
+                                                  "position": request.session['position'],
+                                                  "message": str(check) if not check else "Success!",
+                                                  "username": request.session['username'],
+                                                  "skills": database_access.get_skills(request.session['username'])})
 
 
 class AddSection(View):
@@ -130,9 +137,21 @@ class CreateCourse(View):
         #    return redirect('/Login/')
         check = database_access.make_course({"title": request.POST['title'], "designation": request.POST['designation'],
                                              "section": int(request.POST['section']), "semester": request.POST['semester']})
-        return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success"})
+        return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success", "pagetitle": "Create Course"})
 
         
+class AddSection(View):
+    def get(self, request, **kwargs):
+        return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
+
+    def post(self, request, **kwargs):
+        check = database_access.make_course({"title": " ", "semester": " ", "designation": self.kwargs["course"],
+                                             "section": int(request.POST['section'])})
+
+        return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"],
+                                                              "message": str(check) if not check else "Success!"})
+
+
 class AddLab(View):
         def get(self, request):
             if len(request.GET) == 0:

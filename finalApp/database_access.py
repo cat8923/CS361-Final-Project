@@ -1,4 +1,4 @@
-from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
+from .models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections, TASkills
 from typing import Union
 
 class ErrorString():
@@ -247,14 +247,14 @@ def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
 
 def list_courses() -> Union[ErrorString, dict]:
     """gets a list of all the courses: a triple of 1 course string, 2 list of associated sections, 3 list of associated labs"""
-    result = []
+    #result = []
     courses = CourseData.objects.all()
     #for c in courses:
     #   result.append((str(c), list(map(str, CourseSections.objects.filter(course=c))), list(map(str, LabData.objects.filter(course=c)))))
     for c in courses:
-        result.append((str(c), c.designation, list(map(str, CourseSections.objects.filter(course=c))),
-                       list(map(str, LabData.objects.filter(course=c)))))
-    return result
+        yield (str(c), c.designation, list(map(str, CourseSections.objects.filter(course=c))),
+                       list(map(str, LabData.objects.filter(course=c))))
+    #return result
 
 
 def list_users() -> list:
@@ -266,12 +266,13 @@ def list_users() -> list:
 
 
 def list_instructors() -> list:
-    instructors = []
+    #instructors = []
     for i in MyUser.objects.all():
         if i.position == "I":
-            instructors.append((str(i), i.username))
+            #instructors.append((str(i), i.username))
+            yield (str(i), i.username)
 
-    return instructors
+    #return instructors
 
 
 def get_userdata(username: str) -> Union[ErrorString, dict]:
@@ -309,5 +310,63 @@ def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
     return list(TAsToCourses.objects.filter(course=tempcourse))
 
 
-def add_ta_skill(tausername: str, skill: str):
-    pass
+def update_ta_skill(data: dict):
+    needed = [("taUsername", str), ("skills", str)]
+    check = verify_dict(needed, data)
+    if not check:
+        return check
+
+    tempuser = MyUser.objects.filter(username__iexact=data["taUsername"])
+    if not tempuser.exists():
+        return ErrorString("Error: user not found")
+
+    tempuser = tempuser[0]
+
+    if tempuser.position != "T":
+        return ErrorString("Error: user is not TA")
+
+    print(tempuser)
+
+    TASkills.objects.update_or_create(TA=tempuser, defaults={"skills": data["skills"]})
+
+    return True
+
+
+def get_skills(taUsername: str):
+    if type(taUsername) != str:
+        return ErrorString("Error: taUsername is not str")
+
+    tempuser = list(MyUser.objects.filter(username__iexact=taUsername))
+
+    if not tempuser:
+        return ErrorString("Error: user not found")
+
+    tempuser = tempuser[0]
+
+    if tempuser.position != "T":
+        return ErrorString("Error: user is not TA")
+
+    skills = list(TASkills.objects.filter(TA=tempuser))
+
+    if not skills:
+        return ""
+
+    return skills[0].skills
+
+
+def get_courses_of_instructor(instructorUsername: str):
+    if type(instructorUsername) != str:
+        return ErrorString("Error: wrong type for instructorUsername")
+
+    tempinstructor = list(MyUser.objects.filter(username=instructorUsername))
+    if not tempinstructor:
+        return ErrorString("Error: instructor not found")
+
+    tempinstructor = tempinstructor[0]
+
+    if tempinstructor.position != "I":
+        return ErrorString("Error: user is not instructor")
+
+    courses = CourseData.objects.filter(coursesections__instructor=tempinstructor).distinct()
+
+    return list(courses)

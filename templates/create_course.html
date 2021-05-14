@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Create Course</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-    <h1 class="h1Style">Create Course</h1>
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="h1Style">Create Course</h1>
 <div class="formStyle">
         <form action="{% url 'createcourse' %}" method="post">
         {% csrf_token %}
@@ -47,5 +43,5 @@
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
-</body>
-</html>
+
+{% endblock %}

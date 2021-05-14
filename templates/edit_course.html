@@ -18,6 +18,8 @@
         </tr>
     </table>
     <br>
+    <a href="{% url 'addsection' course=course.designation %}">Add Section</a>
+    <br><br>
     <table class="courselists">
         {% if course.sections%}
         <tr>
