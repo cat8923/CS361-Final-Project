@@ -1,14 +1,14 @@
 from django.test import TestCase
 from django.test import Client
-
+from django.urls import reverse
 from finalApp.models import MyUser
 
 
 class testCreateLab(TestCase):
     def setUp(self):
         self.Client = Client()
-        self.Client.session["position"] = "S"
-        self.Client.session.save()
+        # self.Client.session["position"] = "S"
+        # self.Client.session.save()
 
         # creates 3 users (user0, user1, user2)
         # for i in range(3):
@@ -20,29 +20,22 @@ class testCreateLab(TestCase):
         self.temp1.set_password(raw_password="pass")
         self.temp1.save()
 
-
     def test_01(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'}, follow=True)
-        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
+        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
+                         "Valid Information will take to the homepage page")
 
-        response = self.client.post("/Create_Lab/", {"Description": "Introduction to Software Engineering",
-                                                        "Course": "CS361", "Semester": "Spring 2021",
-                                                        "Instructor": "Jayson Rock","role": "TA",
-                                                     "Times": "Tu & Thur 10:00-10:50 AM"})
+        response = self.client.post("/Create_Lab/", {"title": "Introduction to Software Engineering",
+                                                     "designation": "CS361", "semester": "Spring 2021"}, follow=True)
 
-        self.assertEqual(response.url, "/Homepage/")
-
+        self.assertEqual(response.request["PATH_INFO"], "/Homepage/")
 
     def test_01_Invalid(self):
-        response1 = self.client.post("/Login/", {'name': 'user', 'password': 'pass'}, follow=True)
-        self.assertEqual("/Homepage/", response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
+        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
+                         "Valid Information will take to the homepage page")
 
-        response = self.client.post("/CreateLab/", {"Description": "Introduction",
-                                                        "Course": "CS361", "Semester": "Spring 2021",
-                                                        "Instructor": "Jayson Rock","role": "TA",
-                                                     "Times": "Tu & Thur 6:00-6:50 AM"})
+        response = self.client.post("/CreateLab/", {"title": "Introduction",
+                                                    "designation": "CS361", "semester": "Spring 2021"})
 
-        self.assertEqual("/CreateLab/", response.url, "Invalid type")
-
-
-
+        self.assertEqual("/CreateLab/", response.request["PATH_INFO"], "Invalid type")
