@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
-from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditAccount, AccountList, EditCourse, AssignTas
+
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditCourse, AssignTas, EditAccount, AccountList #EditLab
 import finalApp.views as fav
 
 urlpatterns = [
@@ -25,7 +26,7 @@ urlpatterns = [
     path('Account_List/', AccountList.as_view()),
     path('edit_account/', EditAccount.as_view()),
     path('Logout/', Logout.as_view(), name='logout'),
-    path('Login/', Login.as_view(), name='login'),
+    path('Login/', Login.as_view()),
     path('Homepage/', Homepage.as_view(), name='home'),
     path('createLab/', AddLab.as_view()),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
@@ -34,8 +35,9 @@ urlpatterns = [
     path('test_create/', TestCreate.as_view(), name="test"),
     path('assign_tas', AssignTas.as_view(), name="assigntas"),
     path('edit_self/', fav.EditSelf.as_view(), name='editself'),
+    url(r'^edit_account/(?P<username>[a-zA-Z0-9]+)', TestCreate.as_view(), name="test"),
+    url('Edit_Account/(?P<username>[a-zA-Z0-9]+)', EditAccount.as_view(), name='edit'),
     url(r'^test_create/(?P<username>[a-zA-Z0-9]+)', TestCreate.as_view(), name="test"),
-    url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/addsection/', fav.AddSection.as_view(), name='addsection'),
     url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/assigninstructor/(?P<section>[0-9]+)', fav.AssignInstructor.as_view(), name='addinst'),
     url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/assignta/(?P<lab>[0-9]+)', EditCourse.as_view(), name='edit'),
     url(r'^Edit_Course/(?P<course>[a-zA-Z0-9]+)/add', EditCourse.as_view(), name='edit'),
