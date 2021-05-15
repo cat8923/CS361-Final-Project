@@ -271,7 +271,3 @@ class EditAccount(View):
             return redirect('/Account_List/')
         elif click == 'Create New Account':
             return redirect("/create_account/")
-        elif click == 'Assign Course':
-            pass
-        elif click == 'Assign Lab':
-            pass
