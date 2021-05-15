@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
-from finalApp.models import MyUser
+from finalApp.models import MyUser, TASkills
 
 
 class TestAddPersonalInfo(TestCase):
@@ -10,18 +10,16 @@ class TestAddPersonalInfo(TestCase):
         self.instructor_user = MyUser(position="I", username='prof01')
         self.instructor_user.set_password(raw_password='pass')
         self.instructor_user.save()
-        self.Client = Client()
-        # self.Client.session["position"] = "S"
-        # self.Client.session.save()
 
-        # self.test_instructor_info = PersonalInfo.objects.create(myName='Test Instructor', phoneNumber='414-555-5501', addressl1= '4306 Griff Street',
-        #                                                   email='csdept@example.com',)
+        self.ta_user = MyUser(position="T", username="ta01")
+        self.ta_user.set_password(raw_password='pass')
+        self.ta_user.save()
 
     # changing the phone number
-    def test_01(self):
+    def test_updatePhoneNumber(self):
         # login
         response = self.client.post(reverse('login'), {'username': 'prof01', 'password': 'pass'})
-        self.assertEqual(response.url, '/Homepage/')
+        self.assertEqual(response.url, reverse('home'), msg="Error: logging in does not redirect properly")
 
         response = self.client.post(reverse('editself'), {"username": "prof01", "first_name": "Test", "last_name": "Instructor",
                                                           "phone_number": "416-555-5501",
@@ -30,7 +28,7 @@ class TestAddPersonalInfo(TestCase):
 
         self.pi = MyUser.objects.all()
 
-        self.assertEqual(len(self.pi), 1)
+        self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
 
         # for i in self.pi:
         #     if i.phoneNumber == "416-555-5501":
@@ -39,10 +37,10 @@ class TestAddPersonalInfo(TestCase):
         self.assertEqual(user.phone_number, "416-555-5501")
 
     # changing email
-    def test_02(self):
+    def test_updateEmail(self):
         # login
         response = self.client.post(reverse('login'), {'username': 'prof01', 'password': 'pass'})
-        self.assertEqual(response.url, '/Homepage/')
+        self.assertEqual(response.url, reverse('home'), msg="Error: logging in does not redirect properly")
 
         response1 = self.client.post(reverse('editself'), {"username": "prof01", "first_name": "Test",
                                                            "last_name": "Instructor", "phone_number": "416-555-5501",
@@ -51,27 +49,37 @@ class TestAddPersonalInfo(TestCase):
 
         self.pi = MyUser.objects.all()
 
-        self.assertEqual(len(self.pi), 1)
+        self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
 
-        for i in self.pi:
-            if i.email == "csdept@uwm.edu":
-                self.assertTrue("Successfully added personal info")
+        self.assertEqual(MyUser.objects.get(username="prof01").email, "csdept@uwm.com", msg="Error: email is not updated")
 
-        # changing address
-
-    def test_03(self):
+    # changing address
+    def test_updateAddress(self):
         # login
         response = self.client.post(reverse('login'), {'username': 'prof01', 'password': 'pass'})
-        self.assertEqual(response.url, '/Homepage/')
+        self.assertEqual(response.url, reverse('home'), msg="Error: logging in does not redirect properly")
 
         response2 = self.client.post(reverse('editself'), {"username": "prof01", "name": "Test Instructor",
-                                                           "PhoneNumber": "416-555-5501",
-                                                           "email": "csdept@uwm.com",
-                                                           "addressln1": "4316 Red Street"})
+                                                           "phone_number": "416-555-5501",
+                                                           "email": "csdept@uwm.edu",
+                                                           "addressln1": "4316 Red Street",
+                                                           "addressln2": "Milwaukee, WI"})
         self.pi = MyUser.objects.all()
 
-        self.assertEqual(len(self.pi), 1)
+        self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
 
-        for i in self.pi:
-            if i.email == "csdept@uwm.edu":
-                self.assertTrue("Successfully added personal info")
+        self.assertEqual(MyUser.objects.get(username="prof01").addressln1, "4316 Red Street", msg="Error: address is not updated")
+        self.assertEqual(MyUser.objects.get(username="prof01").addressln2, "Milwaukee, WI", msg="Error: address is not updated")
+
+    def test_updateTASkills(self):
+        response = self.client.post(reverse('login'), {'username': 'ta01', 'password': 'pass'})
+        self.assertEqual(response.url, reverse('home'), msg="Error: logging in does not redirect properly")
+
+        response1 = self.client.post(reverse('editself'), {"username": "ta01", "first_name": "ta",
+                                                           "last_name": "ta", "phone_number": "416-555-5501",
+                                                           "email": "csdept@uwm.com",
+                                                           "skills": "Grading"})
+
+        self.pi = MyUser.objects.all()
+        self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
+        self.assertEqual(TASkills.objects.get(TA__username="ta01").skills, "Grading", msg="Error: skills are not updated")
