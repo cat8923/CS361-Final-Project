@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
-from finalApp.views import Login, Homepage, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditAccount, AccountList, EditCourse
+from finalApp.views import Login, Homepage, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditAccount, AccountList, EditCourse, AccountView
 import finalApp.views as fav
 
 urlpatterns = [
