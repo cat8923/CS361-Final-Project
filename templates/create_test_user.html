@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Test users</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
 
 {% if message %}
     <p>{{ message }}</p><br>
+{% endif %}
+{% if username %}
+    <p>Username is: {{ username }}</p>
 {% endif %}
 <form action="/test_create/" method="post">
     {% csrf_token %}
@@ -21,7 +20,8 @@
     <input type="text" id="pass" name="password"><br>
     <label for="title">Title:</label>
     <input type="text" id="title" name="title"><br>
-    <input type="hidden" name="address" value="3400 N Maryland">
+    <input type="hidden" name="addressln1" value="3400 N Maryland">
+    <input type="hidden" name="addressln2" value="Milwaukee wi 53211">
     <input type="hidden" name="number" value="123456789">
     <input type="hidden" name="email" value="user@user.com">
     <input type="submit" value="submit">
@@ -35,17 +35,41 @@
             <tr><td>
                 <table>
                 <tr><th>{{ i.0 }}</th></tr>
-                {% for j in i.1 %}
+                {% for j in i.2 %}
                     <tr><td class="sections">{{ j }}</td></tr>
                 {% endfor %}
-                {% for j in i.2 %}
-                    <tr><td class="labs">{{ j }}</td></tr>
+                {% for j in i.3 %}
+                    <tr><td class="labs">{{ j }}</td><td>Assign TA</td></tr>
                 {% endfor %}
                 </table>
             </td></tr>
         {% endfor %}
     </table>
+    <br><br>
+{% endif %}
+{% if users %}
+    <table style="border: 1px solid black;">
+        <thead>
+            <th>Name</th>
+            <th>Position</th>
+        </thead>
+        {% for i in users %}
+
+            <tr>
+            <td><a href="{% url 'test' username=i.2 %}">{{ i.0 }}</a></td>
+            <td>{{ i.1 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+{% endif %}
+{% if courses %}
+    <form>
+    <label for="title">Title:</label>
+    <input name="title" value="{{ courses.title }}" readonly>
+    <label for="designation">Designation</label>
+    <input name="designation" value="{{ courses.designation }}" readonly>
+    </form>
 {% endif %}
 
-</body>
-</html>
+{% endblock %}

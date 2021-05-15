@@ -20,16 +20,18 @@ from django.conf.urls import url
 from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, \
     EditAccount, AccountList  # EditLab,
 
+from finalApp.views import Login, Homepage, AddLab, CreateCourse, CourseList, CreateAccount, Blank, Logout, TestCreate, EditCourse, AssignTas #EditLab
+import finalApp.views as fav
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Blank.as_view()),
-    path('Logout/', Logout.as_view()),
+    path('Logout/', Logout.as_view(), name='logout'),
     path('Login/', Login.as_view()),
-    path('Homepage/', Homepage.as_view()),
+    path('Homepage/', Homepage.as_view(), name='home'),
     path('createLab/', AddLab.as_view()),
-    path('Create_Course/', CreateCourse.as_view()),
-    path('Course_List/', CourseList.as_view()),
+    path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
+    path('Course_List/', CourseList.as_view(), name="courses"),
     path('create_account/', CreateAccount.as_view()),
     path('test_create/', TestCreate.as_view()),
     path('Account_List/', AccountList.as_view()),

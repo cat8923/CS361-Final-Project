@@ -25,7 +25,9 @@
     width: 100%;
     clear: both;
 }
-
+.main {
+    width: 100%;
+}
 .divider {
     width: 5px;
     height: auto;
@@ -35,7 +37,11 @@
 .select {
     width: 150px;
     margin: 10px;
-
+}
+.menu {
+    background-color: blue;
+    width: 10%;
+    float: left;
 }
 .select focus{
     min-width: 150px;

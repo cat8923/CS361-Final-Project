@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from finalApp.database_access import login
+from finalApp.database_access import login, ErrorString
 from finalApp import database_access
-from .models import MyUser, UserType
-
+from .models import CourseData, MyUser, UserType
 # Create your views here.
 
 
@@ -47,8 +46,6 @@ class Login(View):
             return render(request, "Login.html", {"message": str(user)})
         else:
             request.session["first_name"] = user["first_name"]
-            request.session["position"] = user["position"]
-            request.session["username"] = user['username']
             request.session.save()
             return redirect("/Homepage/")
 
@@ -58,7 +55,7 @@ class Homepage(View):
 
         name = request.session.get('first_name')
         if name:
-            return render(request, "Homepage.html", {'name': name, 'pagetitle': "Homepage"})
+            return render(request, "Homepage.html", {'name': name})
         else:
             return redirect("/Login/")
 
@@ -181,10 +178,8 @@ class EditAccount(View):
             request.session.flush()
             return redirect('')
         elif click == 'Save Edits':
-            account = database_access.update_user(request.POST)
-            return render(request, "edit_account.html", {"user": database_access.get_userdata(request.session['username']),
-                                                      "position": request.session['position'],
-                                                      "message": str(account) if not account else "Success!"})
+            account = self.kwargs
+            return render(request, "edit_account.html", account)
         elif click == 'Cancel':
             return redirect("/Account_List/")
         elif click == 'Delete Account':
