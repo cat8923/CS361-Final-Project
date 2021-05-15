@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="h1Style">Edit Course</h1>
+<h1 class="h1Style">{% if position == "S"%}Edit{% else %}View{% endif %} Course</h1>
 
 {% if position == "S" %}
 <table>
@@ -41,7 +41,7 @@
         {% for s in course.sections %}
         <tr>
             <td>{{ s.section }}</td>
-            <td {% if position != "S" %}colspan="2" {% endif %}>{% if s.instructor != None %}{{ s.instructor.get_full_name }}{% else %}Staff{% endif %}</td>
+            <td>{% if s.instructor != None %}{{ s.instructor.get_full_name }}{% else %}Staff{% endif %}</td>
             {% if position == "S" %}<td><a href="{% url 'addinst' course=course.designation section=s.section%}">Assign Instructor</a></td>{% endif %}
         </tr>
         {% endfor %}
@@ -50,13 +50,13 @@
         <tr>
             <th>Section</th>
             <th>TA</th>
-            {% if position != "T" %}<th>Assign TA</th>{% endif %}
+            {% if position == "S" %}<th>Assign TA</th>{% endif %}
         </tr>
         {% for s in course.labs %}
         <tr>
             <td>{{ s.section }}</td>
             <td>{% if s.TA != None %}{{ s.TA.get_full_name }}{% else %}Staff{% endif %}</td>
-            {% if position != "T" %}<td><a href="{% url 'addta' course=course.designation lab=s.section%}">Assign TA</a></td>{% endif %}
+            {% if position == "S" %}<td><a href="{% url 'addta' course=course.designation lab=s.section%}">Assign TA</a></td>{% endif %}
         </tr>
         {% endfor %}
         {% endif %}

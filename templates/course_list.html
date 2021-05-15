@@ -11,7 +11,7 @@
         </select><br><br>
         {% csrf_token %}
         <label>
-            <input type="submit" value="Edit Course" name="onclick">
+            <input type="submit" value="{% if position == "S"%}Edit{% else %}View{% endif %} Course" name="onclick">
         </label>
 
     </form>
@@ -24,12 +24,14 @@
         </label>
     </form>-->
 
+    {% if position == "S" %}
     <form action="{% url 'courses' %}" align="left" method="post">
         {% csrf_token %}
         <label class="logoutLblPos">
             <input type="submit" value="Create New Course" name="onclick">
         </label>
     </form>
+    {% endif %}
 </div>
 {% endblock %}
 

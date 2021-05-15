@@ -295,8 +295,8 @@ def get_userdata(username: str) -> Union[ErrorString, dict]:
 def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if type(designation) != str:
         return ErrorString("Error: wrong type for designation")
-    temp = CourseData.objects.filter(designation__iexact=designation)
-    if not temp.exists():
+    temp = list(CourseData.objects.filter(designation__iexact=designation))
+    if not temp:
         return ErrorString("Error: course does not exist")
     temp = temp[0]
     return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}

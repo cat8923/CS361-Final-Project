@@ -33,12 +33,14 @@
         </table>
         </form>
 
+    <!--
         <form action="/Create_Course/" align="right" method="post">
-                {% csrf_token %}
-                <label class="logoutLblPos">
-                    <input type="submit" value="Logout" name="onclick">
-                </label>
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" value="Logout" name="onclick">
+            </label>
         </form>
+    -->
 </div>
     {% if message %}
         <p>{{ message }}</p>

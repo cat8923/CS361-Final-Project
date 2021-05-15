@@ -18,6 +18,19 @@ def check_logged_in_as(session, types=None):
     return True
 
 
+class MyCourses(View):
+    def get(self, request):
+        if not check_logged_in_as(request.session, ["I"]): return redirect("/")
+
+        return render(request, "my_courses.html", {"pagetitle": "My Courses", "position": request.session['position'],
+                                                   "courses": database_access.get_courses_of_instructor(request.session['username'])})
+
+
+class AssignMyTAs(View):
+    def get(self, request):
+        pass
+
+
 class EditSelf(View):
     def get(self, request):
         if not check_logged_in_as(request.session): return redirect("/")
@@ -25,7 +38,8 @@ class EditSelf(View):
         return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
                                                   "position": request.session['position'],
                                                   "username": request.session['username'],
-                                                  "skills": database_access.get_skills(request.session['username'])})
+                                                  "skills": database_access.get_skills(request.session['username']),
+                                                  "pagetitle": "Edit Self"})
 
     def post(self, request):
         check = database_access.update_user(request.POST)
@@ -36,7 +50,8 @@ class EditSelf(View):
                                                   "position": request.session['position'],
                                                   "message": str(check) if not check else "Success!",
                                                   "username": request.session['username'],
-                                                  "skills": database_access.get_skills(request.session['username'])})
+                                                  "skills": database_access.get_skills(request.session['username']),
+                                                  "pagetitle": "Edit Self"})
 
 
 class AssignTasToCourse(View):
@@ -149,7 +164,8 @@ class Homepage(View):
     def get(self, request):
         if not check_logged_in_as(request.session): return redirect("/")
 
-        return render(request, "Homepage.html", {'name': request.session.get('first_name'), 'pagetitle': "Homepage"})
+        return render(request, "Homepage.html", {'name': request.session.get('first_name'), 'pagetitle': "Homepage",
+                                                 'position': request.session['position']})
 
     def post(self, request):
         click = request.POST['onclick']
@@ -208,7 +224,8 @@ class CourseList(View):
 
         if len(request.GET) == 0:
             courses = database_access.list_courses()
-            return render(request, "course_list.html", {"courses": courses, "pagetitle": "List of Courses"})
+            return render(request, "course_list.html", {"courses": courses, "pagetitle": "List of Courses",
+                                                        "position": request.session['position']})
 
     def post(self, request):
         click = request.POST['onclick']
