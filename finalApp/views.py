@@ -8,8 +8,20 @@ from django.urls import reverse
 # Create your views here.
 
 
+def check_logged_in_as(session, types=None):
+    if types is None: types = ["T", "S", "I"]
+
+    if not session.get("username"): return False
+
+    if session.get("position") not in types: return False
+
+    return True
+
+
 class EditSelf(View):
     def get(self, request):
+        if not check_logged_in_as(request.session): return redirect("/")
+
         return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
                                                   "position": request.session['position'],
                                                   "username": request.session['username'],
@@ -29,6 +41,8 @@ class EditSelf(View):
 
 class AssignTasToCourse(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         return render(request, "assign_ta_to_course.html", {"pagetitle": "Assign TA",
                                                             "designation": self.kwargs.get("course"),
                                                             "TAs": database_access.list_tas()})
@@ -44,6 +58,8 @@ class AssignTasToCourse(View):
 
 class AssignTasToLab(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S", "I"]): return redirect("/")
+
         return render(request, "assign_ta_to_lab.html", {"pagetitle": "Assign TA to Lab",
                                                          "designation": self.kwargs.get('course'),
                                                          "TAs": database_access.get_tas_of_course(
@@ -65,6 +81,8 @@ class AssignTasToLab(View):
 
 class AssignInstructor(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
                                                           "designation": self.kwargs.get("course"),
                                                           "section": self.kwargs.get("section"),
@@ -129,12 +147,9 @@ class Login(View):
 
 class Homepage(View):
     def get(self, request):
+        if not check_logged_in_as(request.session): return redirect("/")
 
-        name = request.session.get('first_name')
-        if name:
-            return render(request, "Homepage.html", {'name': name, 'pagetitle': "Homepage"})
-        else:
-            return redirect("/Login/")
+        return render(request, "Homepage.html", {'name': request.session.get('first_name'), 'pagetitle': "Homepage"})
 
     def post(self, request):
         click = request.POST['onclick']
@@ -149,6 +164,8 @@ class Homepage(View):
 
 class CreateCourse(View):
     def get(self, request):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         return render(request, "create_course.html", {"pagetitle": "Create Course"})
 
     def post(self, request):
@@ -161,6 +178,8 @@ class CreateCourse(View):
 
 class AddSection(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         return render(request, "create_course_section.html",
                       {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
 
@@ -185,6 +204,8 @@ class AddSection(View):
 
 class CourseList(View):
     def get(self, request):
+        if not check_logged_in_as(request.session): return redirect("/")
+
         if len(request.GET) == 0:
             courses = database_access.list_courses()
             return render(request, "course_list.html", {"courses": courses, "pagetitle": "List of Courses"})
@@ -272,6 +293,8 @@ class EditAccount(View):
 
 class EditCourse(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session): return redirect("/")
+
         print(self.kwargs)
         course = self.kwargs.get("course")
         if course:
