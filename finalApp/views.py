@@ -231,7 +231,7 @@ class CourseList(View):
         click = request.POST['onclick']
         if click == 'Create New Course':
             return redirect("/Create_Course/")
-        elif click == 'Edit Course':
+        elif click == 'Edit Course' or click == 'View Course':
             print(request.POST)
             course = request.POST['courses']
             return redirect("/Edit_Course/" + course + "/")
