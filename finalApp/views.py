@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from finalApp.database_access import login
 from finalApp import database_access
-from .models import MyUser, UserType
 from django.urls import reverse
+
+
 # Create your views here.
 
 
@@ -17,7 +18,8 @@ class EditSelf(View):
     def post(self, request):
         check = database_access.update_user(request.POST)
         if request.session['position'] == "T":
-            database_access.update_ta_skill({"taUsername": request.session['username'], "skills": request.POST['skills']})
+            database_access.update_ta_skill(
+                {"taUsername": request.session['username'], "skills": request.POST['skills']})
         return render(request, "edit_self.html", {"user": database_access.get_userdata(request.session['username']),
                                                   "position": request.session['position'],
                                                   "message": str(check) if not check else "Success!",
@@ -44,7 +46,8 @@ class AssignTasToLab(View):
     def get(self, request, **kwargs):
         return render(request, "assign_ta_to_lab.html", {"pagetitle": "Assign TA to Lab",
                                                          "designation": self.kwargs.get('course'),
-                                                         "TAs": database_access.get_tas_of_course(self.kwargs.get('course')),
+                                                         "TAs": database_access.get_tas_of_course(
+                                                             self.kwargs.get('course')),
                                                          "lab": self.kwargs.get('lab')})
 
     def post(self, request, **kwargs):
@@ -54,10 +57,10 @@ class AssignTasToLab(View):
 
         return render(request, "assign_ta_to_lab.html", {"pagetitle": "Assign TA to Lab",
                                                          "designation": self.kwargs.get('course'),
-                                                         "TAs": database_access.get_tas_of_course(self.kwargs.get('course')),
+                                                         "TAs": database_access.get_tas_of_course(
+                                                             self.kwargs.get('course')),
                                                          "lab": self.kwargs.get('lab'),
                                                          "message": str(check) if not check else "Success!"})
-
 
 
 class AssignInstructor(View):
@@ -149,19 +152,22 @@ class CreateCourse(View):
         return render(request, "create_course.html", {"pagetitle": "Create Course"})
 
     def post(self, request):
-        check = database_access.make_course({"title": request.POST.get('title'), "designation": request.POST.get('designation'),
-                                             "section": int(request.POST.get('section')), "semester": request.POST.get('semester')})
-        return render(request, "create_course.html", {"message": str(check) if not check else "success", "pagetitle": "Create Course"})
+        check = database_access.make_course(
+            {"title": request.POST.get('title'), "designation": request.POST.get('designation'),
+             "section": int(request.POST.get('section')), "semester": request.POST.get('semester')})
+        return render(request, "create_course.html",
+                      {"message": str(check) if not check else "success", "pagetitle": "Create Course"})
 
-        
+
 class AddSection(View):
     def get(self, request, **kwargs):
-        return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
+        return render(request, "create_course_section.html",
+                      {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
 
     def post(self, request, **kwargs):
         try:
             tempsection = int(request.POST['section'])
-        except:
+        except ValueError:
             tempsection = None
 
         if request.POST.get('isLab'):
@@ -172,8 +178,9 @@ class AddSection(View):
                                                  "section": tempsection})
         print(request.POST)
 
-        return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"],
-                                                              "message": str(check) if not check else "Success!"})
+        return render(request, "create_course_section.html",
+                      {"pagetitle": "Add Section", "designation": self.kwargs["course"],
+                       "message": str(check) if not check else "Success!"})
 
 
 class CourseList(View):
@@ -189,7 +196,7 @@ class CourseList(View):
         elif click == 'Edit Course':
             print(request.POST)
             course = request.POST['courses']
-            return redirect("/Edit_Course/"+course+"/")
+            return redirect("/Edit_Course/" + course + "/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
@@ -219,18 +226,6 @@ class CreateAccount(View):
         return render(request, "create_account.html")
 
     def post(self, request):
-        '''
-        accountDict = {
-            "username": request.POST["description"],
-            "password": request.POST["description"],
-            "first_name": request.POST["description"],
-            "last_name": request.POST["description"],
-            "address": request.POST["description"],
-            "title": request.POST["description"],
-            "email": request.POST["description"],
-            "number": request.POST["description"],
-        }
-        '''
         message = database_access.make_user(request.POST)
         if message:
             message = "successfully created account"
@@ -287,7 +282,7 @@ class EditCourse(View):
         print(data)
 
         return render(request, "edit_course.html", data)
-      
+
     def post(self, request):
         click = request.POST['onclick']
         if click == 'Logout':
