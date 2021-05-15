@@ -25,8 +25,39 @@ class EditSelf(View):
                                                   "skills": database_access.get_skills(request.session['username'])})
 
 
-class AssignTas(View):
-    pass
+class AssignTasToCourse(View):
+    def get(self, request, **kwargs):
+        return render(request, "assign_ta_to_course.html", {"pagetitle": "Assign TA",
+                                                            "designation": self.kwargs.get("course"),
+                                                            "TAs": database_access.list_tas()})
+
+    def post(self, request, **kwargs):
+        check = database_access.assign_ta_to_course({"taUsername": request.POST.get('taUsername'),
+                                                     "designation": self.kwargs.get('course')})
+        return render(request, "assign_ta_to_course.html", {"pagetitle": "Assign TA",
+                                                            "designation": self.kwargs.get("course"),
+                                                            "TAs": database_access.list_tas(),
+                                                            "message": str(check) if not check else "Success!"})
+
+
+class AssignTasToLab(View):
+    def get(self, request, **kwargs):
+        return render(request, "assign_ta_to_lab.html", {"pagetitle": "Assign TA to Lab",
+                                                         "designation": self.kwargs.get('course'),
+                                                         "TAs": database_access.get_tas_of_course(self.kwargs.get('course')),
+                                                         "lab": self.kwargs.get('lab')})
+
+    def post(self, request, **kwargs):
+        check = database_access.assign_ta_to_lab({"designation": self.kwargs.get("course"),
+                                                  "labSection": int(self.kwargs.get("lab")),
+                                                  "taUsername": request.POST.get("taUsername")})
+
+        return render(request, "assign_ta_to_lab.html", {"pagetitle": "Assign TA to Lab",
+                                                         "designation": self.kwargs.get('course'),
+                                                         "TAs": database_access.get_tas_of_course(self.kwargs.get('course')),
+                                                         "lab": self.kwargs.get('lab'),
+                                                         "message": str(check) if not check else "Success!"})
+
 
 
 class AssignInstructor(View):
@@ -130,8 +161,18 @@ class AddSection(View):
         return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
 
     def post(self, request, **kwargs):
-        check = database_access.make_course({"title": " ", "semester": " ", "designation": self.kwargs["course"],
-                                             "section": int(request.POST['section'])})
+        try:
+            tempsection = int(request.POST['section'])
+        except:
+            tempsection = None
+
+        if request.POST.get('isLab'):
+            check = database_access.make_lab({"designation": self.kwargs.get("course"),
+                                              "section": tempsection})
+        else:
+            check = database_access.make_course({"title": " ", "semester": " ", "designation": self.kwargs["course"],
+                                                 "section": tempsection})
+        print(request.POST)
 
         return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"],
                                                               "message": str(check) if not check else "Success!"})
@@ -258,7 +299,7 @@ class EditCourse(View):
             course = database_access.get_coursedata(course)
         else:
             course = {}
-        data = {"course": course, "pagetitle": "Edit Course"}
+        data = {"course": course, "pagetitle": "Edit Course", "position": request.session["position"]}
         print(data)
 
         return render(request, "edit_course.html", data)
