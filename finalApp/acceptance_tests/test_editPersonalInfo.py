@@ -21,10 +21,11 @@ class TestAddPersonalInfo(TestCase):
         response = self.client.post(reverse('login'), {'username': 'prof01', 'password': 'pass'})
         self.assertEqual(response.url, reverse('home'), msg="Error: logging in does not redirect properly")
 
-        response = self.client.post(reverse('editself'), {"username": "prof01", "first_name": "Test", "last_name": "Instructor",
-                                                          "phone_number": "416-555-5501",
-                                                          "email": "csdept@example.com",
-                                                          "addressln1": "4306 Griff Street"})
+        response = self.client.post(reverse('editself'),
+                                    {"username": "prof01", "first_name": "Test", "last_name": "Instructor",
+                                     "phone_number": "416-555-5501",
+                                     "email": "csdept@example.com",
+                                     "addressln1": "4306 Griff Street"})
 
         self.pi = MyUser.objects.all()
 
@@ -51,7 +52,8 @@ class TestAddPersonalInfo(TestCase):
 
         self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
 
-        self.assertEqual(MyUser.objects.get(username="prof01").email, "csdept@uwm.com", msg="Error: email is not updated")
+        self.assertEqual(MyUser.objects.get(username="prof01").email, "csdept@uwm.com",
+                         msg="Error: email is not updated")
 
     # changing address
     def test_updateAddress(self):
@@ -68,8 +70,10 @@ class TestAddPersonalInfo(TestCase):
 
         self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
 
-        self.assertEqual(MyUser.objects.get(username="prof01").addressln1, "4316 Red Street", msg="Error: address is not updated")
-        self.assertEqual(MyUser.objects.get(username="prof01").addressln2, "Milwaukee, WI", msg="Error: address is not updated")
+        self.assertEqual(MyUser.objects.get(username="prof01").addressln1, "4316 Red Street",
+                         msg="Error: address is not updated")
+        self.assertEqual(MyUser.objects.get(username="prof01").addressln2, "Milwaukee, WI",
+                         msg="Error: address is not updated")
 
     def test_updateTASkills(self):
         response = self.client.post(reverse('login'), {'username': 'ta01', 'password': 'pass'})
@@ -82,4 +86,5 @@ class TestAddPersonalInfo(TestCase):
 
         self.pi = MyUser.objects.all()
         self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
-        self.assertEqual(TASkills.objects.get(TA__username="ta01").skills, "Grading", msg="Error: skills are not updated")
+        self.assertEqual(TASkills.objects.get(TA__username="ta01").skills, "Grading",
+                         msg="Error: skills are not updated")
