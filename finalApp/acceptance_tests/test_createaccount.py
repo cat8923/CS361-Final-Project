@@ -32,4 +32,3 @@ class createAccount(TestCase):
                                                          "number": "123456789"})
         self.assertEqual(response.context.get("message"), "Error: username user1 is already taken", msg="account was not created")
         self.assertEqual(response.request["PATH_INFO"], "/create_account/")
-        

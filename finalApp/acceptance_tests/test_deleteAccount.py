@@ -15,31 +15,30 @@ class testDeleteAccount(TestCase):
             temp.save()
 
     def test_1(self):
+        response = self.client.post("/", {'username': 'Supervisor', 'password': 'pass'}, follow=True)
+        self.assertEqual("/Homepage/", response.request["PATH_INFO"],"Valid Information will take to the homepage page")
 
-            response = self.client.post("/", {'username': 'Supervisor', 'password': 'pass'}, follow=True)
-            self.assertEqual("/Homepage/", response.request["PATH_INFO"],"Valid Information will take to the homepage page")
-
-            # add a user
-            response1 = self.Client.post("/create_account/", {"username": "bic21", "password": "hello", "first_name": "brett",
-                                                         "last_name": "frank", "address": "3423 N Maryland",
-                                                         "title": str(UserType.SUPERVISOR), "email": "test@test.com",
-                                                         "number": "123456789"})
-            self.assertEqual(response1.context.get("message"), "successfully created account",msg="did not confirm account creation")
-
-
-            response2 = self.client.post('/edit_account/', {"User": 2})
+        # add a user
+        response1 = self.Client.post("/create_account/", {"username": "bic21", "password": "hello", "first_name": "brett",
+                                                     "last_name": "frank", "address": "3423 N Maryland",
+                                                     "title": str(UserType.SUPERVISOR), "email": "test@test.com",
+                                                     "number": "123456789"})
+        self.assertEqual(response1.context.get("message"), "successfully created account",msg="did not confirm account creation")
 
 
-            response3 = self.client.get('/account_list/')
-
-            users = list(response3.context['users'])
-            print(users)
+        response2 = self.client.post('/edit_account/', {"User": 2})
 
 
-            if len(users) == 1:
-                self.assertTrue("Successful Deletion")
-            else:
-                self.assertFalse("Successful Deletion")
+        response3 = self.client.get('/account_list/')
 
-        def test_2(self):
-            pass
+        users = list(response3.context['users'])
+        print(users)
+
+
+        if len(users) == 1:
+            self.assertTrue("Successful Deletion")
+        else:
+            self.assertFalse("Successful Deletion")
+
+    def test_2(self):
+        pass
