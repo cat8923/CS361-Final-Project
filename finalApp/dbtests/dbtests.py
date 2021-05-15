@@ -1,7 +1,7 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata, list_instructors
+    get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata, list_instructors, list_tas
 import random
 
 
@@ -548,4 +548,29 @@ class ListInstructorsTest(TestCase):
 
     def test_listInstructors(self):
         instructors = list(list_instructors())
-        self.assertListEqual(instructors, self.instructors)
+        self.assertListEqual(instructors, self.instructors, msg="Error: generated list of instructors is incorrect")
+
+
+class ListTAsTest(TestCase):
+    def setUp(self):
+        self.tas = []
+        for i in range(1,11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.tas.append((tempFn + " " +tempLn, tempUser))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
+        for i in range(11,21):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
+        for i in range(21,31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
+
+    def test_listTAs(self):
+        tas = list(list_tas())
+        self.assertListEqual(tas, self.tas, msg="Error: generated list of TAs is incorrect")
