@@ -29,7 +29,7 @@ urlpatterns = [
     path('Homepage/', Homepage.as_view(), name='home'),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
     path('Course_List/', CourseList.as_view(), name="courses"),
-    path('create_account/', CreateAccount.as_view()),
+    path('create_account/', CreateAccount.as_view(), name='createaccount'),
     path('test_create/', TestCreate.as_view(), name="test"),
     path('edit_self/', fav.EditSelf.as_view(), name='editself'),
     url(r'^test_create/(?P<username>[a-zA-Z0-9]+)', TestCreate.as_view(), name="test"),
