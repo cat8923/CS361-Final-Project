@@ -146,14 +146,12 @@ class Homepage(View):
 
 class CreateCourse(View):
     def get(self, request):
-        if len(request.GET) == 0:
-            TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-            return render(request, "create_course.html", {"TA": TA, "pagetitle": "Create Course"})
+        return render(request, "create_course.html", {"pagetitle": "Create Course"})
 
     def post(self, request):
         check = database_access.make_course({"title": request.POST.get('title'), "designation": request.POST.get('designation'),
                                              "section": int(request.POST.get('section')), "semester": request.POST.get('semester')})
-        return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success", "pagetitle": "Create Course"})
+        return render(request, "create_course.html", {"message": str(check) if not check else "success", "pagetitle": "Create Course"})
 
         
 class AddSection(View):
@@ -176,20 +174,6 @@ class AddSection(View):
 
         return render(request, "create_course_section.html", {"pagetitle": "Add Section", "designation": self.kwargs["course"],
                                                               "message": str(check) if not check else "Success!"})
-
-
-class AddLab(View):
-    def get(self, request):
-        if len(request.GET) == 0:
-            TA = list(filter(lambda x: x[1] == 'T', database_access.list_users()))
-            return render(request, "/Create_Lab/", {"TA": TA})
-
-    def post(self, request):
-        labDict = {
-            "courseID": request.GET["description"],
-            "section": request.GET["designation"],
-        }
-        database_access.make_lab(labDict)
 
 
 class CourseList(View):
