@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Create Course</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-    <h1 class="h1Style">Create Course</h1>
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="h1Style">Create Course</h1>
 <div class="formStyle">
         <form action="{% url 'createcourse' %}" method="post">
         {% csrf_token %}
@@ -27,7 +23,7 @@
 
             <tr>
                 <td><label for="section">Section: </label></td>
-                <td><input type="number" id="section" name="section"></td>
+                <td><input type="number" id="section" name="section" value="201"></td>
             </tr>
 
             <tr>
@@ -37,15 +33,17 @@
         </table>
         </form>
 
+    <!--
         <form action="/Create_Course/" align="right" method="post">
-                {% csrf_token %}
-                <label class="logoutLblPos">
-                    <input type="submit" value="Logout" name="onclick">
-                </label>
+            {% csrf_token %}
+            <label class="logoutLblPos">
+                <input type="submit" value="Logout" name="onclick">
+            </label>
         </form>
+    -->
 </div>
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
-</body>
-</html>
+
+{% endblock %}

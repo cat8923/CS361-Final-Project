@@ -16,7 +16,7 @@
         <!-- insert selection list box here -->
         <select size="4" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
                 {% for i in accounts  %}
-                 <option value="{{ i.id }}">{{ i.title }}</option>
+                 <option value="{{ i.2 }}">{{ i.0 }}</option>
                 {% endfor %}
             </select><br><br>
         </select>

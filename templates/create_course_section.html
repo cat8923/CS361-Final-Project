@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Add Section to {{ designation }}</h1>
+
+<form method="post" action="{% url 'addsection' course=designation %}">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td><label for="section">Section:</label></td>
+            <td><input type="number" id="section" name="section"></td>
+        </tr>
+        <tr>
+            <td><label for="isLab">Select to make lab:</label></td>
+            <td><input type="checkbox" id="isLab" name="isLab"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="Submit"></td>
+        </tr>
+    </table>
+</form>
+
+<br>
+<a href="{% url 'edit' course=designation %}">Go Back</a>
+
+
+{% if message %}
+    <hr>
+    <p>{{ message }}</p>
+{% endif %}
+
+{% endblock %}

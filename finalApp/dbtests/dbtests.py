@@ -1,8 +1,9 @@
 from django.test import TestCase
 from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
-from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, assign_instructor, \
-    get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata
-import random
+from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, \
+    assign_instructor, \
+    get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata, list_instructors, \
+    list_tas
 
 
 # Create your tests here.
@@ -17,7 +18,8 @@ class UserCreateTest(TestCase):
 
     def test_createUser(self):
         check = make_user({"username": "user5", "password": "pass5", "first_name": "john", "last_name": "doe",
-                           "addressln1": "3400 N Maryland", "addressln2": "Milwaukee, WI 53211", "title": str(UserType.SUPERVISOR), "email": "testtest.com",
+                           "addressln1": "3400 N Maryland", "addressln2": "Milwaukee, WI 53211",
+                           "title": str(UserType.SUPERVISOR), "email": "testtest.com",
                            "number": "123456789"})
 
         self.assertTrue(check, msg="Error: good data does not create user")
@@ -107,12 +109,12 @@ class UserLoginTest(TestCase):
 
 class CreateCourseTest(TestCase):
     def setUp(self):
-        make_course({"title": "course1", "section": 201, "designation": "CS351"})
+        make_course({"title": "course1", "section": 201, "designation": "CS351", "semester": "SP21"})
 
     def test_goodData(self):
-        check = make_course({"title": "course0", "section": 200, "designation": "CS350"})
+        check = make_course({"title": "course0", "section": 200, "designation": "CS350", "semester": "SP21"})
         self.assertTrue(check, msg="Error: good course data fails to create course")
-        print(list(map(str, CourseSections.objects.all())))
+        self.assertEqual(len(CourseData.objects.all()), 2, msg="Error: new course is not created")
 
     def test_badData(self):
         check = make_course({"title": "course0", "section": "200"})
@@ -123,12 +125,12 @@ class CreateCourseTest(TestCase):
     def test_courseSectionExists(self):
         check = make_course({"title": "course1", "section": 201, "designation": "CS351"})
         self.assertFalse(check, msg="Error: making course does not fail when course section exists")
-        tempCourse = CourseData.objects.get(title="course1")
+        tempCourse = CourseData.objects.get(designation__iexact="CS351")
         self.assertEqual(len(CourseSections.objects.filter(course=tempCourse, section=201)), 1,
                          msg="Error: extra section is created when data is incorrect")
 
     def test_existingCourse(self):
-        check = make_course({"title": "course1", "section": 202, "designation": "CS351"})
+        check = make_course({"title": "course1", "section": 202, "designation": "CS351", "semester": " "})
         self.assertTrue(check, msg="Error: creating new section for a course fails when it should not")
 
     def test_missingData(self):
@@ -374,7 +376,8 @@ class AssignInstructorCourseTest(TestCase):
         check = assign_instructor({"designation": "cs1", "courseSection": 201, "instructorUsername": "user2"})
         self.assertFalse(check, msg="Error: non-instructor does not return false")
         section = CourseSections.objects.get(course_id=1, section=201)
-        self.assertEqual(section.instructor, None, msg="Error: someone was assigned to the course when a non-instructor was provided")
+        self.assertEqual(section.instructor, None,
+                         msg="Error: someone was assigned to the course when a non-instructor was provided")
 
     def test_courseDoesNotExist(self):
         check = assign_instructor({"designation": "cs2", "courseSection": 201, "instructorUsername": "user1"})
@@ -439,11 +442,14 @@ class GetCourseIDTest(TestCase):
 
 class UpdateUserDataTest(TestCase):
     def setUp(self):
-        MyUser.objects.create(username="user1", email="originalemail1", addressln1="3400 N Maryland", phone_number="123456789")
-        MyUser.objects.create(username="user2", email="originalemail2", addressln1="3401 N Maryland", phone_number="987654321")
+        MyUser.objects.create(username="user1", email="originalemail1", addressln1="3400 N Maryland",
+                              phone_number="123456789")
+        MyUser.objects.create(username="user2", email="originalemail2", addressln1="3401 N Maryland",
+                              phone_number="987654321")
 
     def test_goodData(self):
-        check = update_user({"username": "user1", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user(
+            {"username": "user1", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertTrue(check, msg="Error: updating user does not return true when data is good")
         user = MyUser.objects.get(username="user1")
         self.assertEqual(user.email, "newemail1", msg="Error: email is not updated")
@@ -451,17 +457,21 @@ class UpdateUserDataTest(TestCase):
         self.assertEqual(user.phone_number, "100200300", msg="Error: phone number is not updated")
 
     def test_userNoExist(self):
-        check = update_user({"username": "user3", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user(
+            {"username": "user3", "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: check does not return false when user does not exist")
 
     def test_invalidData(self):
-        check = update_user({"username": 1, "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user(
+            {"username": 1, "email": "newemail1", "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when username is incorrect type")
-        check = update_user({"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": "100200300"})
+        check = update_user(
+            {"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when email is incorrect type")
         check = update_user({"username": "user1", "email": "newemail1", "addressln1": 1, "phone_number": "100200300"})
         self.assertFalse(check, msg="Error: updating user does not return false when address is incorrect type")
-        check = update_user({"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": 100200300})
+        check = update_user(
+            {"username": "user1", "email": 1, "addressln1": "3400 S Maryland", "phone_number": 100200300})
         self.assertFalse(check, msg="Error: updating user does not return false when phone number is incorrect type")
 
     def test_updateSome(self):
@@ -483,44 +493,93 @@ class ListCoursesTest(TestCase):
     def setUp(self):
         self.result = []
 
-        for i in range(1,11):
+        for i in range(1, 11):
             temp = CourseData.objects.create(title="course" + str(i), designation="CS" + str(i), id=i)
-            temptup = (str(temp), [], [])
+            temptup = (str(temp), "CS" + str(i), [], [])
             for j in range(1, 4):
-                temptup[1].append(str(CourseSections.objects.create(course=temp, section=(j+200))))
+                temptup[2].append(str(CourseSections.objects.create(course=temp, section=(j + 200))))
             for j in range(1, 4):
-                temptup[2].append(str(LabData.objects.create(course=temp, section=(j+900))))
+                temptup[3].append(str(LabData.objects.create(course=temp, section=(j + 900))))
             self.result.append(temptup)
 
         print(self.result)
 
     def test_good(self):
-        alldata = list_courses()
+        alldata = list(list_courses())
         self.assertListEqual(alldata, self.result, msg="Error")
 
 
 class ListUsersTest(TestCase):
     def setUp(self):
         self.users = []
-        for i in range(1,11):
+        for i in range(1, 11):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.TA), tempUser))
+            self.users.append((tempFn + " " + tempLn, str(UserType.TA), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
-        for i in range(11,21):
+        for i in range(11, 21):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.SUPERVISOR), tempUser))
+            self.users.append((tempFn + " " + tempLn, str(UserType.SUPERVISOR), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
-        for i in range(21,31):
+        for i in range(21, 31):
             tempFn = "john" + str(i)
             tempLn = "doe" + str(i)
             tempUser = "user" + str(i)
-            self.users.append((tempFn + " " +tempLn, str(UserType.INSTRUCTOR), tempUser))
+            self.users.append((tempFn + " " + tempLn, str(UserType.INSTRUCTOR), tempUser))
             MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
 
     def test_good(self):
-        t = get_userdata("user1")
         self.assertListEqual(list_users(), self.users, msg="Error: listusers is wrong.")
+
+
+class ListInstructorsTest(TestCase):
+    def setUp(self):
+        self.instructors = []
+        for i in range(1, 11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
+        for i in range(11, 21):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
+        for i in range(21, 31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.instructors.append((tempFn + " " + tempLn, tempUser))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
+
+    def test_listInstructors(self):
+        instructors = list(list_instructors())
+        self.assertListEqual(instructors, self.instructors, msg="Error: generated list of instructors is incorrect")
+
+
+class ListTAsTest(TestCase):
+    def setUp(self):
+        self.tas = []
+        for i in range(1, 11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            self.tas.append((tempFn + " " + tempLn, tempUser))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.TA)
+        for i in range(11, 21):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.SUPERVISOR)
+        for i in range(21, 31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=UserType.INSTRUCTOR)
+
+    def test_listTAs(self):
+        tas = list(list_tas())
+        self.assertListEqual(tas, self.tas, msg="Error: generated list of TAs is incorrect")
