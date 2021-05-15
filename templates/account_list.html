@@ -3,8 +3,8 @@
     <div class="formstyle">
         <h1 class="h1style">List of Accounts</h1>
         <h2><small>Select an account to view</small></h2>
-        <form action="{% url 'accountlist' %}" method="POST">
-            <select size="4" id="accounts" name="accounts">
+        <form action="{% url 'accountlist' %}" method="post">
+            <select size="4" id="accounts" name="username">
                 {% for i in accounts %}
                 <option value={{ i.2 }}>{{ i.0 }}</option>
                 {% endfor %}

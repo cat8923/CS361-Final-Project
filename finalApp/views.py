@@ -169,12 +169,12 @@ class AccountList(View):
 
     def post(self, request):
         click = request.POST['onclick']
-        if click == 'Create New Course':
-            return redirect("/Create_Course/")
-        elif click == 'Edit Course':
+        if click == 'Create New Account':
+            return redirect("/create_account/")
+        elif click == 'Edit Account':
             print(request.POST)
-            course = request.POST['courses']
-            return redirect("/Edit_Course/"+course+"/")
+            account = request.POST['username']
+            return redirect("/Edit_Account/"+account+"/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
@@ -260,8 +260,11 @@ class EditAccount(View):
             request.session.flush()
             return redirect('')
         elif click == 'Save Edits':
-            account = self.kwargs
-            return render(request, "edit_account.html", account)
+            check = database_access.update_user(request.POST)
+            print(str(check))
+            return render(request, "edit_account.html", {"user": database_access.get_userdata(request.session['username']),
+                                                      "position": request.session['position'],
+                                                      "message": str(check) if not check else "Success!"})
         elif click == 'Cancel':
             return redirect("/Account_List/")
         elif click == 'Delete Account':
