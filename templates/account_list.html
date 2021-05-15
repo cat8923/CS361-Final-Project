@@ -1,34 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>View Accounts</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-    <h1 style="text-align: center;">List of Accounts</h1>
-    <h2 style="text-align: center;"><small>Select an account to view</small></h2>
-    <form action="/Account_List/" method="post">
-        <div class="center">
-            <select size="10" id="accounts" name="accounts">
-                    {% for i in accounts  %}
-                        <option value={{ i.2 }}>{{ i.0 }}</option>
-                    {% endfor %}
-             </select><br><br>
+{% extends "base.html" %}
+{% block content %}
+    <div class="formstyle">
+        <h1 class="h1style">List of Accounts</h1>
+        <h2><small>Select an account to view</small></h2>
+        <form action="{% url 'accountlist' %}" method="POST">
+            <select size="4" id="accounts" name="accounts">
+                {% for i in accounts %}
+                <option value={{ i.2 }}>{{ i.0 }}</option>
+                {% endfor %}
+            </select><br><br>
             {% csrf_token %}
             <label>
                 <input type="submit" value="Edit Account" name="onclick">
                 <input type="submit" value="Create New Account" name="onclick">
             </label>
-        </div>
-    </form>
-
-    <form action="" align="right" method="post">
-        {% csrf_token %}
-        <label class="logoutLblPos">
-            <input type="submit" value="Logout" name="onclick">
-        </label>
-    </form>
-</body>
-</html>
+        </form>
+    </div>
+    {% endblock %}

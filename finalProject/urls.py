@@ -23,7 +23,7 @@ import finalApp.views as fav
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Blank.as_view()),
-    path('Account_List/', AccountList.as_view()),
+    path('Account_List/', AccountList.as_view(), name='accountlist'),
     path('edit_account/', EditAccount.as_view()),
     path('Logout/', Logout.as_view(), name='logout'),
     path('Login/', Login.as_view()),
@@ -31,7 +31,7 @@ urlpatterns = [
     path('createLab/', AddLab.as_view()),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
     path('Course_List/', CourseList.as_view(), name="courses"),
-    path('create_account/', CreateAccount.as_view()),
+    path('create_account/', CreateAccount.as_view(), name='createaccount'),
     path('test_create/', TestCreate.as_view(), name="test"),
     path('assign_tas', AssignTas.as_view(), name="assigntas"),
     path('edit_self/', fav.EditSelf.as_view(), name='editself'),
