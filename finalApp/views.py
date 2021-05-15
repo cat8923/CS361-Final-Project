@@ -117,17 +117,6 @@ class CreateCourse(View):
             return render(request, "create_course.html", {"TA": TA, "pagetitle": "Create Course"})
 
     def post(self, request):
-        '''
-        courseDict = {
-            "title": request.POST["description"],
-            #"section": request.POST["designation"],
-        }
-        database_access.make_course(courseDict)
-        '''
-        #click = request.POST['onclick']
-        #if click == 'Logout':
-        #    request.session.flush()
-        #    return redirect('/Login/')
         check = database_access.make_course({"title": request.POST['title'], "designation": request.POST['designation'],
                                              "section": int(request.POST['section']), "semester": request.POST['semester']})
         return render(request, "create_course.html", {"message": str(type(request.POST['section'])) if not check else "success"})
