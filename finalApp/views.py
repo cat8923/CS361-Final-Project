@@ -52,7 +52,6 @@ class MyCourses(View):
                                                      "lab": self.kwargs["lab"]})
 
 
-
 class AssignMyTAs(View):
     def get(self, request):
         pass
