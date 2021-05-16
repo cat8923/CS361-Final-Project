@@ -299,7 +299,11 @@ def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if not temp:
         return ErrorString("Error: course does not exist")
     temp = temp[0]
-    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}
+    return {"designation": designation,
+            "title": temp.title,
+            "sections": list(CourseSections.objects.filter(course=temp)),
+            "labs": list(LabData.objects.filter(course=temp)),
+            "semester": temp.semester}
 
 
 def get_tas_of_course(designation: str) -> Union[ErrorString, list]:

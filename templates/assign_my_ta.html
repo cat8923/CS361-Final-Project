@@ -18,4 +18,9 @@
 <br>
 <a href="{% url 'mycourses' course=course%}">Go Back</a>
 
+{% if message %}
+    <hr>
+    <p>{{ message }}</p>
+{% endif %}
+
 {% endblock %}

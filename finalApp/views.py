@@ -21,6 +21,7 @@ def check_logged_in_as(session, types=None):
 class MyCourses(View):
     def get(self, request, **kwargs):
         if not check_logged_in_as(request.session, ["I"]): return redirect("/")
+
         context = {"pagetitle": "My Courses",
                    "position": request.session['position'],
                    "courses": database_access.get_courses_of_instructor(request.session['username'])}
@@ -37,6 +38,19 @@ class MyCourses(View):
             html = "my_courses.html"
 
         return render(request, html, context)
+
+    def post(self, request, **kwargs):
+        check = database_access.assign_ta_to_lab({"designation": self.kwargs["course"],
+                                                  "labSection": int(self.kwargs["lab"]),
+                                                  "taUsername": request.POST["taUsername"]})
+        tas = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(self.kwargs["course"]))
+        return render(request, "assign_my_ta.html", {"pagetitle": "My Courses",
+                                                     "position": request.session['position'],
+                                                     "message": str(check) if not check else "Success!",
+                                                     "tas": tas,
+                                                     "course": self.kwargs["course"],
+                                                     "lab": self.kwargs["lab"]})
+
 
 
 class AssignMyTAs(View):
