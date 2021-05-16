@@ -381,3 +381,17 @@ def get_courses_of_instructor(instructorUsername: str):
     courses = CourseData.objects.filter(coursesections__instructor=tempinstructor).distinct()
 
     return list(courses)
+
+
+def delete_account(username: str) -> Union[ErrorString, bool]:
+    if type(username) != str:
+        return ErrorString("Error: wrong type for username")
+
+    tempuser = list(MyUser.objects.filter(username__iexact=username))
+
+    if not tempuser:
+        return ErrorString("Error: user not found")
+
+    tempuser[0].delete()
+
+    return True
