@@ -19,11 +19,24 @@ def check_logged_in_as(session, types=None):
 
 
 class MyCourses(View):
-    def get(self, request):
+    def get(self, request, **kwargs):
         if not check_logged_in_as(request.session, ["I"]): return redirect("/")
+        context = {"pagetitle": "My Courses",
+                   "position": request.session['position'],
+                   "courses": database_access.get_courses_of_instructor(request.session['username'])}
+        if x := self.kwargs.get('course'):
+            context['course'] = x
+            context['tas'] = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(x))
+            if y := self.kwargs.get('lab'):
+                context['lab'] = y
+                html = "assign_my_ta.html"
+            else:
+                context['labs'] = database_access.get_coursedata(context['course'])['labs']
+                html = "view_my_course.html"
+        else:
+            html = "my_courses.html"
 
-        return render(request, "my_courses.html", {"pagetitle": "My Courses", "position": request.session['position'],
-                                                   "courses": database_access.get_courses_of_instructor(request.session['username'])})
+        return render(request, html, context)
 
 
 class AssignMyTAs(View):
@@ -244,7 +257,9 @@ class AccountList(View):
     def get(self, request):
         if len(request.GET) == 0:
             accounts = database_access.list_users()
-            return render(request, "account_list.html", {"accounts": accounts})
+            return render(request, "account_list.html", {"accounts": accounts,
+                                                         "pagetitle": "Account List",
+                                                         "position": request.session['position']})
 
     def post(self, request):
         click = request.POST['onclick']

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>View information for {{ course }}</h1>
+
+{% if tas%}
+    <table class="courselists" style="max-width: 50%;">
+        <tr>
+            <th colspan="3">Assigned TAs</th>
+        </tr>
+        {% for i in tas %}
+        <tr>
+            <td>{{ i.0 }}</td>
+            <td colspan="2">{% if i.1 %}{{ i.1 }}{% else %}<em>No skills provided.</em>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% if labs %}
+        <tr>
+            <th colspan="3">Lab Sections</th>
+        </tr>
+        {% for s in labs %}
+        <tr>
+            <td>{{ s.section }}</td>
+            <td>{% if s.TA != None %}{{ s.TA.get_full_name }}{% else %}Staff{% endif %}</td>
+            <td><a href="{% url 'mycourses' course=course lab=s.section%}">Assign TA</a></td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </table>
+{% endif %}
+
+<br>
+<a href="{% url 'mycourses' %}">Go Back</a>
+
+{% endblock %}
