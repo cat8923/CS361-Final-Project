@@ -286,6 +286,12 @@ def list_instructors() -> list:
             yield (str(i), i.username)
 
 
+def list_tas() -> list:
+    for i in MyUser.objects.all():
+        if i.position == "T":
+            yield (str(i), i.username)
+
+
 def get_userdata(username: str) -> Union[ErrorString, dict]:
     """gets the userdata of a certain user"""
     if type(username) is not str:
@@ -304,8 +310,8 @@ def get_userdata(username: str) -> Union[ErrorString, dict]:
 def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if type(designation) != str:
         return ErrorString("Error: wrong type for designation")
-    temp = CourseData.objects.filter(designation__iexact=designation)
-    if not temp.exists():
+    temp = list(CourseData.objects.filter(designation__iexact=designation))
+    if not temp:
         return ErrorString("Error: course does not exist")
     temp = temp[0]
     return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}
@@ -318,7 +324,8 @@ def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
     if not tempcourse:
         return ErrorString("Error: no course with given designation found")
     tempcourse = tempcourse[0]
-    return list(TAsToCourses.objects.filter(course=tempcourse))
+    for i in TAsToCourses.objects.filter(course=tempcourse):
+        yield (str(i.TA), i.TA.username)
 
 
 def update_ta_skill(data: dict):

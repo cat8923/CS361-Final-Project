@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Assign TA to Lab Section {{ lab }}</h1>
+<form method="post" action="{% url 'addta' course=designation lab=lab %}">
+    {% csrf_token %}
+    <label for="taUsername">Select TA:</label>
+    <select id="taUsername" name="taUsername">
+        {% for i in TAs %}
+            <option value="{{ i.1 }}">{{ i.0 }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Submit">
+</form>
+
+<a href="{% url 'edit' course=designation %}">Go Back</a>
+
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+{% endblock %}
