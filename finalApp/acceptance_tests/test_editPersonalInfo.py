@@ -141,7 +141,7 @@ class TestAddPersonalInfo(TestCase):
                                                                "last_name": "ta", "phone_number": "416-555-5501",
                                                                "email": "csdept@uwm.com",
                                                                "skills": "Grading"})
-         self.pi = MyUser.objects.all()
-         self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
-         self.assertEqual(TASkills.objects.get(TA__username="ta01").skills, "Grading",
+        self.pi = MyUser.objects.all()
+        self.assertEqual(len(self.pi), 2, msg="Error: an extra user is created when trying to update user data")
+        self.assertEqual(TASkills.objects.get(TA__username="ta01").skills, "Grading",
                              msg="Error: skills are not updated")
