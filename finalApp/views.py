@@ -261,7 +261,7 @@ class EditCourse(View):
         print(data)
 
         return render(request, "edit_course.html", data)
-      
+
     def post(self, request):
         click = request.POST['onclick']
         if click == 'Logout':
@@ -282,3 +282,40 @@ class EditCourse(View):
             pass
         elif click == 'Add Lab':
             pass
+class EditAccount(View):
+    def get(self, request, **kwargs):
+        print(self.kwargs)
+        account = self.kwargs.get("username")
+        if account:
+            account = database_access.get_userdata(account)
+        else:
+            account = {}
+        data = {"account": account}
+        print(data)
+
+        return render(request, "edit_account.html", data)
+
+    def post(self, request):
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return redirect('')
+        elif click == 'Save Edits':
+            check = database_access.update_user(request.POST)
+            print(type(check))
+            return render(request, "edit_account.html", {"user": database_access.get_userdata(request.session['username']),
+                                                      "position": request.session['position'],
+                                                      "message": str(check) if not check else "Success!"})
+        elif click == 'Cancel':
+            return redirect("/Account_List/")
+        elif click == 'Delete Account':
+            '''username = self.kwargs.get("username")
+            print(type(username))'''
+            account = database_access.get_userdata(request.POST['username'])
+            print(type(account))
+            print(str(account))
+            return render(request, "edit_account.html", {"user": database_access.delete_account(request.POST['username']),
+                                                         "position": request.session['position'],
+                                                         "message": str(account) if not account else "Success!"})
+        elif click == 'Create New Account':
+            return redirect("/create_account/")
