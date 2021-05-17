@@ -32,7 +32,7 @@ class testAssignI(TestCase):
                                      "number": "123456789"})
 
         self.assertEqual(response.context.get("message"), "successfully created account", msg="No message for confirmed account creation")
-        self.assertEqual(reverse('home'), response1.request["PATH_INFO"])
+        self.assertEqual(reverse('home'), response.request["PATH_INFO"])
 
         # assign the user created to the course declared in setUp
         response2 = self.Client.post("/Create_Course/", {"Course": 1}, follow=True)
@@ -54,4 +54,4 @@ class testAssignI(TestCase):
 
         # assign the user created to the course declared in setUp
         response2 = self.Client.post("/Create_Course/", {"Course": 2})
-        self.assertEqual("/Create_Course/", response2.request["PATH_INFO"],"Lab does not exist")
+        self.assertEqual("/Create_Course/", response2.request["PATH_INFO"],"Course does not exist")
