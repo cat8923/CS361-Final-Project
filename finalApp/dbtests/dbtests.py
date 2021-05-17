@@ -3,7 +3,8 @@ from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses,
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, \
     assign_instructor, \
     get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata, list_instructors, \
-    list_tas
+    list_tas, get_coursedata, get_tas_of_course, get_courses_of_instructor, get_all_user_info, get_skills, \
+    update_ta_skill, delete_account
 
 
 # Create your tests here.
@@ -583,3 +584,177 @@ class ListTAsTest(TestCase):
     def test_listTAs(self):
         tas = list(list_tas())
         self.assertListEqual(tas, self.tas, msg="Error: generated list of TAs is incorrect")
+
+
+class TestGetUserdata(TestCase):
+    def setUp(self):
+        MyUser.objects.create(username="user1", first_name="John", last_name="Doe", addressln1="address",
+                              addressln2="more address", email="tst@test.com", phone_number="123456")
+        MyUser.objects.create(username="user2", first_name="John2", last_name="Doe2", addressln1="address2",
+                              addressln2="more address2", email="tst2@test.com", phone_number="1234562")
+
+    def test_getUserdata(self):
+        needToReturn = ["username", "first_name", "last_name", "addressln1", "addressln2", "email", "phone_number"]
+        data = get_userdata("user1")
+        self.assertTrue(data, msg="Error: existing user does not return a truthy dictionary")
+        self.assertTrue(isinstance(data, dict), msg="Error: a dict is not returned")
+        self.assertListEqual(list(data.keys()), needToReturn,
+                             msg="Error: the right items are not included in the returned dictionary")
+        self.assertEqual(data['first_name'], "John", msg="Error: first name is wrong")
+        self.assertEqual(data['last_name'], "Doe", msg="Error: last name is wrong")
+
+    def test_getUserNotExist(self):
+        data = get_userdata("user3")
+        self.assertFalse(data, msg="Error: getting data of user who does not exist does not fail")
+        self.assertTrue(isinstance(data, ErrorString), msg="Error: an ErrorString is not returned")
+
+    def test_getUserBadInput(self):
+        data = get_userdata(1)
+        self.assertFalse(data, msg="Error: getting data of user with bad input does not fail")
+        self.assertTrue(isinstance(data, ErrorString), msg="Error: an ErrorString is not returned")
+
+
+class TestGetCourseData(TestCase):
+    def setUp(self):
+        for i in range(5):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                section = 201 + j
+                CourseSections.objects.create(course=course, section=section)
+            for j in range(i):
+                section = 901 + j
+                LabData.objects.create(course=course, section=section)
+
+    def test_getCourseData(self):
+        toReturn = ["designation", "title", "sections", "labs", "semester"]
+        for i in range(5):
+            course = get_coursedata("CS" + str(i))
+            self.assertEqual(list(course.keys()), toReturn,
+                             msg="Error: returned dictionary does not contain the right keys")
+            self.assertEqual(course['title'], "course " + str(i), msg="Error: returned course title is wrong")
+            self.assertEqual(course['designation'], "CS" + str(i), msg="Error: returned designation is incorrect")
+            self.assertEqual(len(course['sections']), i,
+                             msg="Error: returned list of course sections does not contain the right number of sections")
+            self.assertEqual(len(course['labs']), i,
+                             msg="Error: returned list of course labs does not contain the right number of labs")
+
+
+class TestGetTAsOfCourse(TestCase):
+    def setUp(self):
+        tas = []
+        self.numCourses = 5
+        for i in range(self.numCourses):
+            username = "user" + str(i)
+            first_name = "john" + str(i)
+            last_name = "doe" + str(i)
+            tas.append(MyUser.objects.create(username=username, first_name=first_name, last_name=last_name))
+
+        for i in range(self.numCourses):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                TAsToCourses.objects.create(TA=tas[j], course=course)
+
+    def test_getTAsOfCourse(self):
+        for i in range(self.numCourses):
+            tas = list(get_tas_of_course("CS" + str(i)))
+            self.assertEqual(len(tas), i, msg="Error: wrong number of TAs assigned to a course returned.")
+            for j in range(i):
+                self.assertEqual(("john" + str(j) + " doe" + str(j), "user" + str(j)), tas[j],
+                                 msg="Error: wrong ta is in list")
+
+    def test_getTAsOfNonExistingCourse(self):
+        tas = get_tas_of_course("CS-1")
+        self.assertFalse(tas, msg="Error: when course does not exist getting tas of the course does not fail")
+
+    def test_getTAsOfCourseBadInput(self):
+        tas = get_tas_of_course(2)
+        self.assertFalse(tas, msg="Error: calling get tas of course does not fail when input is bad")
+
+
+class TestGetInstructorsCourses(TestCase):
+    def setUp(self):
+        instructors = []
+        self.numCourses = 5
+        for i in range(self.numCourses):
+            username = "instructor" + str(i)
+            first_name = "john" + str(i)
+            last_name = "doe" + str(i)
+            instructors.append(
+                MyUser.objects.create(username=username, first_name=first_name, last_name=last_name, position="I"))
+
+        for i in range(self.numCourses):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                section = 200 + j
+                CourseSections.objects.create(course=course, instructor=instructors[j], section=section)
+
+    def test_getInstructorsCourses(self):
+        print(list(list_courses()))
+        for i in range(self.numCourses):
+            courses = get_courses_of_instructor("instructor" + str(i))
+            self.assertEqual(len(courses), self.numCourses - i - 1,
+                             msg="Error: incorrect number of courses assigned to an instructor is returned")
+
+    def test_instructorAssignedToMultipleSectionsOfSameCourse(self):
+        inst0 = MyUser.objects.get(username="instructor1")
+        course1 = CourseData.objects.get(designation="CS1")
+        CourseSections.objects.create(course=course1, instructor=inst0, section=999)
+        courses = get_courses_of_instructor("instructor1")
+        self.assertEqual(len(courses), 4, msg="Error: wrong number of courses for an instructor is returned")
+
+    def test_userIsNotInstructor(self):
+        MyUser.objects.create(username="notinstructor", position="T")
+        courses = get_courses_of_instructor("notinstructor")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a TA does not fail")
+        MyUser.objects.create(username="Supervisor", position="S")
+        courses = get_courses_of_instructor("Supervisor")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a supervisor does not fail")
+
+
+    def test_userDoesNotExist(self):
+        courses = get_courses_of_instructor("thisisnotauser")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a user who does not exist does not fail")
+
+
+class TestGetAllUserInfo(TestCase):
+    def setUp(self):
+        pass
+
+    def test_getAllUserInfoNonSupervisor(self):
+        check = get_all_user_info()
+
+    def test_getAllUserInfoSuervisor(self):
+        check = get_all_user_info(True)
+
+
+class TestGetSkills(TestCase):
+    def setUp(self):
+        pass
+
+    def test_getSkills(self):
+        check = get_skills("ta1")
+
+
+class TestUpdateSkill(TestCase):
+    def setUp(self):
+        pass
+
+    def test_updateSkill(self):
+        check = update_ta_skill({"taUsername": "ta1", "skills": "here are my skills"})
+
+
+class TestDeleteAccount(TestCase):
+    def setUp(self):
+        pass
+
+    def test_deleteAccount(self):
+        check = delete_account("user1")
