@@ -81,7 +81,8 @@ class AssignTasToCourse(View):
 
         return render(request, "assign_ta_to_course.html", {"pagetitle": "Assign TA",
                                                             "designation": self.kwargs.get("course"),
-                                                            "TAs": database_access.list_tas()})
+                                                            "TAs": database_access.list_tas(),
+                                                            "position": request.session['position']})
 
     def post(self, request, **kwargs):
         check = database_access.assign_ta_to_course({"taUsername": request.POST.get('taUsername'),
@@ -89,7 +90,8 @@ class AssignTasToCourse(View):
         return render(request, "assign_ta_to_course.html", {"pagetitle": "Assign TA",
                                                             "designation": self.kwargs.get("course"),
                                                             "TAs": database_access.list_tas(),
-                                                            "message": str(check) if not check else "Success!"})
+                                                            "message": str(check) if not check else "Success!",
+                                                            "position": request.session['position']})
 
 
 class AssignTasToLab(View):
@@ -267,14 +269,21 @@ class CourseList(View):
 
 
 class AccountList(View):
-    def get(self, request):
+    def get(self, request, **kwargs):
         if not check_logged_in_as(request.session): return redirect("/")
 
-        if len(request.GET) == 0:
-            accounts = database_access.list_users()
-            return render(request, "account_list.html", {"accounts": accounts,
-                                                         "pagetitle": "Account List",
-                                                         "position": request.session['position']})
+        account = self.kwargs.get('account')
+
+        data = {"position": request.session['position']}
+        html = "account_list.html"
+
+        if not account:
+            data['accounts'] = database_access.list_users()
+        else:
+            html = "view_user.html"
+            data['user'] = database_access.get_userdata(account)
+
+        return render(request, html, data)
 
     def post(self, request):
         click = request.POST['onclick']
@@ -284,9 +293,9 @@ class AccountList(View):
             print(request.POST)
             account = request.POST['username']
             return redirect("/Edit_Account/"+account+"/")
-        elif click == 'Logout':
-            request.session.flush()
-            return render(request, "Login.html")
+        elif click == 'View Account':
+            account = request.POST['username']
+            return redirect(reverse('accountlist', args=[account]))
 
 
 class CreateAccount(View):

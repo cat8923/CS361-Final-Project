@@ -32,6 +32,7 @@ urlpatterns = [
     path('create_account/', CreateAccount.as_view(), name='createaccount'),
     path('test_create/', TestCreate.as_view(), name="test"),
     path('edit_self/', fav.EditSelf.as_view(), name='editself'),
+    url(r'^account_list/(?P<account>[a-zA-Z0-9]+)', fav.AccountList.as_view(), name='accountlist'),
     url(r'^my_courses/(?P<course>[a-zA-Z0-9]+)/(?P<lab>[0-9]+)', fav.MyCourses.as_view(), name='mycourses'),
     url(r'^my_courses/(?P<course>[a-zA-Z0-9]+)', fav.MyCourses.as_view(), name='mycourses'),
     url('Edit_Account/(?P<username>[a-zA-Z0-9]+)', EditAccount.as_view(), name='edit'),
