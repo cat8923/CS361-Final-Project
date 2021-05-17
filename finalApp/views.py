@@ -122,7 +122,8 @@ class AssignInstructor(View):
         return render(request, "assign_instructor.html", {"pagetitle": "Assign Instructor",
                                                           "designation": self.kwargs.get("course"),
                                                           "section": self.kwargs.get("section"),
-                                                          "instructors": database_access.list_instructors()})
+                                                          "instructors": database_access.list_instructors(),
+                                                          "position": request.session['position']})
 
     def post(self, request, **kwargs):
         check = database_access.assign_instructor({"instructorUsername": request.POST["instructorUsername"],
@@ -132,7 +133,8 @@ class AssignInstructor(View):
                                                           "designation": self.kwargs.get("course"),
                                                           "section": self.kwargs.get("section"),
                                                           "instructors": database_access.list_instructors(),
-                                                          "message": str(check) if not check else "Success"})
+                                                          "message": str(check) if not check else "Success",
+                                                          "position": request.session['position']})
 
 
 class TestCreate(View):
@@ -295,6 +297,9 @@ class CreateAccount(View):
                                                        "pagetitle": "Create Account"})
 
     def post(self, request):
+        if request.POST['onclick'] == "Cancel":
+            return redirect("/")
+
         message = database_access.make_user(request.POST)
         if message:
             message = "successfully created account"
