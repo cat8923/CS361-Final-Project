@@ -7,14 +7,15 @@
             <table>
                 <tr>
                     <td><label for="position">Position: </label></td>
-                    <td><select name="title" id="title">
-                        <option value="S">Supervisor</option>
-                        <option value="I">Instructor</option>
-                        <option value="T">TA</option>
-                    </select></td>
+                    <td>
+                        <select name="title" id="position">
+                            <option value="S">Supervisor</option>
+                            <option value="I">Instructor</option>
+                            <option value="T">TA</option>
+                        </select>
+                    </td>
                 </tr>
 
-                <div class="container">
                     <tr>
                         <td><label for="username">Username: </label></td>
                         <td><input type="text" id="username" name="username"></td>
@@ -48,7 +49,6 @@
                         <td><label for="number">Phone:</label></td>
                         <td><input type="text" id="number" name="number"></td>
                     </tr>
-                </div>
                 <tr>
                     <td><input type="submit" value="Cancel"></td>
                     <td><input type="submit" value="Create Account"></td>
@@ -56,4 +56,10 @@
             </table>
         </form>
     </div>
+
+    {% if message %}
+        <hr>
+        <p>{{ message }}</p>
+    {% endif %}
+
 {% endblock %}

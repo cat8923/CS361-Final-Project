@@ -298,7 +298,8 @@ class CreateAccount(View):
         else:
             message = str(message)
 
-        return render(request, "Homepage.html", {"message": message})
+        return render(request, "create_account.html", {"message": message, "position": request.session['position'],
+                                                       "pagetitle": "Create Account"})
 
 
 class EditCourse(View):
@@ -348,7 +349,7 @@ class EditAccount(View):
             account = database_access.get_userdata(account)
         else:
             account = {}
-        data = {"account": account}
+        data = {"account": account, "pagetitle": "Edit Account", "position": request.session['position']}
         print(data)
 
         return render(request, "edit_account.html", data)
