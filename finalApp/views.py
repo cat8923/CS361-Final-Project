@@ -52,11 +52,6 @@ class MyCourses(View):
                                                      "lab": self.kwargs["lab"]})
 
 
-class AssignMyTAs(View):
-    def get(self, request):
-        pass
-
-
 class EditSelf(View):
     def get(self, request):
         if not check_logged_in_as(request.session): return redirect("/")
@@ -268,6 +263,8 @@ class CourseList(View):
 
 class AccountList(View):
     def get(self, request):
+        if not check_logged_in_as(request.session): return redirect("/")
+
         if len(request.GET) == 0:
             accounts = database_access.list_users()
             return render(request, "account_list.html", {"accounts": accounts,
@@ -289,7 +286,10 @@ class AccountList(View):
 
 class CreateAccount(View):
     def get(self, request):
-        return render(request, "create_account.html")
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
+        return render(request, "create_account.html", {"position": request.session['position'],
+                                                       "pagetitle": "Create Account"})
 
     def post(self, request):
         message = database_access.make_user(request.POST)
@@ -299,6 +299,7 @@ class CreateAccount(View):
             message = str(message)
 
         return render(request, "Homepage.html", {"message": message})
+
 
 class EditCourse(View):
     def get(self, request, **kwargs):
@@ -339,6 +340,8 @@ class EditCourse(View):
 
 class EditAccount(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         print(self.kwargs)
         account = self.kwargs.get("username")
         if account:

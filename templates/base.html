@@ -53,10 +53,11 @@
             width: 100%;
             text-align: center;
             margin: 10px auto;
+            margin-bottom: 20px;
         }
         .link a {
             color: white;
-            font-size: 2em;
+            font-size: 1.8em;
             text-decoration: none;
         }
         .courselists {
@@ -81,7 +82,7 @@
     <div class="navigation">
         <div class="link"><a href="{% url 'home' %}">Home</a></div>
         <div class="link"><a href="{% url 'courses' %}">Courses</a></div>
-        <div class="link"><a href="{% url 'createaccount' %}">Create Account</a></div>
+        {% if position == "S" %}<div class="link"><a href="{% url 'createaccount' %}">Create Account</a></div>{% endif %}
         <div class="link"><a href="{% url 'accountlist' %}">View All Accounts</a> </div>
         {% if position == "I" %}<div class="link"><a href="{% url 'mycourses' %}">My Courses</a></div>{% endif %}
         <div class="link"><a href="{% url 'editself' %}">My Account</a>></div>>
