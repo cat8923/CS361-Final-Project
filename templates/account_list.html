@@ -1,31 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>View Accounts</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-    <h1 style="text-align: center;">List of Accounts</h1>
-    <h2 style="text-align: center;"><small>Select an account to view</small></h2>
-    <form action="" method="post">
-        {% csrf_token %}
-        <!-- insert selection list box here -->
-        <select size="4" id="accounts" name="accounts" onclick="window.location.href='/account_list/';">
-                {% for i in accounts  %}
-                 <option value="{{ i.2 }}">{{ i.0 }}</option>
+    <div class="formstyle">
+        <h1 class="h1style">List of Accounts</h1>
+        <h2><small>Select an account to view</small></h2>
+        <form action="{% url 'accountlist' %}" method="post">
+            <select size="4" id="accounts" name="username">
+                {% for i in accounts %}
+                <option value={{ i.2 }}>{{ i.0 }}</option>
                 {% endfor %}
             </select><br><br>
-        </select>
-    </form>
-    <form align="right" method="post">
-        <label class="logoutLblPos">
-            <input type="submit" value="Logout">
-        </label>
-    </form>
-</body>
-</html>
+            {% csrf_token %}
+            <label>
+                <input type="submit" value="Edit Account" name="onclick">
+                <input type="submit" value="Create New Account" name="onclick">
+            </label>
+        </form>
+    </div>
 {% endblock %}

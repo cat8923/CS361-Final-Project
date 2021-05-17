@@ -43,8 +43,17 @@
 .main {
     width: 100%;
 }
+
 .menu {
     background-color: blue;
     width: 10%;
     float: left;
+}
+.select focus{
+    min-width: 150px;
+    width: auto;
+}
+
+.center {
+    text-align: center;
 }

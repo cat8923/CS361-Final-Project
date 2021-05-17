@@ -1,27 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="formstyle">
+        <h1 class="h1style">Edit Account</h1>
+        <form action="/edit_account/" method="post">
+            {% csrf_token %}
+            <div class="container">
+                <label for="username">Username: {{ account.username }}</label><br><br>
+                <!--<label for="title">Title: {{ account.position }}</label><br><br> -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Edit Account</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
-<body>
-    <h1>Edit Account</h1>
-    <form action="" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name"><br><br>
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address"><br><br>
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email"><br><br>
-        <label for="PhoneNumber">Phone:</label>
-        <input type="text" id="PhoneNumber" name="PhoneNumber"><br><br>
-        <input type="submit" value="Finish Editing Account">
-    </form>
-</body>
-</html>
+                <label for="first_name">First name:</label>
+                <input type="text" id="first_name" name="first_name" value="{{ account.first_name }}"><br><br>
+
+                <label for="last_name">Last name: </label>
+                <input type="text" id="last_name" name="last_name" value="{{ account.last_name }}"><br><br>
+
+                <label for="addressln1">Address line 1:</label>
+                <input type="text" id="addressln1" name="addressln1" value="{{ account.addressln1 }}"><br><br>
+
+                <label for="addressln2">Address line 2:</label>
+                <input type="text" id="addressln2" name="addressln2" value="{{ account.addressln2 }}"><br><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ account.email }}"><br><br>
+
+                <label for="number">Phone:</label>
+                <input type="text" id="number" name="phone_number" value="{{ account.phone_number }}"><br><br>
+            </div>
+
+            <input type="submit" value="Cancel" name="onclick">
+            &nbsp;
+            <input type="submit" value="Save Edits" onclick="alert('Edits Saved')" name="onclick">
+            &nbsp;
+            <input type="submit" value="Delete Account" name="onclick">
+            &nbsp;
+            <input type="submit" value="Create New Account" name="onclick">
+            <input type="hidden" name="username" value="{{ account.username }}">
+        </form>
+    </div>
 {% endblock %}

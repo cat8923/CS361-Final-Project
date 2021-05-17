@@ -280,8 +280,8 @@ class AccountList(View):
             return redirect("/create_account/")
         elif click == 'Edit Account':
             print(request.POST)
-            account = request.POST['accounts']
-            return redirect("/edit_account/" + account + "/")
+            account = request.POST['username']
+            return redirect("/Edit_Account/"+account+"/")
         elif click == 'Logout':
             request.session.flush()
             return render(request, "Login.html")
@@ -299,42 +299,6 @@ class CreateAccount(View):
             message = str(message)
 
         return render(request, "Homepage.html", {"message": message})
-
-
-class EditAccount(View):
-    def get(self, request, **kwargs):
-        print(self.kwargs)
-        account = self.kwargs.get("account")
-        if account:
-            account = database_access.get_userdata(account)
-        else:
-            account = {}
-        data = {"account": account}
-        print(data)
-
-        return render(request, "edit_account.html", data)
-
-    def post(self, request):
-        return redirect("/")
-        click = request.POST['onclick']
-        if click == 'Logout':
-            request.session.flush()
-            return redirect('')
-        elif click == 'Save Edits':
-            account = self.kwargs
-            return render(request, "edit_account.html", account)
-        elif click == 'Cancel':
-            account = self.kwargs
-            return render(request, "edit_account.html", account)
-        elif click == 'Delete Account':
-            return redirect('/Account_List/')
-        elif click == 'Create New Account':
-            return redirect("/create_account/")
-        elif click == 'Assign Course':
-            pass
-        elif click == 'Assign Lab':
-            pass
-
 
 class EditCourse(View):
     def get(self, request, **kwargs):
@@ -371,3 +335,42 @@ class EditCourse(View):
             pass
         elif click == 'Add Lab':
             pass
+
+
+class EditAccount(View):
+    def get(self, request, **kwargs):
+        print(self.kwargs)
+        account = self.kwargs.get("username")
+        if account:
+            account = database_access.get_userdata(account)
+        else:
+            account = {}
+        data = {"account": account}
+        print(data)
+
+        return render(request, "edit_account.html", data)
+
+    def post(self, request):
+        click = request.POST['onclick']
+        if click == 'Logout':
+            request.session.flush()
+            return redirect('')
+        elif click == 'Save Edits':
+            check = database_access.update_user(request.POST)
+            print(type(check))
+            return render(request, "edit_account.html", {"user": database_access.get_userdata(request.session['username']),
+                                                      "position": request.session['position'],
+                                                      "message": str(check) if not check else "Success!"})
+        elif click == 'Cancel':
+            return redirect("/Account_List/")
+        elif click == 'Delete Account':
+            '''username = self.kwargs.get("username")
+            print(type(username))'''
+            account = database_access.get_userdata(request.POST['username'])
+            print(type(account))
+            print(str(account))
+            return render(request, "edit_account.html", {"user": database_access.delete_account(request.POST['username']),
+                                                         "position": request.session['position'],
+                                                         "message": str(account) if not account else "Success!"})
+        elif click == 'Create New Account':
+            return redirect("/create_account/")

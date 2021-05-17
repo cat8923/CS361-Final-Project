@@ -81,7 +81,8 @@
     <div class="navigation">
         <div class="link"><a href="{% url 'home' %}">Home</a></div>
         <div class="link"><a href="{% url 'courses' %}">Courses</a></div>
-        <div class="link"><a href="{% url 'accounts' %}">Accounts</a></div>
+        <div class="link"><a href="{% url 'createaccount' %}">Create Account</a></div>
+        <div class="link"><a href="{% url 'accountlist' %}">View All Accounts</a> </div>
         {% if position == "I" %}<div class="link"><a href="{% url 'mycourses' %}">My Courses</a></div>{% endif %}
         <div class="link"><a href="{% url 'editself' %}">My Account</a>></div>>
     </div>
