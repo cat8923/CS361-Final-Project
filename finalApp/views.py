@@ -203,14 +203,17 @@ class CreateCourse(View):
     def get(self, request):
         if not check_logged_in_as(request.session, ["S"]): return redirect("/")
 
-        return render(request, "create_course.html", {"pagetitle": "Create Course"})
+        return render(request, "create_course.html", {"pagetitle": "Create Course", "position": request.session['position']})
 
     def post(self, request):
+        section = request.POST.get('section')
+        section = int(section) if section else None
         check = database_access.make_course(
             {"title": request.POST.get('title'), "designation": request.POST.get('designation'),
-             "section": int(request.POST.get('section')), "semester": request.POST.get('semester')})
+             "section": section, "semester": request.POST.get('semester')})
         return render(request, "create_course.html",
-                      {"message": str(check) if not check else "success", "pagetitle": "Create Course"})
+                      {"message": str(check) if not check else "success", "pagetitle": "Create Course",
+                       "position": request.session['position']})
 
 
 class AddSection(View):
