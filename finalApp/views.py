@@ -102,7 +102,8 @@ class AssignTasToLab(View):
                                                          "designation": self.kwargs.get('course'),
                                                          "TAs": database_access.get_tas_of_course(
                                                              self.kwargs.get('course')),
-                                                         "lab": self.kwargs.get('lab')})
+                                                         "lab": self.kwargs.get('lab'),
+                                                         "position": request.session['position']})
 
     def post(self, request, **kwargs):
         check = database_access.assign_ta_to_lab({"designation": self.kwargs.get("course"),
@@ -114,7 +115,8 @@ class AssignTasToLab(View):
                                                          "TAs": database_access.get_tas_of_course(
                                                              self.kwargs.get('course')),
                                                          "lab": self.kwargs.get('lab'),
-                                                         "message": str(check) if not check else "Success!"})
+                                                         "message": str(check) if not check else "Success!",
+                                                         "position": request.session['position']})
 
 
 class AssignInstructor(View):
@@ -225,7 +227,8 @@ class AddSection(View):
         if not check_logged_in_as(request.session, ["S"]): return redirect("/")
 
         return render(request, "create_course_section.html",
-                      {"pagetitle": "Add Section", "designation": self.kwargs["course"]})
+                      {"pagetitle": "Add Section", "designation": self.kwargs["course"],
+                       "position": request.session['position']})
 
     def post(self, request, **kwargs):
         try:
@@ -261,7 +264,9 @@ class CourseList(View):
             return redirect("/Create_Course/")
         elif click == 'Edit Course' or click == 'View Course':
             print(request.POST)
-            course = request.POST['courses']
+            course = request.POST.get('courses')
+            if not course:
+                return redirect("/Course_List/")
             return redirect("/Edit_Course/" + course + "/")
         elif click == 'Logout':
             request.session.flush()
