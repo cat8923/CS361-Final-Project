@@ -106,11 +106,11 @@ def login(logindata: dict) -> Union[ErrorString, dict]:
 
     tempUser = MyUser.objects.filter(username__iexact=logindata["username"]).exists()
     if not tempUser:
-        return ErrorString("Error: user does not exist")
+        return ErrorString("Error: bad username or password")
 
     tempUser = MyUser.objects.get(username__iexact=logindata["username"])
     if not tempUser.check_password(raw_password=logindata["password"]):
-        return ErrorString("Error: incorrect password")
+        return ErrorString("Error: badd username or password")
 
     return {"first_name": tempUser.first_name, "last_name": tempUser.last_name, "position": tempUser.position}
 
@@ -234,6 +234,21 @@ def assign_instructor(data: dict, all=False) -> Union[ErrorString, bool]:
     return True
 
 
+def get_userdata(username: str) -> Union[ErrorString, dict]:
+    """gets the userdata of a certain user"""
+    if type(username) is not str:
+        return ErrorString("Error: wrong type for username")
+
+    temp = MyUser.objects.filter(username__iexact=username)
+    if not temp:
+        return ErrorString("Error: user not found")
+
+    temp = temp[0]
+
+    return {"username": username, "first_name": temp.first_name, "last_name": temp.last_name, "addressln1": temp.addressln1,
+            "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}
+
+
 def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
     """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
     whether the course did not exist or if data were invalid"""
@@ -271,6 +286,12 @@ def list_instructors() -> list:
             yield (str(i), i.username)
 
 
+def list_tas() -> list:
+    for i in MyUser.objects.all():
+        if i.position == "T":
+            yield (str(i), i.username)
+
+
 def get_userdata(username: str) -> Union[ErrorString, dict]:
     """gets the userdata of a certain user"""
     if type(username) is not str:
@@ -289,11 +310,15 @@ def get_userdata(username: str) -> Union[ErrorString, dict]:
 def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if type(designation) != str:
         return ErrorString("Error: wrong type for designation")
-    temp = CourseData.objects.filter(designation__iexact=designation)
-    if not temp.exists():
+    temp = list(CourseData.objects.filter(designation__iexact=designation))
+    if not temp:
         return ErrorString("Error: course does not exist")
     temp = temp[0]
-    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}
+    return {"designation": designation,
+            "title": temp.title,
+            "sections": list(CourseSections.objects.filter(course=temp)),
+            "labs": list(LabData.objects.filter(course=temp)),
+            "semester": temp.semester}
 
 
 def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
@@ -303,7 +328,8 @@ def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
     if not tempcourse:
         return ErrorString("Error: no course with given designation found")
     tempcourse = tempcourse[0]
-    return list(TAsToCourses.objects.filter(course=tempcourse))
+    for i in TAsToCourses.objects.filter(course=tempcourse):
+        yield (str(i.TA), i.TA.username)
 
 
 def update_ta_skill(data: dict):
@@ -366,3 +392,32 @@ def get_courses_of_instructor(instructorUsername: str):
     courses = CourseData.objects.filter(coursesections__instructor=tempinstructor).distinct()
 
     return list(courses)
+
+
+def delete_account(username: str) -> Union[ErrorString, bool]:
+    if type(username) != str:
+        return ErrorString("Error: wrong type for username")
+
+    tempuser = list(MyUser.objects.filter(username__iexact=username))
+
+    if not tempuser:
+        return ErrorString("Error: user not found")
+
+    tempuser[0].delete()
+
+    return True
+
+
+def get_all_user_info(isSupervisor=False):
+    def allInfo(user: MyUser):
+        return (user.username, user.position, user.get_full_name(), user.email, user.phone_number, user.addressln1, user.addressln2)
+
+    def publicInfo(user: MyUser):
+        return (user.username, user.position, user.get_full_name(), user.email)
+
+    users = MyUser.objects.all()
+
+    func = allInfo if isSupervisor else publicInfo
+
+    for i in users:
+        yield func(i)

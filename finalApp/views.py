@@ -19,16 +19,37 @@ def check_logged_in_as(session, types=None):
 
 
 class MyCourses(View):
-    def get(self, request):
+    def get(self, request, **kwargs):
         if not check_logged_in_as(request.session, ["I"]): return redirect("/")
 
-        return render(request, "my_courses.html", {"pagetitle": "My Courses", "position": request.session['position'],
-                                                   "courses": database_access.get_courses_of_instructor(request.session['username'])})
+        context = {"pagetitle": "My Courses",
+                   "position": request.session['position'],
+                   "courses": database_access.get_courses_of_instructor(request.session['username'])}
+        if x := self.kwargs.get('course'):
+            context['course'] = x
+            context['tas'] = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(x))
+            if y := self.kwargs.get('lab'):
+                context['lab'] = y
+                html = "assign_my_ta.html"
+            else:
+                context['labs'] = database_access.get_coursedata(context['course'])['labs']
+                html = "view_my_course.html"
+        else:
+            html = "my_courses.html"
 
+        return render(request, html, context)
 
-class AssignMyTAs(View):
-    def get(self, request):
-        pass
+    def post(self, request, **kwargs):
+        check = database_access.assign_ta_to_lab({"designation": self.kwargs["course"],
+                                                  "labSection": int(self.kwargs["lab"]),
+                                                  "taUsername": request.POST["taUsername"]})
+        tas = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(self.kwargs["course"]))
+        return render(request, "assign_my_ta.html", {"pagetitle": "My Courses",
+                                                     "position": request.session['position'],
+                                                     "message": str(check) if not check else "Success!",
+                                                     "tas": tas,
+                                                     "course": self.kwargs["course"],
+                                                     "lab": self.kwargs["lab"]})
 
 
 class EditSelf(View):
@@ -115,6 +136,14 @@ class AssignInstructor(View):
 
 
 class TestCreate(View):
+    def get(self, request, **kwargs):
+        li = database_access.list_courses()
+        return render(request, "create_test_user.html", {"list": li, "username": self.kwargs.get("username"),
+                                                         "users": database_access.list_users(),
+                                                         "courses": database_access.get_coursedata("cs351")})
+
+class TestCreate(View):
+    def get(self, request):
     def get(self, request, **kwargs):
         li = database_access.list_courses()
         return render(request, "create_test_user.html", {"list": li, "username": self.kwargs.get("username"),
@@ -259,6 +288,13 @@ class AccountList(View):
             return render(request, "Login.html")
 
 
+class AccountList(View):
+    def get(self, request):
+        if len(request.GET) == 0:
+            accounts = list(database_access.list_users())
+            return render(request, "account_list.html", {"accounts": accounts})
+
+
 class CreateAccount(View):
     def get(self, request):
         return render(request, "create_account.html")
@@ -272,6 +308,7 @@ class CreateAccount(View):
 
         return render(request, "Homepage.html", {"message": message})
 
+      
 class EditCourse(View):
     def get(self, request, **kwargs):
         if not check_logged_in_as(request.session): return redirect("/")
@@ -311,13 +348,15 @@ class EditCourse(View):
 
 class EditAccount(View):
     def get(self, request, **kwargs):
+        if not check_logged_in_as(request.session, ["S"]): return redirect("/")
+
         print(self.kwargs)
         account = self.kwargs.get("username")
         if account:
             account = database_access.get_userdata(account)
         else:
             account = {}
-        data = {"account": account}
+        data = {"account": account, "pagetitle": "Edit Account", "position": request.session['position']}
         print(data)
 
         return render(request, "edit_account.html", data)

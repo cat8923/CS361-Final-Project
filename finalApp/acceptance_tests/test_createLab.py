@@ -7,8 +7,6 @@ from finalApp.models import MyUser
 class testCreateLab(TestCase):
     def setUp(self):
         self.Client = Client()
-        # self.Client.session["position"] = "S"
-        # self.Client.session.save()
 
         # creates 3 users (user0, user1, user2)
         # for i in range(3):
