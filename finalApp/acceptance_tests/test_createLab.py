@@ -6,7 +6,7 @@ from finalApp.models import MyUser
 
 class testCreateLab(TestCase):
     def setUp(self):
-        self.Client = Client()
+        self.client = Client()
 
         # creates 3 users (user0, user1, user2)
         # for i in range(3):

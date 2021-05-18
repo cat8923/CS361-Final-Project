@@ -1,10 +1,10 @@
 from django.test import TestCase
 from django.test import Client
 from django.urls import reverse
-from finalApp.models import MyUser,CourseData, LabData, TAsToCourses, UserType, CourseSections
+from finalApp.models import MyUser, CourseData, LabData, TAsToCourses, UserType, CourseSections
 
 
-class testAssignTA(TestCase):
+class TestAssignTA(TestCase):
     def setUp(self):
         self.Client = Client()
         # self.Client.session["position"] = "S"
@@ -25,42 +25,33 @@ class testAssignTA(TestCase):
 
         self.data = CourseData(title="Class", designation="CS1")
         self.data.save()
-        self.course = CourseSections(course=self.data, section=901, instructor= self.temp1)
+        self.course = CourseSections(course=self.data, section=901, instructor=self.temp1)
         self.course.save()
 
         self.Lab = LabData(course=self.data, section=902)
         self.Lab.save()
 
-    def test_01(self):
-        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
-        self.assertEqual(reverse('home'), response1.request['PATH_INFO'], "Valid Information does not take to the homepage page")
+    def test_assignTaToCourse(self):
+        response = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual(reverse('home'), response.request['PATH_INFO'],
+                         "Valid Information does not take to the homepage page")
 
-        response = self.Client.post("/create_account/",
-                                    {"username": "bic21", "password": "hello", "first_name": "brett",
-                                     "last_name": "frank", "addressln1": "3423 N Maryland", "addressln2": "Milwaukee wi",
-                                     "title": "TA", "email": "test@test.com",
-                                     "number": "123456789"})
-        self.assertEqual(response.context.get("message"), "successfully created account", msg="No message for confirmed account creation")
-        self.assertEqual(reverse('home'), response1.request["PATH_INFO"])
+        url = reverse('assigntas', args=['CS1'])
+        response = self.Client.post(url, {"taUsername": "TA"})
+        response = self.Client.post(url, {"taUsername": "TA"})
+        self.assertEqual("Error: TA has already been assigned to course", response.context.get("message"),
+                         msg="No message for failing assignment")
+        self.assertEqual(reverse('assigntas', args=['CS1']), response.request['PATH_INFO'])
 
-        # assign the user created to the course declared in setUp
-        response2 = self.Client.post("/Create_Lab/", {"Lab": 1}, follow=True)
-        self.assertEqual(reverse('home'), response2.request['PATH_INFO'])
+        self.assertEqual(1, len(TAsToCourses.objects.all()), msg="Error: wrong number of linking entries created")
 
-    def test_02(self):
-        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+    def test_alreadyAssigned(self):
+        response = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual(reverse('home'), response.request['PATH_INFO'],
+                         "Valid Information does not take to the homepage page")
 
-        self.assertEqual(reverse('home'), response1.request["PATH_INFO"], "Valid Information will take to the homepage page")
-
-        response = self.Client.post("/create_account/",
-                                    {"username": "bic21", "password": "hello", "first_name": "brett",
-                                     "last_name": "frank", "addressln1": "3423 N Maryland","addressln2": "Milwaukee WI",
-                                     "title": "TA", "email": "test@test.com",
-                                     "number": "123456789"})
-
-        self.assertEqual(response.context["message"], "successfully created account", msg="confirmed account creation")
-        self.assertEqual(reverse('home'), response.request["PATH_INFO"])
-
-        # assign the user created to the course declared in setUp
-        response2 = self.Client.post("/Create_Lab/", {"Lab": 2})
-        self.assertEqual("/Create_Lab/", response2.request["PATH_INFO"],"Lab does not exist")
+        url = reverse('assigntas', args=['CS1'])
+        response = self.Client.post(url, {"taUsername": "TA"})
+        self.assertEqual("Success!", response.context.get("message"), msg="No message for successful assignment")
+        self.assertEqual(reverse('assigntas', args=['CS1']), response.request['PATH_INFO'])
+        self.assertEqual(1, len(TAsToCourses.objects.all()), msg="Error: wrong number of linking entries created")
