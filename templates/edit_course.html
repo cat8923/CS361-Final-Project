@@ -1,7 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="h1Style">Edit Course</h1>
+<h1 class="h1Style">{% if position == "S"%}Edit{% else %}View{% endif %} Course</h1>
+
+{% if position == "S" %}
+<table>
+    <tr>
+        <th colspan="2">Supervisor Tools</th>
+    </tr>
+    <tr>
+        <td><a href="{% url 'assigntas' course=course.designation %}">Add TA to Course</a></td>
+        <td><a href="{% url 'addsection' course=course.designation %}">Add Section</a></td>
+    </tr>
+</table>
+{% endif %}
+
 <div class="formStyle">
     <table>
         <tr>
@@ -18,20 +31,18 @@
         </tr>
     </table>
     <br>
-    <a href="{% url 'addsection' course=course.designation %}">Add Section</a>
-    <br><br>
     <table class="courselists">
         {% if course.sections%}
         <tr>
             <th>Section</th>
-            <th>Instructor</th>
-            <th>Assign</th>
+            <th {% if position != "S" %}colspan="2" {% endif %}>Instructor</th>
+            {% if position == "S" %}<th>Assign</th>{% endif %}
         </tr>
         {% for s in course.sections %}
         <tr>
             <td>{{ s.section }}</td>
             <td>{% if s.instructor != None %}{{ s.instructor.get_full_name }}{% else %}Staff{% endif %}</td>
-            <td><a href="{% url 'addinst' course=course.designation section=s.section%}">Assign Instructor</a></td>
+            {% if position == "S" %}<td><a href="{% url 'addinst' course=course.designation section=s.section%}">Assign Instructor</a></td>{% endif %}
         </tr>
         {% endfor %}
         {% endif %}
@@ -39,63 +50,21 @@
         <tr>
             <th>Section</th>
             <th>TA</th>
-            <th>Assign TA</th>
+            {% if position == "S" %}<th>Assign TA</th>{% endif %}
         </tr>
         {% for s in course.labs %}
         <tr>
             <td>{{ s.section }}</td>
             <td>{% if s.TA != None %}{{ s.TA.get_full_name }}{% else %}Staff{% endif %}</td>
-            <td><a href="{% url 'edit' course=course.designation lab=s.section%}">Assign TA</a></td>
+            {% if position == "S" %}<td><a href="{% url 'addta' course=course.designation lab=s.section%}">Assign TA</a></td>{% endif %}
         </tr>
         {% endfor %}
         {% endif %}
 
     </table>
 
+    <br>
+
     <a href="{% url 'courses' %}">Go back</a>
-    <!--
-    <label for="section">Section: </label>
-    <select id="sections" name="sections" value="sections">
-        {% for i in course.sections  %}
-            <option value="{{ i.section }}">{{ i.section }}</option>
-        {% endfor %}
-    </select>
-    <label for="instructor">Instructor:</label>
-    <select id="Instructor" name="Instructor" value="instructors">
-        {% for i in instructors  %}
-            <option value="{{ i.username }}">{{ i.get_full_name }}</option>
-        {% endfor %}
-    </select>
-    <input type="Submit" name="onclick" value="Assign">
-    <input type="Submit" name="onclick" value="Add Section"><br><br>
-
-    <label for="Labs">Lab:</label>
-    <select id="Labs" name="Lab" value="Labs">
-        {% for i in course.labs  %}
-            <option value="{{ i.section }}">{{ i.section }}</option>
-        {% endfor %}
-    </select>
-    <label for="TAs">TA:</label>
-    <select id="TA" name="TA">
-        {% for i in TA  %}
-            <option value="{{ i.username }}">{{ i.get_full_name }}</option>
-        {% endfor %}
-    </select>
-    <input type="Submit" name="onclick" value="Assign">
-    <input type="Submit" name="onclick" value="Add Lab">
-    <input type="Submit" name="onclick" value="Delete Lab"><br><br>
-
-    <input type="submit" value="Create New Course" name="onclick">
-    <input type="submit" value="Save Edit" onclick="alert('Edits Saved')" name="onclick">
-    <input type="submit" value="Cancel Edit" onclick="alert('Edits Canceled')" name="onclick">
-    <input type="submit" value="Delete Course" onclick="confirm('Delete the course?')" name="onclick"><br><br>
-
-    <form action="{%  url 'edit' course=course.designation %}" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" value="Logout" name="onclick">
-            </label>
-    </form>
-     -->
 </div>
 {% endblock %}
