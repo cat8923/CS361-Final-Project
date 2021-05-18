@@ -24,6 +24,7 @@ class MyUser(models.User):
 class CourseData(m.Model):
     title = m.CharField(max_length=50, unique=True)
     designation = m.CharField(max_length=10, unique=True)
+    semester = m.CharField(max_length=10)
 
     def __str__(self):
         return self.title + " - " + self.designation
@@ -35,7 +36,7 @@ class CourseSections(m.Model):
     instructor = m.ForeignKey(MyUser, on_delete=m.SET_NULL, null=True)
 
     def __str__(self):
-        return str(self.course) + " " + str(self.section)
+        return self.course.designation + " " + str(self.section) + (" Instructor: " + self.instructor.get_full_name() if self.instructor else "")
 
     def __repr__(self):
         return self.course.designation + " " + str(self.section)
@@ -47,14 +48,26 @@ class LabData(m.Model):
     section = m.IntegerField(null=False)
 
     def __str__(self):
-        return str(self.section) + (("TA: " + self.TA.get_full_name() + " ") if self.TA else "")
+        return self.course.designation + " " + str(self.section) + ((" TA: " + self.TA.get_full_name() + " ") if self.TA else "")
 
 
 class TAsToCourses(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     course = m.ForeignKey(CourseData, on_delete=m.CASCADE, null=False)
 
+    def __str__(self):
+        return str(self.TA) + " - " + self.course.designation
+
+    def __repr__(self):
+        return str(self)
+
 
 class TASkills(m.Model):
     TA = m.ForeignKey(MyUser, on_delete=m.CASCADE, null=False)
     skills = m.TextField()
+
+    def __str__(self):
+        return self.TA.first_name + " " + self.skills
+
+    def __repr__(self):
+        return str(self)
