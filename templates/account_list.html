@@ -11,8 +11,11 @@
             </select><br><br>
             {% csrf_token %}
             <label>
-                <input type="submit" value="Edit Account" name="onclick">
-                <input type="submit" value="Create New Account" name="onclick">
+                <input type="submit" value="View Account" name="onclick">
+                {% if position == "S"%}
+                    <input type="submit" value="Edit Account" name="onclick">
+                    <input type="submit" value="Create New Account" name="onclick">
+                {% endif %}
             </label>
         </form>
     </div>

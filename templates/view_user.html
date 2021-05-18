@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>View data for {{ user.first_name }}</h1>
+<table class="courselists">
+    <tr>
+        <td>First Name:</td>
+        <td>{{ user.first_name }}</td>
+    </tr>
+    <tr>
+        <td>Last Name:</td>
+        <td>{{ user.last_name }}</td>
+    </tr>
+    <tr>
+        <td>Email:</td>
+        <td>{{ user.email }}</td>
+    </tr>
+    {% if position == "S"%}
+    <tr>
+        <td>Phone Number:</td>
+        <td>{{ user.phone_number }}</td>
+    </tr>
+    <tr>
+        <td>Address Line 1:</td>
+        <td>{{ user.addressln1 }}</td>
+    </tr>
+    <tr>
+        <td>Address Line 2:</td>
+        <td>{{ user.addressln2 }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<br>
+<a href="{% url 'accountlist' %}">Go Back</a>
+
+{% endblock %}

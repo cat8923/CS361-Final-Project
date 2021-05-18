@@ -1,9 +1,10 @@
 from django.test import TestCase
-from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections
+from finalApp.models import MyUser, UserType, CourseData, LabData, TAsToCourses, CourseSections, TASkills
 from finalApp.database_access import make_user, login, ErrorString, make_course, make_lab, assign_ta_to_lab, \
     assign_instructor, \
     get_course_id_by_name, assign_ta_to_course, update_user, list_courses, list_users, get_userdata, list_instructors, \
-    list_tas
+    list_tas, get_coursedata, get_tas_of_course, get_courses_of_instructor, get_all_user_info, get_skills, \
+    update_ta_skill, delete_account
 
 
 # Create your tests here.
@@ -583,3 +584,302 @@ class ListTAsTest(TestCase):
     def test_listTAs(self):
         tas = list(list_tas())
         self.assertListEqual(tas, self.tas, msg="Error: generated list of TAs is incorrect")
+
+
+class TestGetUserdata(TestCase):
+    def setUp(self):
+        MyUser.objects.create(username="user1", first_name="John", last_name="Doe", addressln1="address",
+                              addressln2="more address", email="tst@test.com", phone_number="123456")
+        MyUser.objects.create(username="user2", first_name="John2", last_name="Doe2", addressln1="address2",
+                              addressln2="more address2", email="tst2@test.com", phone_number="1234562")
+
+    def test_getUserdata(self):
+        needToReturn = ["username", "first_name", "last_name", "addressln1", "addressln2", "email", "phone_number"]
+        data = get_userdata("user1")
+        self.assertTrue(data, msg="Error: existing user does not return a truthy dictionary")
+        self.assertTrue(isinstance(data, dict), msg="Error: a dict is not returned")
+        self.assertListEqual(list(data.keys()), needToReturn,
+                             msg="Error: the right items are not included in the returned dictionary")
+        self.assertEqual(data['first_name'], "John", msg="Error: first name is wrong")
+        self.assertEqual(data['last_name'], "Doe", msg="Error: last name is wrong")
+
+    def test_getUserNotExist(self):
+        data = get_userdata("user3")
+        self.assertFalse(data, msg="Error: getting data of user who does not exist does not fail")
+        self.assertTrue(isinstance(data, ErrorString), msg="Error: an ErrorString is not returned")
+
+    def test_getUserBadInput(self):
+        data = get_userdata(1)
+        self.assertFalse(data, msg="Error: getting data of user with bad input does not fail")
+        self.assertTrue(isinstance(data, ErrorString), msg="Error: an ErrorString is not returned")
+
+
+class TestGetCourseData(TestCase):
+    def setUp(self):
+        for i in range(5):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                section = 201 + j
+                CourseSections.objects.create(course=course, section=section)
+            for j in range(i):
+                section = 901 + j
+                LabData.objects.create(course=course, section=section)
+
+    def test_getCourseData(self):
+        toReturn = ["designation", "title", "sections", "labs", "semester"]
+        for i in range(5):
+            course = get_coursedata("CS" + str(i))
+            self.assertEqual(list(course.keys()), toReturn,
+                             msg="Error: returned dictionary does not contain the right keys")
+            self.assertEqual(course['title'], "course " + str(i), msg="Error: returned course title is wrong")
+            self.assertEqual(course['designation'], "CS" + str(i), msg="Error: returned designation is incorrect")
+            self.assertEqual(len(course['sections']), i,
+                             msg="Error: returned list of course sections does not contain the right number of sections")
+            self.assertEqual(len(course['labs']), i,
+                             msg="Error: returned list of course labs does not contain the right number of labs")
+
+
+class TestGetTAsOfCourse(TestCase):
+    def setUp(self):
+        tas = []
+        self.numCourses = 5
+        for i in range(self.numCourses):
+            username = "user" + str(i)
+            first_name = "john" + str(i)
+            last_name = "doe" + str(i)
+            tas.append(MyUser.objects.create(username=username, first_name=first_name, last_name=last_name))
+
+        for i in range(self.numCourses):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                TAsToCourses.objects.create(TA=tas[j], course=course)
+
+    def test_getTAsOfCourse(self):
+        for i in range(self.numCourses):
+            tas = list(get_tas_of_course("CS" + str(i)))
+            self.assertEqual(len(tas), i, msg="Error: wrong number of TAs assigned to a course returned.")
+            for j in range(i):
+                self.assertEqual(("john" + str(j) + " doe" + str(j), "user" + str(j)), tas[j],
+                                 msg="Error: wrong ta is in list")
+
+    def test_getTAsOfNonExistingCourse(self):
+        tas = list(get_tas_of_course("CS-1"))
+        self.assertFalse(tas, msg="Error: when course does not exist getting tas of the course does not fail")
+
+    def test_getTAsOfCourseBadInput(self):
+        tas = list(get_tas_of_course(2))
+        self.assertFalse(tas, msg="Error: calling get tas of course does not fail when input is bad")
+
+
+class TestGetInstructorsCourses(TestCase):
+    def setUp(self):
+        instructors = []
+        self.numCourses = 5
+        for i in range(self.numCourses):
+            username = "instructor" + str(i)
+            first_name = "john" + str(i)
+            last_name = "doe" + str(i)
+            instructors.append(
+                MyUser.objects.create(username=username, first_name=first_name, last_name=last_name, position="I"))
+
+        for i in range(self.numCourses):
+            title = "course " + str(i)
+            designation = "CS" + str(i)
+            semester = "SP21"
+            course = CourseData.objects.create(title=title, designation=designation, semester=semester)
+            for j in range(i):
+                section = 200 + j
+                CourseSections.objects.create(course=course, instructor=instructors[j], section=section)
+
+    def test_getInstructorsCourses(self):
+        print(list(list_courses()))
+        for i in range(self.numCourses):
+            courses = get_courses_of_instructor("instructor" + str(i))
+            self.assertEqual(len(courses), self.numCourses - i - 1,
+                             msg="Error: incorrect number of courses assigned to an instructor is returned")
+
+    def test_instructorAssignedToMultipleSectionsOfSameCourse(self):
+        inst0 = MyUser.objects.get(username="instructor1")
+        course1 = CourseData.objects.get(designation="CS1")
+        CourseSections.objects.create(course=course1, instructor=inst0, section=999)
+        courses = get_courses_of_instructor("instructor1")
+        self.assertEqual(len(courses), 4, msg="Error: wrong number of courses for an instructor is returned")
+
+    def test_userIsNotInstructor(self):
+        MyUser.objects.create(username="notinstructor", position="T")
+        courses = get_courses_of_instructor("notinstructor")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a TA does not fail")
+        MyUser.objects.create(username="Supervisor", position="S")
+        courses = get_courses_of_instructor("Supervisor")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a supervisor does not fail")
+
+    def test_userDoesNotExist(self):
+        courses = get_courses_of_instructor("thisisnotauser")
+        self.assertFalse(courses, msg="Error: trying to get the courses of a user who does not exist does not fail")
+
+    def test_getCoursesBadInput(self):
+        courses = get_courses_of_instructor(2)
+        self.assertFalse(courses, msg="Error: trying to access courses with bad input does not fail")
+
+
+class TestGetAllUserInfo(TestCase):
+    def setUp(self):
+        self.publicinfo = []
+        self.allinfo = []
+        for i in range(1, 31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            tempAddrLn1 = str(i) + " N Maryland"
+            tempAddrLn2 = "Milwaukee, WI " + str(i)
+            tempEmail = "user" + str(i) + "@uwm.edu"
+            tempNumber = str(i)
+            tempPos = UserType.TA if i < 11 else UserType.SUPERVISOR if i < 21 else UserType.INSTRUCTOR
+            self.publicinfo.append((tempUser, str(tempPos), tempFn + " " + tempLn, tempEmail))
+            self.allinfo.append(
+                (tempUser, str(tempPos), tempFn + " " + tempLn, tempEmail, tempNumber, tempAddrLn1, tempAddrLn2))
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=tempPos,
+                                  addressln1=tempAddrLn1, addressln2=tempAddrLn2, phone_number=tempNumber,
+                                  email=tempEmail)
+
+    def test_getAllUserInfoNonSupervisor(self):
+        check = list(get_all_user_info())
+        self.assertTrue(check, msg="Error: getting all user info should not be false.")
+        self.assertEqual(len(check), 30, msg="Error: wrong number of users returned by get user info.")
+        self.assertListEqual(check, self.publicinfo, msg="Error: wrong data returned for getting all user info")
+
+    def test_getAllUserInfoSupervisor(self):
+        check = list(get_all_user_info(True))
+        self.assertTrue(check, msg="Error: getting all user info should not be false.")
+        self.assertEqual(len(check), 30, msg="Error: wrong number of users returned by get user info by supervisor")
+        self.assertListEqual(check, self.allinfo,
+                             msg="Error: wrong data returned for getting all user info by supervisor")
+
+
+class TestGetSkills(TestCase):
+    def setUp(self):
+        for i in range(1, 11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            tempAddrLn1 = str(i) + " N Maryland"
+            tempAddrLn2 = "Milwaukee, WI " + str(i)
+            tempEmail = "user" + str(i) + "@uwm.edu"
+            tempNumber = str(i)
+            tempPos = UserType.TA
+            ta = MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=tempPos,
+                                       addressln1=tempAddrLn1, addressln2=tempAddrLn2, phone_number=tempNumber,
+                                       email=tempEmail)
+
+            TASkills.objects.create(TA=ta, skills="I have " + str(i) + " skills")
+
+    def test_getSkills(self):
+        for i in range(1, 11):
+            check = get_skills("user" + str(i))
+            self.assertTrue(check, msg="Error: getting skills fails when it should not")
+
+    def test_getSkillsUserDoesNotExist(self):
+        check = get_skills("user0")
+        self.assertFalse(check, msg="Error: getting skills of nonexistent user does not fail")
+
+    def test_getSkillsUserNotTA(self):
+        MyUser.objects.create(username="user0", position="I")
+        check = get_skills("user0")
+        self.assertFalse(check, msg="Error: getting skills of non user does not fail")
+
+    def test_getSkillsBadData(self):
+        check = get_skills(1)
+        self.assertFalse(check, msg="Error: getting skills with bad input data does not fail")
+
+    def test_getSkillsNoneAdded(self):
+        MyUser.objects.create(username="user0")
+        check = get_skills("user0")
+        self.assertEqual(check, "",
+                         msg="Error: getting skills of TA who has not entered skills does not return empty string")
+
+
+class TestUpdateSkill(TestCase):
+    def setUp(self):
+        for i in range(1, 11):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            tempAddrLn1 = str(i) + " N Maryland"
+            tempAddrLn2 = "Milwaukee, WI " + str(i)
+            tempEmail = "user" + str(i) + "@uwm.edu"
+            tempNumber = str(i)
+            tempPos = UserType.TA
+            ta = MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=tempPos,
+                                       addressln1=tempAddrLn1, addressln2=tempAddrLn2, phone_number=tempNumber,
+                                       email=tempEmail)
+
+            TASkills.objects.create(TA=ta, skills="I have " + str(i) + " skills")
+
+    def test_updateSkill(self):
+        check = update_ta_skill({"taUsername": "user1", "skills": "I have a new skill!"})
+        self.assertTrue(check, msg="Error: updating skill does not return true when it should")
+        ta = MyUser.objects.get(username="user1")
+        self.assertEqual(TASkills.objects.get(TA=ta).skills, "I have a new skill!")
+        self.assertEqual(len(TASkills.objects.all()), 10,
+                         msg="Error: an extra ta skill is created when updating existing skill")
+
+    def test_updateNewSkill(self):
+        ta = MyUser.objects.create(username="user0")
+        check = update_ta_skill({"taUsername": "user0", "skills": "This is my first skill!"})
+        self.assertTrue(check, msg="Error: updating skill does not return true when it should")
+        self.assertEqual(TASkills.objects.get(TA=ta).skills, "This is my first skill!")
+        self.assertEqual(len(TASkills.objects.all()), 11,
+                         msg="Error: an extra ta skill is not created wen updating succeeds")
+
+    def test_updateSkillNotTA(self):
+        inst = MyUser.objects.create(username="user0", position="I")
+        check = update_ta_skill({"taUsername": "user0", "skills": "I am not even a TA"})
+        self.assertFalse(check, msg="Error: trying to update the skills of an instructor does not fail")
+        inst.position = "S"
+        inst.save()
+        check = update_ta_skill({"taUsername": "user0", "skills": "I am a supervisor"})
+        self.assertFalse(check, msg="Error: trying to update the skills of a supervisor does not fail")
+        self.assertEqual(len(TASkills.objects.all()), 10, msg="Error: an extra ta skill is created when updating fails")
+
+    def test_updateSkillsUserDoesNotExist(self):
+        check = update_ta_skill({"taUsername": "user0", "skills": "uh oh"})
+        self.assertFalse(check, msg="Error: trying to update the skills of a user who does not exist does not fail")
+        self.assertEqual(len(TASkills.objects.all()), 10, msg="Error: an extra ta skill is created when updating fails")
+
+
+class TestDeleteAccount(TestCase):
+    def setUp(self):
+        for i in range(1, 31):
+            tempFn = "john" + str(i)
+            tempLn = "doe" + str(i)
+            tempUser = "user" + str(i)
+            tempAddrLn1 = str(i) + " N Maryland"
+            tempAddrLn2 = "Milwaukee, WI " + str(i)
+            tempEmail = "user" + str(i) + "@uwm.edu"
+            tempNumber = str(i)
+            tempPos = UserType.TA if i < 11 else UserType.SUPERVISOR if i < 21 else UserType.INSTRUCTOR
+            MyUser.objects.create(username=tempUser, first_name=tempFn, last_name=tempLn, position=tempPos,
+                                  addressln1=tempAddrLn1, addressln2=tempAddrLn2, phone_number=tempNumber,
+                                  email=tempEmail)
+
+    def test_deleteAccount(self):
+        self.assertTrue(MyUser.objects.filter(username="user1").exists(),
+                        msg="Error: database may not have been initialized")
+        check = delete_account("user1")
+        self.assertTrue(check, msg="Error: deleting an existing account does not succeed as it should")
+        self.assertFalse(MyUser.objects.filter(username="user1").exists(),
+                         msg="Error: user is not deleted from the database")
+
+    def test_deleteNonExistentAccount(self):
+        check = delete_account("thisaccountdoesnotexist")
+        self.assertFalse(check, msg="Error: trying to delete an account that does not exist does not fail as it should")
+
+    def test_deleteAccountBadData(self):
+        check = delete_account(2)
+        self.assertFalse(check, msg="Error: trying to delete account with bad data passed in does not fail")

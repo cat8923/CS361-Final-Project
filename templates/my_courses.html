@@ -12,7 +12,7 @@
         {% for i in courses %}
         <tr>
             <td>{{ i.title }}</td>
-            <td>View Details</td>
+            <td><a href="{% url 'mycourses' course=i.designation %}">View Details</a></td>
         </tr>
         {% endfor %}
     </table>
