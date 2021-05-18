@@ -4,7 +4,7 @@
 <h1 class="h1Style">{% if position == "S"%}Edit{% else %}View{% endif %} Course</h1>
 
 {% if position == "S" %}
-<table>
+<table class="courselists">
     <tr>
         <th colspan="2">Supervisor Tools</th>
     </tr>
@@ -13,6 +13,7 @@
         <td><a href="{% url 'addsection' course=course.designation %}">Add Section</a></td>
     </tr>
 </table>
+<br>
 {% endif %}
 
 <div class="formStyle">

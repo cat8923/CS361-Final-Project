@@ -27,8 +27,11 @@ class MyCourses(View):
                    "courses": database_access.get_courses_of_instructor(request.session['username'])}
         if x := self.kwargs.get('course'):
             context['course'] = x
-            context['tas'] = ((i[0], database_access.get_skills(i[1]), i[1]) for i in
-                              database_access.get_tas_of_course(x))
+            context['tas'] = [(i[0], database_access.get_skills(i[1]), i[1]) for i in
+                              database_access.get_tas_of_course(x)]
+            sections = database_access.get_sections_of_instructor({"username": request.session['username'], "designation": x})
+            context['sections'] = sections
+            print(sections)
             if y := self.kwargs.get('lab'):
                 context['lab'] = y
                 html = "assign_my_ta.html"

@@ -249,6 +249,17 @@ def get_userdata(username: str) -> Union[ErrorString, dict]:
             "addressln2": temp.addressln2, "email": temp.email, "phone_number": temp.phone_number}
 
 
+def get_sections_of_instructor(data: dict) -> list:
+    needed = [("username", str), ("designation", str)]
+    check = verify_dict(needed, data)
+    if not check:
+        return check
+
+    sections = CourseSections.objects.filter(instructor__username__iexact=data['username'], course__designation__iexact=data['designation'])
+
+    return list(sections)
+
+
 def get_course_id_by_name(courseName: str) -> Union[ErrorString, int]:
     """gets the id of a course by its name (case insensitive). Returns the id on success, or an ErrorString saying
     whether the course did not exist or if data were invalid"""
