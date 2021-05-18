@@ -311,7 +311,7 @@ class CreateAccount(View):
                                                        "pagetitle": "Create Account"})
 
     def post(self, request):
-        if request.POST['onclick'] == "Cancel":
+        if request.POST.get('onclick') == "Cancel":
             return redirect("/")
 
         message = database_access.make_user(request.POST)
