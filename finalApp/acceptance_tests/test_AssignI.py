@@ -13,7 +13,7 @@ class testAssignI(TestCase):
         self.temp1.set_password(raw_password="pass")
         self.temp1.save()
 
-        self.ta = MyUser(username="I", position=UserType.I)
+        self.ta = MyUser(username="I", position=UserType.INSTRUCTOR)
         self.ta.save()
 
         self.data = CourseData(title="Class", designation="CS1")

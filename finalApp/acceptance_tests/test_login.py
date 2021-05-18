@@ -27,7 +27,7 @@ class testLogin(TestCase):
 
     def test_invalid_login_S(self):
         response = self.client.post(reverse('login'), {'username': 'Supervisor', 'password': '123'})
-        self.assertEqual("Error: incorrect password", response.context['message'], "InValid Information will take back to home page")
+        self.assertEqual("Error: bad username or password", response.context['message'], "InValid Information will take back to home page")
 
     def test_valid_login_I(self):
         response = self.client.post(reverse('login'), {'username': 'Instructor','password': 'pass1'}, follow=True)
@@ -35,7 +35,7 @@ class testLogin(TestCase):
 
     def test_invalid_login_I(self):
         response = self.client.post(reverse('login'), {'username': 'Instructor', 'password': '123'}, follow=True)
-        self.assertEqual("Error: incorrect password", response.context['message'], "InValid Information does not take back to home page")
+        self.assertEqual("Error: bad username or password", response.context['message'], "InValid Information does not take back to home page")
 
     def test_valid_login_TA(self):
         response = self.client.post(reverse('login'), {'username': 'TA','password': 'pass2'}, follow=True)
@@ -43,4 +43,4 @@ class testLogin(TestCase):
 
     def test_invalid_login_TA(self):
         response = self.client.post(reverse('login'), {'username': 'TA', 'password': '123'})
-        self.assertEqual("Error: incorrect password", response.context['message'], "InValid Information does not take back to home page")
+        self.assertEqual("Error: bad username or password", response.context['message'], "InValid Information does not take back to home page")

@@ -110,7 +110,7 @@ def login(logindata: dict) -> Union[ErrorString, dict]:
 
     tempUser = MyUser.objects.get(username__iexact=logindata["username"])
     if not tempUser.check_password(raw_password=logindata["password"]):
-        return ErrorString("Error: badd username or password")
+        return ErrorString("Error: bad username or password")
 
     return {"first_name": tempUser.first_name, "last_name": tempUser.last_name, "position": tempUser.position}
 

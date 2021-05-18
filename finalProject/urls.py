@@ -25,7 +25,7 @@ urlpatterns = [
     path('Account_List/', AccountList.as_view(), name='accountlist'),
     path('edit_account/', EditAccount.as_view()),
     path('Logout/', Logout.as_view(), name='logout'),
-    path('Login/', Login.as_view()),
+    path('Login/', Login.as_view(), name='login'),
     path('Homepage/', Homepage.as_view(), name='home'),
     path('Create_Course/', CreateCourse.as_view(), name='createcourse'),
     path('Course_List/', CourseList.as_view(), name="courses"),
