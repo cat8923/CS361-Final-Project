@@ -106,11 +106,11 @@ def login(logindata: dict) -> Union[ErrorString, dict]:
 
     tempUser = MyUser.objects.filter(username__iexact=logindata["username"]).exists()
     if not tempUser:
-        return ErrorString("Error: user does not exist")
+        return ErrorString("Error: bad username or password")
 
     tempUser = MyUser.objects.get(username__iexact=logindata["username"])
     if not tempUser.check_password(raw_password=logindata["password"]):
-        return ErrorString("Error: incorrect password")
+        return ErrorString("Error: badd username or password")
 
     return {"first_name": tempUser.first_name, "last_name": tempUser.last_name, "position": tempUser.position}
 
@@ -314,7 +314,11 @@ def get_coursedata(designation: str) -> Union[ErrorString, dict]:
     if not temp:
         return ErrorString("Error: course does not exist")
     temp = temp[0]
-    return {"designation": designation, "title": temp.title, "sections": list(CourseSections.objects.filter(course=temp)), "labs": list(LabData.objects.filter(course=temp)), "semester": temp.semester}
+    return {"designation": designation,
+            "title": temp.title,
+            "sections": list(CourseSections.objects.filter(course=temp)),
+            "labs": list(LabData.objects.filter(course=temp)),
+            "semester": temp.semester}
 
 
 def get_tas_of_course(designation: str) -> Union[ErrorString, list]:
@@ -402,3 +406,18 @@ def delete_account(username: str) -> Union[ErrorString, bool]:
     tempuser[0].delete()
 
     return True
+
+
+def get_all_user_info(isSupervisor=False):
+    def allInfo(user: MyUser):
+        return (user.username, user.position, user.get_full_name(), user.email, user.phone_number, user.addressln1, user.addressln2)
+
+    def publicInfo(user: MyUser):
+        return (user.username, user.position, user.get_full_name(), user.email)
+
+    users = MyUser.objects.all()
+
+    func = allInfo if isSupervisor else publicInfo
+
+    for i in users:
+        yield func(i)

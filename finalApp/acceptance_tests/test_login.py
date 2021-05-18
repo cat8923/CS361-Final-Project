@@ -7,8 +7,6 @@ from finalApp.models import MyUser, UserType
 class testLogin(TestCase):
     def setUp(self):
             self.Client = Client()
-            # self.Client.session["position"] = "S"
-            # self.Client.session.save()
 
             self.temp = MyUser(username="Supervisor", first_name="Susan", last_name="Mcroy", position=UserType.SUPERVISOR)
             self.temp.set_password(raw_password="pass")
