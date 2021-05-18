@@ -28,20 +28,15 @@
 
             <tr>
                 <td><input type="submit" value="Save Course" name="onclick"></td>
-                <td><input type="submit" value="Cancel" name="onclick"></td>
             </tr>
         </table>
         </form>
-
-    <!--
-        <form action="/Create_Course/" align="right" method="post">
-            {% csrf_token %}
-            <label class="logoutLblPos">
-                <input type="submit" value="Logout" name="onclick">
-            </label>
-        </form>
-    -->
 </div>
+
+    <br>
+
+    <a href="{% url 'courses' %}">Go back</a>
+
     {% if message %}
         <p>{{ message }}</p>
     {% endif %}
