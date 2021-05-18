@@ -27,7 +27,8 @@ class MyCourses(View):
                    "courses": database_access.get_courses_of_instructor(request.session['username'])}
         if x := self.kwargs.get('course'):
             context['course'] = x
-            context['tas'] = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(x))
+            context['tas'] = ((i[0], database_access.get_skills(i[1]), i[1]) for i in
+                              database_access.get_tas_of_course(x))
             if y := self.kwargs.get('lab'):
                 context['lab'] = y
                 html = "assign_my_ta.html"
@@ -43,7 +44,8 @@ class MyCourses(View):
         check = database_access.assign_ta_to_lab({"designation": self.kwargs["course"],
                                                   "labSection": int(self.kwargs["lab"]),
                                                   "taUsername": request.POST["taUsername"]})
-        tas = ((i[0], database_access.get_skills(i[1]), i[1]) for i in database_access.get_tas_of_course(self.kwargs["course"]))
+        tas = ((i[0], database_access.get_skills(i[1]), i[1]) for i in
+               database_access.get_tas_of_course(self.kwargs["course"]))
         return render(request, "assign_my_ta.html", {"pagetitle": "My Courses",
                                                      "position": request.session['position'],
                                                      "message": str(check) if not check else "Success!",
@@ -209,7 +211,8 @@ class CreateCourse(View):
     def get(self, request):
         if not check_logged_in_as(request.session, ["S"]): return redirect("/")
 
-        return render(request, "create_course.html", {"pagetitle": "Create Course", "position": request.session['position']})
+        return render(request, "create_course.html",
+                      {"pagetitle": "Create Course", "position": request.session['position']})
 
     def post(self, request):
         section = request.POST.get('section')
@@ -297,7 +300,7 @@ class AccountList(View):
         elif click == 'Edit Account':
             print(request.POST)
             account = request.POST['username']
-            return redirect("/Edit_Account/"+account+"/")
+            return redirect("/Edit_Account/" + account + "/")
         elif click == 'View Account':
             account = request.POST['username']
             return redirect(reverse('accountlist', args=[account]))
@@ -384,19 +387,19 @@ class EditAccount(View):
         elif click == 'Save Edits':
             check = database_access.update_user(request.POST)
             print(type(check))
-            return render(request, "edit_account.html", {"user": database_access.get_userdata(request.session['username']),
-                                                      "position": request.session['position'],
-                                                      "message": str(check) if not check else "Success!"})
+            return render(request, "edit_account.html",
+                          {"user": database_access.get_userdata(request.session['username']),
+                           "position": request.session['position'],
+                           "message": str(check) if not check else "Success!"})
         elif click == 'Cancel':
             return redirect("/Account_List/")
         elif click == 'Delete Account':
-            '''username = self.kwargs.get("username")
-            print(type(username))'''
             account = database_access.get_userdata(request.POST['username'])
             print(type(account))
             print(str(account))
-            return render(request, "edit_account.html", {"user": database_access.delete_account(request.POST['username']),
-                                                         "position": request.session['position'],
-                                                         "message": str(account) if not account else "Success!"})
+            return render(request, "edit_account.html",
+                          {"user": database_access.delete_account(request.POST['username']),
+                           "position": request.session['position'],
+                           "message": str(account) if not account else "Success!"})
         elif click == 'Create New Account':
             return redirect("/create_account/")

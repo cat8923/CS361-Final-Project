@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Blank.as_view()),
     path('Account_List/', AccountList.as_view(), name='accountlist'),
-    path('edit_account/', EditAccount.as_view()),
+    path('edit_account/', EditAccount.as_view(), name='editaccount'),
     path('Logout/', Logout.as_view(), name='logout'),
     path('Login/', Login.as_view(), name='login'),
     path('Homepage/', Homepage.as_view(), name='home'),

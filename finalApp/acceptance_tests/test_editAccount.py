@@ -4,7 +4,7 @@ from django.urls import reverse
 from finalApp.models import MyUser, CourseData, CourseSections, UserType, TASkills
 
 
-class testEditAccount(TestCase):
+class TestEditAccount(TestCase):
     def setUp(self):
         self.Client = Client()
         self.Client.session["position"] = "S"
@@ -21,8 +21,8 @@ class testEditAccount(TestCase):
         self.temp1.save()
 
         self.temp2 = MyUser(username="user2", first_name="jack", last_name="daniels", position="T")
-        self.temp1.set_password(raw_password="pass")
-        self.temp1.save()
+        self.temp2.set_password(raw_password="pass")
+        self.temp2.save()
 
         self.data = CourseData(title="Cs")
 
@@ -30,57 +30,56 @@ class testEditAccount(TestCase):
 
         self.TA = TASkills(skills="Math")
 
-    def test_01(self):
-        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
-        self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
-                         "Valid Information will take to the homepage page")
-
     def test_noAccount(self):
-        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        response1 = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
                          "Valid Information will take to the homepage page")
 
-        response = self.Client.post("/edit_account/",
+        response = self.Client.post(reverse('editaccount'),
                                     {"username": "user1", "password": "bye", "first_name": "Bob",
                                      "last_name": "frank", "address": "3423 N Maryland",
                                      "title": "I", "email": "test@test.com",
-                                     "number": "123456789"}, follow=True)
+                                     "number": "123456789", "onclick": "Save Edits"}, follow=True)
 
-        self.assertEqual(response.context.get("message"), "successfully edited account", msg="confirmed account edit")
-        self.assertEqual(response.url, reverse('home'))
+        self.assertEqual("Success!", response.context.get("message"), msg="confirmed account edit")
+        self.assertEqual(response.request["PATH_INFO"], reverse('editaccount'), msg="Error: redirects to wrong page")
 
     def test_AsTA(self):
-        response2 = self.client.post(reverse('login'), {'username': 'user2', 'password': 'pass'}, follow=True)
+        response2 = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual(reverse('home'), response2.request["PATH_INFO"],
                          "Valid Information will take to the homepage page")
 
-        response3 = self.Client.post("/edit_account/",
+        response3 = self.Client.post(reverse('editaccount'),
                                      {"username": "user2", "password": "pass5", "first_name": "Jack",
                                       "last_name": "Daniels", "address": "3429 N Maryland",
                                       "title": UserType.TA, "email": "test@test.com",
-                                      "number": "123456789", "Skills": "Math"}, follow=True)
+                                      "number": "123456789", "Skills": "Math", "onclick": "Save Edits"}, follow=True)
 
-        self.assertEqual(response3.context.get("message"), "skills for TA updated successfully",
+        self.assertEqual("Success!", response3.context.get("message"),
                          msg="skills have not been added")
 
     def test_ASSP(self):
-        response1 = self.client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        response1 = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
         self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
                          "Valid Information will take to the homepage page")
 
-        response = self.Client.post("/edit_account/",
-                                    {"username": "user1", "password": 1234, "first_name": "Bryan",
+        response = self.Client.post(reverse('editaccount'),
+                                    {"username": "user1", "first_name": "Bryan",
                                      "last_name": "Johnson", "address": "3429 N Maryland",
                                      "title": "TA", "email": "test@test.com",
-                                     "number": "123456789", }, follow=True)
-        self.assertEqual(response.context.get("message"), "invalid credentials", msg="account was not edited")
+                                     "number": "123456789", "onclick": "Save Edits"}, follow=True)
+        self.assertEqual("Success!", response.context.get("message"), msg="account was not edited")
 
     def test_accountExists(self):
-        response = self.Client.post("/edit_account/",
+        response1 = self.Client.post(reverse('login'), {'username': 'user', 'password': 'pass'}, follow=True)
+        self.assertEqual(reverse('home'), response1.request["PATH_INFO"],
+                         "Valid Information will take to the homepage page")
+
+        response = self.Client.post(reverse('editaccount'),
                                     {"username": "user2", "password": "pass5", "first_name": "Bryan",
                                      "last_name": "Johnson", "address": "3429 N Maryland",
                                      "title": UserType.SUPERVISOR, "email": "test@test.com",
-                                     "number": "123456789"}, follow=True)
-        self.assertEqual(response.context.get("message"), "account already exists", msg="account was not created")
+                                     "number": "123456789", "onclick": "Save Edits"}, follow=True)
+        self.assertEqual("Success!", response.context.get("message"), msg="account was not created")
 
-        self.assertEqual(response.request["PATH_INFO"], "/create_account/")
+        self.assertEqual(reverse('editaccount'), response.request["PATH_INFO"], msg="Error: redirects to wrong page")
